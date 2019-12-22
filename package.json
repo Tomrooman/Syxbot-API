@@ -1,0 +1,22 @@
+{
+  "name": "syxbot-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tomrooman/Syxbot-API.git"
+  },
+  "author": "Tom Rooman",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/Tomrooman/Syxbot-API/issues"
+  },
+  "homepage": "https://github.com/Tomrooman/Syxbot-API#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
