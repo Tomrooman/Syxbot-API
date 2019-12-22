@@ -8,6 +8,8 @@ lerna-debug.log*
 yarn.lock
 package-lock.json
 config.json
+server.crt
+server.key
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

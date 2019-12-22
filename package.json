@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "pm2 start index.js --name syxbot_api",
+    "dev": "pm2 start index.js --watch --name syxbot_api",
+    "log": "pm2 log --lines 100 syxbot_api ",
+    "status": "pm2 status",
+    "stop": "pm2 stop syxbot_api",
+    "stopall": "pm2 stop all"
   },
   "repository": {
     "type": "git",
@@ -17,6 +22,8 @@
   },
   "homepage": "https://github.com/Tomrooman/Syxbot-API#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "pm2": "^4.2.1"
   }
 }
