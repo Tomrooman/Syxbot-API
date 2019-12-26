@@ -7,6 +7,7 @@
     "start": "pm2 start index.js --name syxbot_api",
     "dev": "pm2 start index.js --watch --name syxbot_api",
     "log": "pm2 log --lines 100 syxbot_api ",
+    "eslint": "eslint ./",
     "status": "pm2 status",
     "stop": "pm2 stop syxbot_api",
     "stopall": "pm2 stop all"
@@ -16,7 +17,7 @@
     "url": "git+https://github.com/Tomrooman/Syxbot-API.git"
   },
   "author": "Tom Rooman",
-  "license": "GPL",
+  "license": "GPL-3.0-only",
   "bugs": {
     "url": "https://github.com/Tomrooman/Syxbot-API/issues"
   },
@@ -24,6 +25,10 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "nodemailer": "^6.4.2",
     "pm2": "^4.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.1"
   }
 }
