@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js --name syxbot_api",
-    "dev": "pm2 start index.js --watch --name syxbot_api",
+    "start": "pm2 start index.js --interpreter babel-node --name syxbot_api",
+    "dev": "pm2 start index.js --interpreter babel-node  --watch --name syxbot_api",
     "log": "pm2 log --lines 100 syxbot_api ",
     "eslint": "eslint ./",
     "status": "pm2 status",
@@ -29,6 +29,10 @@
     "pm2": "^4.2.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/node": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
     "eslint": "^6.7.1"
   }
 }

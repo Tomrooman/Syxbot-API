@@ -1,9 +1,9 @@
-const express = require('express');
-const bodyParser = require('body-parser')
-const fs = require('fs')
-const https = require('https')
-const nodeMailer = require('nodemailer')
-const config = require('./config.json')
+import express from 'express';
+import bodyParser from 'body-parser';
+import fs from 'fs';
+import https from 'https';
+import nodeMailer from 'nodemailer';
+import config from './config.json';
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.post('/docs/contact', (req, res) => {
-    console.log('req body : ', req.body)
+    console.log('req body : ', req.body);
     res.send('Données reçues');
     const transporter = nodeMailer.createTransport({
         host: 'smtp-mail.outlook.com',
@@ -37,18 +37,18 @@ app.post('/docs/contact', (req, res) => {
             return console.log('Error while sending mail : ', error);
         }
         console.log('Message response info : ', info);
-        res.send(true)
+        res.send(true);
     });
 });
 
 app.get('/*', (req, res) => {
-    res.send('404 not found')
-})
+    res.send('404 not found');
+});
 
 https.createServer({
     key: fs.readFileSync('./server.key'),
     cert: fs.readFileSync('./server.crt')
 }, app)
     .listen(9000, function () {
-        console.log('HTTPS running on port 9000')
-    })
+        console.log('HTTPS running on port 9000');
+    });

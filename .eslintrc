@@ -2,16 +2,12 @@
     "extends": "eslint:recommended",
     "env": {
         "node": true,
-        "es6": true
+        "es2020": true
     },
     "root": true,
     "parserOptions": {
-        "ecmaVersion": 2019
+        "sourceType": "module"
     },
-    "ignorePatterns": [
-        "tests/",
-        "public/"
-    ],
     "rules": {
         "brace-style": [
             "error",
@@ -40,12 +36,12 @@
             "error",
             4
         ],
-        // "max-len": [
-        //   "error",
-        //   {
-        //     "code": 100
-        //   }
-        // ],
+        "max-len": [
+            "error",
+            {
+                "code": 100
+            }
+        ],
         "max-nested-callbacks": [
             "error",
             {
@@ -95,10 +91,10 @@
             "error",
             "single"
         ],
-        /*"semi": [
-        "error",
-        "always"
-      ],*/
+        "semi": [
+            "error",
+            "always"
+        ],
         "space-before-blocks": "error",
         "space-in-parens": "error",
         "space-infix-ops": "error",
