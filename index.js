@@ -13,31 +13,33 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.post('/docs/contact', (req, res) => {
-    console.log('req body : ', req.body);
-    res.send('Données reçues');
+    // setTimeout(() => {
+    //     res.send(true);
+    // }, 4000);
+    let message = req.body.message.split('\n');
+    message = message.join('</br>');
     const transporter = nodeMailer.createTransport({
-        host: 'smtp-mail.outlook.com',
+        host: 'smtp.office365.com',
         port: 587,
-        secure: true,
         auth: {
             user: 'syxbot@hotmail.com',
             pass: config.email.password
         }
     });
     const mailOptions = {
-        from: req.body.mail,
+        from: 'syxbot@hotmail.com',
         to: 'syxbot@hotmail.com',
         subject: req.body.object,
-        text: req.body.message,
-        html: '<b>test du body html</b>'
+        html: '<b>Email de la personne : </b>' + req.body.mail + '</br></br>' + message
     };
-
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, error => {
         if (error) {
+            res.send(false);
             return console.log('Error while sending mail : ', error);
         }
-        console.log('Message response info : ', info);
-        res.send(true);
+        else {
+            res.send(true);
+        }
     });
 });
 
