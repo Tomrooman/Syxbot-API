@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/update', (req, res) => {
-    console.log('Api data : ', req.data);
+    console.log('Api data : ', req.body);
     res.send('Get the data');
 });
 
