@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 import https from 'https';
 import docsRouter from './routes/docs.js';
+import settingsRouter from './routes/settings.js';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/docs', docsRouter);
+app.use('/settings', settingsRouter);
 
 app.get('/*', (req, res) => {
     res.send('404 not found');
