@@ -1,17 +1,40 @@
 import express from 'express';
+import settingsModel from './../models/settings.js';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    if (!req.query.guildId) {
-        return res.send('No guildId');
-    }
-    res.send('get guildId');
+    settingsModel.find()
+        .then(settings => {
+            res.send(settings);
+        })
+        .catch(e => {
+            console.log('Error in API route to get all settings : ', e.message);
+            res.send(false);
+        });
 });
 
 router.post('/update', (req, res) => {
-    console.log('Api data : ', req.body);
-    res.send('Get the data');
+    const settingsObj = req.body;
+    settingsModel.get(settingsObj.guildId)
+        .then(dbSettings => {
+            if (dbSettings) {
+                dbSettings.notif.current = settingsObj.notif.current;
+                dbSettings.notif.added = settingsObj.notif.added;
+                dbSettings.notif.removed = settingsObj.notif.removed;
+                dbSettings.notif.radio = settingsObj.notif.radio;
+                dbSettings.audio.volume = settingsObj.audio.volume;
+                dbSettings.save();
+            }
+            else {
+                new settingsModel(settingsObj).save();
+            }
+            res.send(true);
+        })
+        .catch(e => {
+            console.log('error while get one settings : ', e.message);
+            res.send(false);
+        });
 });
 
 export default router;

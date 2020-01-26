@@ -4,35 +4,34 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js --interpreter babel-node --name syxbot_api",
-    "dev": "pm2 start index.js --interpreter babel-node  --watch --name syxbot_api",
+    "start": "pm2 start index.js --interpreter babel-node --name syxbot_api && npm run log",
+    "dev": "pm2 start index.js --interpreter babel-node  --watch --name syxbot_api && npm run log",
+    "test": "mocha --require @babel/register ./tests/index.test.js --exit",
     "log": "pm2 log --lines 100 syxbot_api ",
     "eslint": "eslint ./",
     "status": "pm2 status",
     "stop": "pm2 stop syxbot_api",
-    "stopall": "pm2 stop all"
+    "stopall": "pm2 stop all",
+    "mongodb": "sudo service mongod start"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Tomrooman/Syxbot-API.git"
-  },
+  "private": true,
   "author": "Tom Rooman",
   "license": "GPL-3.0-only",
-  "bugs": {
-    "url": "https://github.com/Tomrooman/Syxbot-API/issues"
-  },
-  "homepage": "https://github.com/Tomrooman/Syxbot-API#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "nodemailer": "^6.4.2",
-    "pm2": "^4.2.1"
+    "dateformat": "^3.0.3",
+    "pm2": "^4.2.1",
+    "mongoose": "^5.8.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.7",
     "@babel/core": "^7.7.7",
     "@babel/node": "^7.7.7",
+    "@babel/register": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
-    "eslint": "^6.7.1"
+    "eslint": "^6.7.1",
+    "mocha": "^6.2.2"
   }
 }
