@@ -8,6 +8,9 @@
     "parserOptions": {
         "sourceType": "module"
     },
+    "ignorePatterns": [
+        "tests/"
+    ],
     "rules": {
         "brace-style": [
             "error",

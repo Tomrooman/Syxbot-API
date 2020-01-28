@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js --interpreter babel-node --name syxbot_api && npm run log",
+    "start": "pm2 start index.js --interpreter babel-node --name syxbot_api",
     "dev": "pm2 start index.js --interpreter babel-node  --watch --name syxbot_api && npm run log",
     "test": "mocha --require @babel/register ./tests/index.test.js --exit",
     "log": "pm2 log --lines 100 syxbot_api ",
