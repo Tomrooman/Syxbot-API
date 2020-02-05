@@ -6,6 +6,7 @@ import https from 'https';
 import dateFormat from 'dateformat';
 import docsRouter from './routes/docs.js';
 import settingsRouter from './routes/settings.js';
+import tokenRouter from './routes/token.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 
 app.use('/docs', docsRouter);
 app.use('/settings', settingsRouter);
+app.use('/token', tokenRouter);
 
 app.get('/*', (req, res) => {
     res.send('404 not found');

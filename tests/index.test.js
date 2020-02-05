@@ -15,3 +15,4 @@ describe('Index', function () {
 });
 
 require('./settings.test.js');
+require('./token.test.js');
