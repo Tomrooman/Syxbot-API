@@ -19,11 +19,9 @@ router.post('/update', (req, res) => {
     settingsModel.get(settingsObj.guildId)
         .then(dbSettings => {
             if (dbSettings) {
-                dbSettings.notif.current = settingsObj.notif.current;
-                dbSettings.notif.added = settingsObj.notif.added;
-                dbSettings.notif.removed = settingsObj.notif.removed;
-                dbSettings.notif.radio = settingsObj.notif.radio;
-                dbSettings.audio.volume = settingsObj.audio.volume;
+                dbSettings.notif = settingsObj.notif;
+                dbSettings.audio = settingsObj.audio;
+                dbSettings.twitter = settingsObj.twitter;
                 dbSettings.save();
             }
             else {
