@@ -22,7 +22,7 @@ router.post('/update', (req, res) => {
                     token_type: tokenObj.token_type,
                     expire_at: (Date.now() / 1000) + tokenObj.expires_in,
                     refresh_token: tokenObj.refresh_token,
-                    scope: tokenObj.scope,
+                    scope: tokenObj.scope
                 })
                     .save();
             }
@@ -56,7 +56,7 @@ router.post('/remove', (req, res) => {
     tokenModel.deleteOne({ userId: userId }, err => {
         if (err) return res.send(false);
         res.send(true);
-    })
+    });
 });
 
 export default router;
