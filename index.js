@@ -7,6 +7,8 @@ import dateFormat from 'dateformat';
 import docsRouter from './routes/docs.js';
 import settingsRouter from './routes/settings.js';
 import tokenRouter from './routes/token.js';
+import notesRouter from './routes/dofus/notes.js';
+import dragodindesRouter from './routes/dofus/dragodindes.js';
 
 const app = express();
 
@@ -18,10 +20,13 @@ app.use(bodyParser.json());
 app.use('/docs', docsRouter);
 app.use('/settings', settingsRouter);
 app.use('/token', tokenRouter);
+app.use('/dofus/notes', notesRouter);
+app.use('/dofus/dragodindes', dragodindesRouter);
 
-app.get('/*', (req, res) => {
-    res.send('404 not found');
+app.post('/', (req, res) => {
+    res.sendStatus(200);
 });
+
 console.log(' ');
 console.log('----- ' + dateFormat(Date.now(), 'HH:MM:ss dd/mm/yyyy') + ' -----');
 console.log('Connecting to database ...');
