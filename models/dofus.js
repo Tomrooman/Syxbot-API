@@ -11,6 +11,8 @@ const dofusSchema = new Schema({
     dragodindes: [{
         name: String,
         duration: Number,
+        generation: Number,
+        used: { type: Boolean, default: false },
         last: {
             status: { type: Boolean, default: false },
             date: Date
