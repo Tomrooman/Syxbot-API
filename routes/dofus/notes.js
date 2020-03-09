@@ -8,12 +8,8 @@ router.post('/', (req, res) => {
     if (req.body.userId) {
         dofusModel.get(req.body.userId)
             .then(dofus_infos => {
-                if (dofus_infos) {
-                    res.send(dofus_infos.notes);
-                }
-                else {
-                    res.send(false);
-                }
+                if (dofus_infos) return res.send(dofus_infos.notes);
+                res.send(false);
             }).catch(e => {
                 console.log('Error /api/dofus/notes : ', e.message);
                 res.send(false);
