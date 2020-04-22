@@ -19,6 +19,11 @@ const settingsSchema = new Schema({
             status: String,
             channelID: String,
             channelName: String
+        },
+        warzone: {
+            status: String,
+            channelID: String,
+            channelName: String
         }
     },
     createdAt: {
