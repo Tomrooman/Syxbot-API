@@ -21,7 +21,7 @@ router.post('/update', (req, res) => {
             if (dbSettings) {
                 dbSettings.notif = settingsObj.notif;
                 dbSettings.audio = settingsObj.audio;
-                dbSettings.twitter = settingsObj.twitter;
+                // dbSettings.twitter = settingsObj.twitter;
                 dbSettings.save();
             }
             else {

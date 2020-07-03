@@ -14,18 +14,18 @@ const settingsSchema = new Schema({
     audio: {
         volume: Number
     },
-    twitter: {
-        wolcen: {
-            status: String,
-            channelID: String,
-            channelName: String
-        },
-        warzone: {
-            status: String,
-            channelID: String,
-            channelName: String
-        }
-    },
+    // twitter: {
+    //     wolcen: {
+    //         status: String,
+    //         channelID: String,
+    //         channelName: String
+    //     },
+    //     warzone: {
+    //         status: String,
+    //         channelID: String,
+    //         channelName: String
+    //     }
+    // },
     createdAt: {
         iso: {
             type: Date,
