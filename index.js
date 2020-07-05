@@ -39,8 +39,8 @@ mongoose.connect('mongodb://localhost/syxbot-database', {
 mongoose.connection.once('open', () => {
     console.log('Connected to database !');
     https.createServer({
-        key: fs.readFileSync('./server.key'),
-        cert: fs.readFileSync('./server.crt')
+        key: fs.readFileSync('/etc/letsencrypt/live/syxbot.com/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/syxbot.com/cert.pem')
     }, app)
         .listen(9000, function () {
             console.log(' - API running | port : 9000');
