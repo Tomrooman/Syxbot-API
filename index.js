@@ -24,6 +24,7 @@ app.use('/dofus/notes', notesRouter);
 app.use('/dofus/dragodindes', dragodindesRouter);
 
 app.post('/', (req, res) => {
+    console.log('keep alive !!!!!');
     res.sendStatus(200);
 });
 
