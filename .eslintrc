@@ -9,7 +9,8 @@
         "sourceType": "module"
     },
     "ignorePatterns": [
-        "tests/"
+        "test/",
+        "dist/"
     ],
     "rules": {
         "brace-style": [

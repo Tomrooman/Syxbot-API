@@ -4,14 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js --interpreter babel-node --name syxbot_api",
-    "dev": "pm2 start index.js --interpreter babel-node  --watch --name syxbot_api && npm run log",
-    "test": "mocha --require @babel/register ./test/index.test.js --exit",
-    "log": "pm2 log --lines 100 syxbot_api ",
+    "start": "npm-run-all build server",
+    "server": "pm2 start dist/index.js --interpreter babel-node --name syxbot_prod_api",
+    "dev": "pm2 start index.js --interpreter babel-node  --watch --name syxbot_api && npm run log-dev",
+    "test": "mocha --require @babel/register ./lib/test/index.test.js --exit",
+    "log-dev": "pm2 log --lines 100 syxbot_api ",
+    "log-prod": "pm2 log --lines 100 syxbot_prod_api",
     "eslint": "eslint ./",
     "status": "pm2 status",
-    "stop": "pm2 stop syxbot_api",
-    "stopall": "pm2 stop all",
+    "transpile": "babel ./ --out-dir dist --copy-files --ignore node_modules,UPDATER.js,babel.config.json,package.json,yarn.lock,package-lock.json",
+    "clean": "rimraf dist",
+    "clean-unusable": "rimraf dist/node_modules dist/UPDATER.js dist/babel.config.json dist/package.json dist/yarn.lock dist/package-lock.json",
+    "build": "npm-run-all clean transpile clean-unusable",
+    "stop-dev": "pm2 stop syxbot_api",
+    "stop-prod": "pm2 stop syxbot_prod_api",
+    "stop-all": "pm2 stop all",
     "mongodb": "sudo service mongod start"
   },
   "private": true,
@@ -26,7 +33,9 @@
     "lodash": "^4.17.19",
     "mongoose": "^5.9.23",
     "nodemailer": "^6.4.10",
-    "pm2": "^4.4.0"
+    "npm-run-all": "^4.1.5",
+    "pm2": "^4.4.0",
+    "rimraf": "^3.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.4",
