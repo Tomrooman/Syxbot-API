@@ -1,8 +1,10 @@
-import assert from 'assert';
 import mongoose from 'mongoose';
 import settingsSchema from '../models/settings.js';
+import chai from 'chai';
 
-describe('Settings', function () {
+const expect = chai.expect;
+
+describe('Settings', () => {
     const settingsObj = {
         guildId: '1234554321',
         notif: {
@@ -16,79 +18,67 @@ describe('Settings', function () {
         }
     };
 
-    it('Settings should be empty', function (done) {
-        settingsSchema.find()
-            .then(users => {
-                assert.equal(users.length, 0);
-                done();
-            });
+    it('Settings should be empty', async () => {
+        const users = await settingsSchema.find();
+
+        expect(users).to.be.an('array').that.is.empty;
     });
-    it('Add first settings', function (done) {
-        const promise = new settingsSchema(settingsObj).save();
-        assert.ok(promise instanceof Promise);
-        promise.then(() => {
-            settingsSchema.find()
-                .then(settings => {
-                    assert.equal(settings.length, 1);
-                    assert.equal(settings[0].guildId, settingsObj.guildId);
-                    assert.equal(settings[0].notif.current, settingsObj.notif.current);
-                    assert.equal(settings[0].notif.added, settingsObj.notif.added);
-                    assert.equal(settings[0].notif.removed, settingsObj.notif.removed);
-                    assert.equal(settings[0].notif.radio, settingsObj.notif.radio);
-                    assert.equal(settings[0].audio.volume, settingsObj.audio.volume);
-                    done();
-                });
-        });
+
+    it('Add first settings', async () => {
+        await new settingsSchema(settingsObj).save();
+        const settings = await settingsSchema.find();
+
+        expect(settings).to.be.an('array').that.have.lengthOf(1);
+        expect(settings[0].guildId).to.equal(settingsObj.guildId);
+        expect(settings[0].notif.current).to.equal(settingsObj.notif.current);
+        expect(settings[0].notif.added).to.equal(settingsObj.notif.added);
+        expect(settings[0].notif.removed).to.equal(settingsObj.notif.removed);
+        expect(settings[0].notif.radio).to.equal(settingsObj.notif.radio);
+        expect(settings[0].audio.volume).to.equal(settingsObj.audio.volume);
     });
-    it('get() Get first settings', function (done) {
-        settingsSchema.get(settingsObj.guildId)
-            .then(settings => {
-                assert.equal(settings.guildId, settingsObj.guildId);
-                assert.equal(settings.notif.current, settingsObj.notif.current);
-                assert.equal(settings.notif.added, settingsObj.notif.added);
-                assert.equal(settings.notif.removed, settingsObj.notif.removed);
-                assert.equal(settings.notif.radio, settingsObj.notif.radio);
-                assert.equal(settings.audio.volume, settingsObj.audio.volume);
-                done();
-            });
+
+    it('get() Get first settings', async () => {
+        const settings = await settingsSchema.get(settingsObj.guildId);
+
+        expect(settings.guildId).to.equal(settingsObj.guildId);
+        expect(settings.notif.current).to.equal(settingsObj.notif.current);
+        expect(settings.notif.added).to.equal(settingsObj.notif.added);
+        expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
+        expect(settings.notif.radio).to.equal(settingsObj.notif.radio);
+        expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
     });
-    it('Add second settings', function (done) {
+
+    it('Add second settings', async () => {
         settingsObj.guildId = '987656789';
         settingsObj.notif.radio = 'off';
-        const promise = new settingsSchema(settingsObj).save();
-        assert.ok(promise instanceof Promise);
-        promise.then(() => {
-            settingsSchema.find()
-                .then(settings => {
-                    assert.equal(settings.length, 2);
-                    assert.equal(settings[1].guildId, '987656789');
-                    assert.equal(settings[1].notif.current, settingsObj.notif.current);
-                    assert.equal(settings[1].notif.added, settingsObj.notif.added);
-                    assert.equal(settings[1].notif.removed, settingsObj.notif.removed);
-                    assert.equal(settings[1].notif.radio, 'off');
-                    assert.equal(settings[1].audio.volume, settingsObj.audio.volume);
-                    done();
-                });
-        });
+
+        await new settingsSchema(settingsObj).save();
+        const settings = await settingsSchema.find();
+
+        expect(settings).to.be.an('array').that.have.lengthOf(2);
+        expect(settings[1].guildId).to.equal('987656789');
+        expect(settings[1].notif.current).to.equal(settingsObj.notif.current);
+        expect(settings[1].notif.added).to.equal(settingsObj.notif.added);
+        expect(settings[1].notif.removed).to.equal(settingsObj.notif.removed);
+        expect(settings[1].notif.radio).to.equal('off');
+        expect(settings[1].audio.volume).to.equal(settingsObj.audio.volume);
     });
-    it('get() Get second settings', function (done) {
-        settingsSchema.get(settingsObj.guildId)
-            .then(settings => {
-                assert.equal(settings.guildId, '987656789');
-                assert.equal(settings.notif.current, settingsObj.notif.current);
-                assert.equal(settings.notif.added, settingsObj.notif.added);
-                assert.equal(settings.notif.removed, settingsObj.notif.removed);
-                assert.equal(settings.notif.radio, 'off');
-                assert.equal(settings.audio.volume, settingsObj.audio.volume);
-                done();
-            });
+
+    it('get() Get second settings', async () => {
+        const settings = await settingsSchema.get(settingsObj.guildId);
+
+        expect(settings.guildId).to.equal('987656789');
+        expect(settings.notif.current).to.equal(settingsObj.notif.current);
+        expect(settings.notif.added).to.equal(settingsObj.notif.added);
+        expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
+        expect(settings.notif.radio).to.equal('off');
+        expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
     });
-    it('Should drop test database', function (done) {
+
+    it('Should drop test database', async () => {
         mongoose.connection.db.dropDatabase();
-        settingsSchema.find()
-            .then(settings => {
-                assert.equal(settings.length, 0);
-                done();
-            });
+        const settings = await settingsSchema.find();
+
+        expect(settings).to.be.an('array').that.is.empty;
     });
 });

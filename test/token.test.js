@@ -1,8 +1,10 @@
-import assert from 'assert';
 import mongoose from 'mongoose';
 import tokenSchema from '../models/token.js';
+import chai from 'chai';
 
-describe('Token', function () {
+const expect = chai.expect;
+
+describe('Token', () => {
     const tokenObj = {
         userId: '1234554321',
         access_token: 'bad access token',
@@ -12,88 +14,74 @@ describe('Token', function () {
         scope: 'identify guilds'
     };
 
-    it('Token should be empty', function (done) {
-        tokenSchema.find()
-            .then(token => {
-                assert.equal(token.length, 0);
-                done();
-            });
+    it('Token should be empty', async () => {
+        const token = await tokenSchema.find();
+
+        expect(token).to.be.an('array').that.is.empty;
     });
-    it('Add first token', function (done) {
-        const promise = new tokenSchema(tokenObj).save();
-        assert.ok(promise instanceof Promise);
-        promise.then(() => {
-            tokenSchema.find()
-                .then(token => {
-                    assert.equal(token.length, 1);
-                    assert.equal(token[0].userId, tokenObj.userId);
-                    assert.equal(token[0].access_token, tokenObj.access_token);
-                    assert.equal(token[0].token_type, tokenObj.token_type);
-                    assert.equal(token[0].expire_at, tokenObj.expire_at);
-                    assert.equal(token[0].refresh_token, tokenObj.refresh_token);
-                    assert.equal(token[0].scope, tokenObj.scope);
-                    done();
-                });
-        });
+
+    it('Add first token', async () => {
+        await new tokenSchema(tokenObj).save();
+        const token = await tokenSchema.find();
+
+        expect(token).to.be.an('array').that.have.lengthOf(1);
+        expect(token[0].userId).to.equal(tokenObj.userId);
+        expect(token[0].access_token).to.equal(tokenObj.access_token);
+        expect(token[0].token_type).to.equal(tokenObj.token_type);
+        expect(token[0].expire_at).to.equal(tokenObj.expire_at);
+        expect(token[0].refresh_token).to.equal(tokenObj.refresh_token);
+        expect(token[0].scope).to.equal(tokenObj.scope);
     });
-    it('get() Get first token', function (done) {
-        tokenSchema.get(tokenObj.userId)
-            .then(token => {
-                assert.equal(token.userId, tokenObj.userId);
-                assert.equal(token.access_token, tokenObj.access_token);
-                assert.equal(token.token_type, tokenObj.token_type);
-                assert.equal(token.expire_at, tokenObj.expire_at);
-                assert.equal(token.refresh_token, tokenObj.refresh_token);
-                assert.equal(token.scope, tokenObj.scope);
-                done();
-            });
+
+    it('get() Get first token', async () => {
+        const token = await tokenSchema.get(tokenObj.userId);
+
+        expect(token.userId).to.equal(tokenObj.userId);
+        expect(token.access_token).to.equal(tokenObj.access_token);
+        expect(token.token_type).to.equal(tokenObj.token_type);
+        expect(token.expire_at).to.equal(tokenObj.expire_at);
+        expect(token.refresh_token).to.equal(tokenObj.refresh_token);
+        expect(token.scope).to.equal(tokenObj.scope);
     });
-    it('Add second token', function (done) {
+
+    it('Add second token', async () => {
         tokenObj.userId = '987656789';
         tokenObj.access_token = 'good good';
-        const promise = new tokenSchema(tokenObj).save();
-        assert.ok(promise instanceof Promise);
-        promise.then(() => {
-            tokenSchema.find()
-                .then(token => {
-                    assert.equal(token.length, 2);
-                    assert.equal(token[1].userId, '987656789');
-                    assert.equal(token[1].access_token, 'good good');
-                    assert.equal(token[1].token_type, tokenObj.token_type);
-                    assert.equal(token[1].expire_at, tokenObj.expire_at);
-                    assert.equal(token[1].refresh_token, tokenObj.refresh_token);
-                    assert.equal(token[1].scope, tokenObj.scope);
-                    done();
-                });
-        });
+
+        await new tokenSchema(tokenObj).save();
+        const token = await tokenSchema.find();
+
+        expect(token).to.be.an('array').that.have.lengthOf(2);
+        expect(token[1].userId).to.equal('987656789');
+        expect(token[1].access_token).to.equal('good good');
+        expect(token[1].token_type).to.equal(tokenObj.token_type);
+        expect(token[1].expire_at).to.equal(tokenObj.expire_at);
+        expect(token[1].refresh_token).to.equal(tokenObj.refresh_token);
+        expect(token[1].scope).to.equal(tokenObj.scope);
     });
-    it('get() Get second token', function (done) {
-        tokenSchema.get(tokenObj.userId)
-            .then(token => {
-                assert.equal(token.userId, '987656789');
-                assert.equal(token.access_token, 'good good');
-                assert.equal(token.token_type, tokenObj.token_type);
-                assert.equal(token.expire_at, tokenObj.expire_at);
-                assert.equal(token.refresh_token, tokenObj.refresh_token);
-                assert.equal(token.scope, tokenObj.scope);
-                done();
-            });
+
+    it('get() Get second token', async () => {
+        const token = await tokenSchema.get(tokenObj.userId);
+
+        expect(token.userId).to.equal('987656789');
+        expect(token.access_token).to.equal('good good');
+        expect(token.token_type).to.equal(tokenObj.token_type);
+        expect(token.expire_at).to.equal(tokenObj.expire_at);
+        expect(token.refresh_token).to.equal(tokenObj.refresh_token);
+        expect(token.scope).to.equal(tokenObj.scope);
     });
-    it('Remove first token', function (done) {
-        tokenSchema.deleteOne({ userId: '1234554321' }, err => {
-            tokenSchema.find()
-                .then(token => {
-                    assert.equal(token.length, 1);
-                    done();
-                });
-        })
+
+    it('Remove first token', async () => {
+        await tokenSchema.deleteOne({ userId: '1234554321' });
+        const token = await tokenSchema.find();
+
+        expect(token).to.be.an('array').that.have.lengthOf(1);
     });
-    it('Should drop test database', function (done) {
+
+    it('Should drop test database', async () => {
         mongoose.connection.db.dropDatabase();
-        tokenSchema.find()
-            .then(token => {
-                assert.equal(token.length, 0);
-                done();
-            });
+        const token = await tokenSchema.find();
+
+        expect(token).to.be.an('array').that.is.empty;
     });
 });

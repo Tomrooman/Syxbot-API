@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 import https from 'https';
 import dateFormat from 'dateformat';
-import testRouter from './routes/test.js';
 import contactRouter from './routes/contact.js';
 import settingsRouter from './routes/settings.js';
 import tokenRouter from './routes/token.js';
@@ -16,7 +15,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/test', testRouter);
 app.use('/docs', contactRouter);
 app.use('/settings', settingsRouter);
 app.use('/token', tokenRouter);

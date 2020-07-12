@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-describe('Index', function () {
-    it('Connect to database', function (done) {
+describe('Index', () => {
+    it('Connect to database', (done) => {
         mongoose.connect('mongodb://localhost/syxbot-database-test', {
             useNewUrlParser: true,
             useUnifiedTopology: true,

@@ -1,11 +1,13 @@
 import express from 'express';
 import _ from 'lodash';
+import dofusMiddleware from './../../middleware/dofus/dragodindes.js';
 import dofusModel from './../../models/dofus.js';
 
 const router = express.Router();
 
 router.post('/', (req, res) => {
     if (req.body.userId) {
+        console.log('Get dragodindes routes');
         dofusModel.get(req.body.userId)
             .then(dofus_infos => {
                 if (dofus_infos) {

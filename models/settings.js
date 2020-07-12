@@ -56,7 +56,7 @@ settingsSchema.pre('save', function (next) {
     next();
 });
 
-settingsSchema.statics.get = (guildId) => {
+settingsSchema.statics.get = async (guildId) => {
     if (!guildId) {
         return false;
     }
