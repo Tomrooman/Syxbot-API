@@ -40,10 +40,14 @@
             "error",
             4
         ],
+        "max-lines-per-function": [
+            "error",
+            35
+        ],
         "max-len": [
             "error",
             {
-                "code": 120
+                "code": 125
             }
         ],
         "max-nested-callbacks": [
@@ -61,7 +65,6 @@
         "no-console": "off",
         "no-empty-function": "error",
         "no-floating-decimal": "error",
-        "no-inline-comments": "error",
         "no-lonely-if": "error",
         "no-multi-spaces": "error",
         "no-multiple-empty-lines": [
