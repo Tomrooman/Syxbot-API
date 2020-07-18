@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "yarn npm-run-all build server",
-    "server": "yarn pm2 start dist/index.js --interpreter babel-node --name syxbot_prod_api",
-    "dev": "yarn pm2 start index.js --interpreter babel-node  --watch --name syxbot_api && npm run log-dev",
-    "test": "yarn mocha --require @babel/register ./lib/test/index.test.js --exit",
+    "start": "npm-run-all build server",
+    "server": "pm2 start dist/index.js --interpreter babel-node --name syxbot_prod_api",
+    "dev": "pm2 start index.js --interpreter babel-node --watch --name syxbot_api && npm run log-dev",
+    "test": "mocha --require @babel/register ./lib/test/index.test.js --exit",
     "log-dev": "pm2 log --lines 100 syxbot_api ",
     "log-prod": "pm2 log --lines 100 syxbot_prod_api",
     "eslint": "eslint ./",
@@ -15,8 +15,8 @@
     "transpile": "babel ./ --out-dir dist --copy-files --ignore node_modules,UPDATER.js,babel.config.json,package.json,yarn.lock,package-lock.json,.yarn,.pnp.js,.yarnrc.yml",
     "clean": "rimraf dist",
     "clean-unusable": "rimraf dist/node_modules dist/UPDATER.js dist/babel.config.json dist/package.json dist/yarn.lock dist/package-lock.json dist/.yarn dist/.pnp.js dist/.yarnrc.yml",
-    "remove-modules": "yarn rimraf .yarn/build-state.yml .yarn/cache .yarn/install-state.gz .yarn/unplugged .pnp.js yarn.lock package-lock.json",
-    "build": "yarn npm-run-all clean transpile clean-unusable",
+    "remove-modules": "rimraf .yarn/build-state.yml .yarn/cache .yarn/install-state.gz .yarn/unplugged .pnp.js yarn.lock package-lock.json",
+    "build": "npm-run-all clean transpile clean-unusable",
     "stop-dev": "pm2 stop syxbot_api",
     "stop-prod": "pm2 stop syxbot_prod_api",
     "stop-all": "pm2 stop all",
@@ -43,11 +43,11 @@
     "mongoose": "^5.9.23",
     "nodemailer": "^6.4.10",
     "npm-run-all": "^4.1.5",
-    "pm2": "^4.4.0",
     "querystring": "^0.2.0",
     "rimraf": "^3.0.2"
   },
   "devDependencies": {
+    "eslint": "^7.4.0",
     "mocha": "^8.0.1"
   }
 }
