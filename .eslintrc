@@ -10,7 +10,8 @@
     },
     "ignorePatterns": [
         "test/",
-        "dist/"
+        "dist/",
+        ".yarn/"
     ],
     "rules": {
         "brace-style": [
