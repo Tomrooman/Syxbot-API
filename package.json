@@ -15,6 +15,7 @@
     "transpile": "babel ./ --out-dir dist --copy-files --ignore node_modules,UPDATER.js,babel.config.json,package.json,yarn.lock,package-lock.json",
     "clean": "rimraf dist",
     "clean-unusable": "rimraf dist/node_modules dist/UPDATER.js dist/babel.config.json dist/package.json dist/yarn.lock dist/package-lock.json",
+    "remove-modules": "rimraf .yarn/build-state.yml .yarn/cache .yarn/install-state.gz .yarn/unplugged .pnp.js yarn.lock package-lock.json",
     "build": "npm-run-all clean transpile clean-unusable",
     "stop-dev": "pm2 stop syxbot_api",
     "stop-prod": "pm2 stop syxbot_prod_api",
