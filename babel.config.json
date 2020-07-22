@@ -12,5 +12,7 @@
             "@babel/preset-env"
         ]
     ],
-    "ignore": [".pnp.js"]
+    "ignore": [
+        ".pnp.js"
+    ]
 }

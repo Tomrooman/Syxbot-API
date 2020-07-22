@@ -4,11 +4,11 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 import https from 'https';
 import dateFormat from 'dateformat';
-import contactRouter from './lib/routes/contact.js';
-import settingsRouter from './lib/routes/settings.js';
-import tokenRouter from './lib/routes/token.js';
-import notesRouter from './lib/routes/dofus/notes.js';
-import dragodindesRouter from './lib/routes/dofus/dragodindes.js';
+import contactRouter from './lib/routes/contact';
+import settingsRouter from './lib/routes/settings';
+import tokenRouter from './lib/routes/token';
+import notesRouter from './lib/routes/dofus/notes';
+import dragodindesRouter from './lib/routes/dofus/dragodindes';
 
 const app = express();
 
