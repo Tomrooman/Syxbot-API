@@ -1,2 +1,3 @@
-require = require("esm")(module);
-module.exports = require("./index").default;
+/* eslint no-global-assign: 0 */
+require = require('esm')(module);
+module.exports = require('./index').default;
