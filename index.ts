@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import fs from 'fs';
@@ -21,7 +21,7 @@ app.use('/token', tokenRouter);
 app.use('/dofus/notes', notesRouter);
 app.use('/dofus/dragodindes', dragodindesRouter);
 
-app.post('/', (req, res) => {
+app.post('/', (_req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
