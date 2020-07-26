@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 import https from 'https';
+import chalk from 'chalk';
 import dateFormat from 'dateformat';
 import contactRouter from './lib/routes/contact';
 import settingsRouter from './lib/routes/settings';
@@ -27,6 +28,7 @@ app.post('/', (_req: Request, res: Response) => {
 
 console.log(' ');
 console.log('----- ' + dateFormat(Date.now(), 'HH:MM:ss dd/mm/yyyy') + ' -----');
+console.log(chalk.bgRgb(25, 108, 207)('         CONNECTION         '));
 console.log('Connecting to database ...');
 mongoose.connect('mongodb://localhost/syxbot-database', {
     useNewUrlParser: true,
@@ -35,12 +37,13 @@ mongoose.connect('mongodb://localhost/syxbot-database', {
     useFindAndModify: false
 });
 mongoose.connection.once('open', () => {
-    console.log('Connected to database !');
+    console.log(' - Connected to database !');
+    console.log(chalk.bgRgb(60, 121, 0)(`\n         CONNECTED          `));
     https.createServer({
         key: fs.readFileSync('/etc/letsencrypt/live/syxbot.com/privkey.pem'),
         cert: fs.readFileSync('/etc/letsencrypt/live/syxbot.com/cert.pem')
     }, app)
         .listen(9000, function () {
-            console.log(' - API running | port : 9000');
+            console.log('      port => 9000');
         });
 });
