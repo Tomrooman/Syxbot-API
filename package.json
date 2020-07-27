@@ -2,6 +2,8 @@
   "name": "syxbot-api",
   "version": "1.0.0",
   "description": "",
+  "private": true,
+  "author": "Tom Rooman",
   "scripts": {
     "start-log": "yarn npm-run-all build server log-prod",
     "start": "yarn npm-run-all build server",
@@ -20,9 +22,6 @@
     "stop-prod": "yarn pm2 stop syxbot_prod_api",
     "stop-all": "yarn pm2 stop all"
   },
-  "private": true,
-  "author": "Tom Rooman",
-  "license": "GPL-3.0-only",
   "dependencies": {
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
