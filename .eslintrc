@@ -21,7 +21,8 @@
         "test/",
         "dist/",
         ".yarn/",
-        "node_modules/"
+        "node_modules/",
+        "private/"
     ],
     "rules": {
         "brace-style": [

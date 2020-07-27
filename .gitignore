@@ -10,6 +10,7 @@ package-lock.json
 config.json
 server.crt
 server.key
+private
 dist
 
 .yarn/*
