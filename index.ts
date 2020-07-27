@@ -31,6 +31,7 @@ console.log(' ');
 console.log('----- ' + dateFormat(Date.now(), 'HH:MM:ss dd/mm/yyyy') + ' -----');
 if (config.WHAT === 'DEV') console.log(chalk.bgRgb(25, 108, 207)('         CONNECTION         '));
 console.log('Connecting to database ...');
+
 mongoose.connect('mongodb://localhost/syxbot-database', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
