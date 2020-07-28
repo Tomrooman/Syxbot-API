@@ -1,8 +1,9 @@
 'use strict';
 
 import dofusInfosModel from '../../models/dofus_infos';
+import { noteType } from '../../@types/models/dofus_infos';
 
-const getNotes = async (req, res, next) => {
+export const getNotes = async (req, res, next) => {
     if (req.body.userId) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
@@ -12,9 +13,9 @@ const getNotes = async (req, res, next) => {
     next();
 };
 
-const createOrAddNotes = async (req, res, next) => {
+export const createOrAddNotes = async (req, res, next) => {
     if (req.body.userId && req.body.title && req.body.content) {
-        let notes = false;
+        let notes: noteType[] | false = false;
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
             notes = await dofusInfosModel.addNotes(allDofusInfos, req.body.title, req.body.content);
@@ -28,7 +29,7 @@ const createOrAddNotes = async (req, res, next) => {
     next();
 };
 
-const updateNotes = async (req, res, next) => {
+export const updateNotes = async (req, res, next) => {
     if (req.body.userId && req.body.title && req.body.oldContent && req.body.newContent) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
@@ -42,7 +43,7 @@ const updateNotes = async (req, res, next) => {
     next();
 };
 
-const removeNotes = async (req, res, next) => {
+export const removeNotes = async (req, res, next) => {
     if (req.body.userId && req.body.title && req.body.content) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
@@ -51,11 +52,4 @@ const removeNotes = async (req, res, next) => {
         }
     }
     next();
-};
-
-export {
-    getNotes,
-    createOrAddNotes,
-    updateNotes,
-    removeNotes
 };

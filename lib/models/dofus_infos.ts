@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import _ from 'lodash';
+import { dofusInfosType, dragodindeType, userStatic } from '../@types/models/dofus_infos';
 
 const Schema = mongoose.Schema;
 
@@ -26,7 +27,7 @@ const dofusInfosSchema = new Schema({
 
 dofusInfosSchema.statics.get = async (userId) => {
     if (userId) {
-        const Dofus = mongoose.model('Dofus');
+        const Dofus = mongoose.model<dofusInfosType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
             userId: userId
         });
@@ -38,7 +39,7 @@ dofusInfosSchema.statics.get = async (userId) => {
 };
 
 dofusInfosSchema.statics.getAllDragodindesNotifInfos = async () => {
-    const Dofus = mongoose.model('Dofus');
+    const Dofus = mongoose.model<dofusInfosType>('Dofus');
     const allDofusInfos = await Dofus.find();
     if (allDofusInfos) {
         const dofusNotif = allDofusInfos.map(dofusInfos => {
@@ -54,7 +55,7 @@ dofusInfosSchema.statics.getAllDragodindesNotifInfos = async () => {
 
 dofusInfosSchema.statics.getDragodindes = async (userId) => {
     if (userId) {
-        const Dofus = mongoose.model('Dofus');
+        const Dofus = mongoose.model<dofusInfosType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
             userId: userId
         });
@@ -73,7 +74,7 @@ dofusInfosSchema.statics.createNotificationStatus = async (userId, status) => {
             dragodindes: [],
             notif: status === 'on' ? true : false
         };
-        const Dofus = mongoose.model('Dofus');
+        const Dofus = mongoose.model<dofusInfosType>('Dofus');
         await new Dofus(dofusObj).save();
         return dofusObj;
     }
@@ -96,12 +97,12 @@ dofusInfosSchema.statics.createDragodindes = async (userId, addedDragodindes) =>
     if (userId && addedDragodindes && addedDragodindes.length) {
         const dofusObj = {
             userId: userId,
-            dragodindes: []
+            dragodindes: [] as dragodindeType[]
         };
-        addedDragodindes.map(drago => {
+        addedDragodindes.map((drago: dragodindeType) => {
             dofusObj.dragodindes.push(drago);
         });
-        const Dofus = mongoose.model('Dofus');
+        const Dofus = mongoose.model<dofusInfosType>('Dofus');
         await new Dofus(dofusObj).save();
         return dofusObj.dragodindes;
     }
@@ -111,7 +112,7 @@ dofusInfosSchema.statics.createDragodindes = async (userId, addedDragodindes) =>
 dofusInfosSchema.statics.removeDragodindes = async (allDofusInfos, dragodindes) => {
     if (allDofusInfos && dragodindes && dragodindes.length) {
         dragodindes.map(drago => {
-            const index = _.findIndex(allDofusInfos.dragodindes, o => drago.name === o.name);
+            const index = _.findIndex(allDofusInfos.dragodindes, (o: dragodindeType) => drago.name === o.name);
             if (index !== -1) {
                 delete allDofusInfos.dragodindes[index];
                 allDofusInfos.dragodindes = _.compact(allDofusInfos.dragodindes);
@@ -169,7 +170,7 @@ dofusInfosSchema.statics.modifyLastDragodindes = async (action, allDofusInfos, d
 dofusInfosSchema.statics.modifyUsedDragodindes = async (action, allDofusInfos, dragodindes) => {
     if (action && allDofusInfos && dragodindes && dragodindes.length) {
         allDofusInfos.dragodindes.map(drago => {
-            if (_.findIndex(dragodindes, o => drago.name === o.name) !== -1) {
+            if (_.findIndex(dragodindes, (o: dragodindeType) => drago.name === o.name) !== -1) {
                 if (action === 'update') {
                     drago.used = true;
                     drago.last = {
@@ -207,7 +208,7 @@ dofusInfosSchema.statics.createNotes = async (userId, title, content) => {
                 content: content
             }]
         };
-        const Dofus = mongoose.model('Dofus');
+        const Dofus = mongoose.model<dofusInfosType>('Dofus');
         await new Dofus(dofusObj).save();
         return dofusObj.notes;
     }
@@ -243,4 +244,4 @@ dofusInfosSchema.statics.removeNotes = async (allDofusInfos, title, content) => 
     return false;
 };
 
-export default mongoose.models.Dofus || mongoose.model('Dofus', dofusInfosSchema);
+export default mongoose.model<dofusInfosType, userStatic>('Dofus', dofusInfosSchema);

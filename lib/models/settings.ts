@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dateFormat from 'dateformat';
+import { settingsType, userStatic } from '../@types/models/settings';
 
 const Schema = mongoose.Schema;
 
@@ -51,13 +52,13 @@ const settingsSchema = new Schema({
 });
 
 settingsSchema.pre('save', function (next) {
-    this.updatedAt.iso = Date.now();
-    this.updatedAt.formatted = dateFormat(Date.now(), 'dd/mm/yyyy HH:MM:ss');
+    (this as any).updatedAt.iso = Date.now();
+    (this as any).updatedAt.formatted = dateFormat(Date.now(), 'dd/mm/yyyy HH:MM:ss');
     next();
 });
 
 settingsSchema.statics.getAllSettings = async () => {
-    const Settings = mongoose.model('Settings');
+    const Settings = mongoose.model<settingsType>('Settings');
     const settings = await Settings.find();
     if (settings) {
         return settings;
@@ -67,7 +68,7 @@ settingsSchema.statics.getAllSettings = async () => {
 
 settingsSchema.statics.get = async guildId => {
     if (guildId) {
-        const Settings = mongoose.model('Settings');
+        const Settings = mongoose.model<settingsType>('Settings');
         const settings = await Settings.findOne({
             guildId: guildId
         });
@@ -85,7 +86,7 @@ settingsSchema.statics.createSettings = async (guildId, notif, audio) => {
             notif: notif,
             audio: audio
         };
-        const Settings = mongoose.model('Settings');
+        const Settings = mongoose.model<settingsType>('Settings');
         await new Settings(settingsObj).save();
         return settingsObj;
     }
@@ -97,11 +98,12 @@ settingsSchema.statics.updateSettings = async (allSettings, notif, audio) => {
         allSettings.notif = notif;
         allSettings.audio = audio;
         // allSettings.twitter = req.body.twitter;
+        allSettings.markModified('notif');
+        allSettings.markModified('audio');
         await allSettings.save();
         return allSettings;
     }
     return false;
 };
 
-const settingsModel = mongoose.models.Settings || mongoose.model('Settings', settingsSchema);
-export default settingsModel;
+export default mongoose.model<settingsType, userStatic>('Settings', settingsSchema);

@@ -3,7 +3,7 @@
 import nodeMailer from 'nodemailer';
 import config from '../../config.json';
 
-const sendMail = async (req, res, next) => {
+export const sendMail = async (req, res, next) => {
     if (req.body.message && req.body.mail && req.body.object) {
         let message = req.body.message.split('\n');
         message = message.join('</br>');
@@ -34,8 +34,4 @@ const sendMail = async (req, res, next) => {
     else {
         next();
     }
-};
-
-export {
-    sendMail
 };

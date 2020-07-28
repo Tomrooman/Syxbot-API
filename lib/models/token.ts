@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { tokenType, userStatic } from '../@types/models/token';
 
 const Schema = mongoose.Schema;
 
@@ -15,7 +16,7 @@ const tokenSchema = new Schema({
 
 tokenSchema.statics.get = async (userId) => {
     if (userId) {
-        const Token = mongoose.model('Token');
+        const Token = mongoose.model<tokenType>('Token');
         const token = await Token.findOne({
             userId: userId
         });
@@ -36,7 +37,7 @@ tokenSchema.statics.createToken = async (tokenObj, expires_in) => {
             refresh_token: tokenObj.refresh_token,
             scope: tokenObj.scope
         };
-        const Token = mongoose.model('Token');
+        const Token = mongoose.model<tokenType>('Token');
         await new Token(newTokenObj).save();
         return newTokenObj;
     }
@@ -50,6 +51,11 @@ tokenSchema.statics.updateToken = async (tokenInfos, tokenObj, expire_at) => {
         tokenInfos.expire_at = expire_at;
         tokenInfos.refresh_token = tokenObj.refresh_token;
         tokenInfos.scope = tokenObj.scope;
+        tokenInfos.markModified('access_token');
+        tokenInfos.markModified('token_type');
+        tokenInfos.markModified('expire_at');
+        tokenInfos.markModified('refresh_token');
+        tokenInfos.markModified('scope');
         await tokenInfos.save();
         return tokenInfos;
     }
@@ -58,7 +64,7 @@ tokenSchema.statics.updateToken = async (tokenInfos, tokenObj, expire_at) => {
 
 tokenSchema.statics.deleteToken = async (userId) => {
     if (userId) {
-        const Token = mongoose.model('Token');
+        const Token = mongoose.model<tokenType>('Token');
         const result = await Token.deleteOne({ userId: userId });
         if (result && result.ok === 1) {
             return true;
@@ -67,4 +73,4 @@ tokenSchema.statics.deleteToken = async (userId) => {
     return false;
 };
 
-export default mongoose.models.Token || mongoose.model('Token', tokenSchema);
+export default mongoose.model<tokenType, userStatic>('Token', tokenSchema);

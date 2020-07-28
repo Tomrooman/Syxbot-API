@@ -1,42 +1,43 @@
-import express from 'express';
-import * as dragodindesMiddleware from './../../middleware/dofus/dragodindes';
+'use strict';
 
+import express from 'express';
+import * as dragodindesMiddleware from '../../middleware/dofus/dragodindes';
 const router = express.Router();
 
 router.post('/',
     dragodindesMiddleware.getDragodindes,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.dragodindes || false);
     });
 
 router.post('/notif/all',
     dragodindesMiddleware.getAllDragodindesNotifInfos,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.dragodindesNotif || false);
     });
 
 router.post('/notif',
     dragodindesMiddleware.getDofusInfos,
     dragodindesMiddleware.SetNotificationsByStatus,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.dragodindes || false);
     });
 
 router.post('/create',
     dragodindesMiddleware.CreateOrAddDragodindes,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.dragodindes || false);
     });
 
 router.post('/status/:type/:action',
     dragodindesMiddleware.modifyDragodindesStatus,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.dragodindes || false);
     });
 
 router.post('/remove',
     dragodindesMiddleware.removeDragodindes,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.dragodindes || false);
     });
 

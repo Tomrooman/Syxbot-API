@@ -46,6 +46,10 @@ mongoose.connection.once('open', () => {
         cert: fs.readFileSync('/etc/letsencrypt/live/syxbot.com/cert.pem')
     }, app)
         .listen(9000, function () {
-            console.log('      port => 9000');
+            if (config.WHAT === 'DEV') console.log('      Port => 9000');
+            else if (config.WHAT === 'MASTER') {
+                console.log(' ');
+                console.log('Port => 9000');
+            }
         });
 });

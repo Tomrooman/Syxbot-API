@@ -35,13 +35,14 @@ describe('Token', () => {
 
     it('get() Get first token', async () => {
         const token = await tokenSchema.get(tokenObj.userId);
-
-        expect(token.userId).to.equal(tokenObj.userId);
-        expect(token.access_token).to.equal(tokenObj.access_token);
-        expect(token.token_type).to.equal(tokenObj.token_type);
-        expect(token.expire_at).to.equal(tokenObj.expire_at);
-        expect(token.refresh_token).to.equal(tokenObj.refresh_token);
-        expect(token.scope).to.equal(tokenObj.scope);
+        if (token) {
+            expect(token.userId).to.equal(tokenObj.userId);
+            expect(token.access_token).to.equal(tokenObj.access_token);
+            expect(token.token_type).to.equal(tokenObj.token_type);
+            expect(token.expire_at).to.equal(tokenObj.expire_at);
+            expect(token.refresh_token).to.equal(tokenObj.refresh_token);
+            expect(token.scope).to.equal(tokenObj.scope);
+        }
     });
 
     it('Add second token', async () => {
@@ -62,13 +63,14 @@ describe('Token', () => {
 
     it('get() Get second token', async () => {
         const token = await tokenSchema.get(tokenObj.userId);
-
-        expect(token.userId).to.equal('987656789');
-        expect(token.access_token).to.equal('good good');
-        expect(token.token_type).to.equal(tokenObj.token_type);
-        expect(token.expire_at).to.equal(tokenObj.expire_at);
-        expect(token.refresh_token).to.equal(tokenObj.refresh_token);
-        expect(token.scope).to.equal(tokenObj.scope);
+        if (token) {
+            expect(token.userId).to.equal('987656789');
+            expect(token.access_token).to.equal('good good');
+            expect(token.token_type).to.equal(tokenObj.token_type);
+            expect(token.expire_at).to.equal(tokenObj.expire_at);
+            expect(token.refresh_token).to.equal(tokenObj.refresh_token);
+            expect(token.scope).to.equal(tokenObj.scope);
+        }
     });
 
     it('Remove first token', async () => {

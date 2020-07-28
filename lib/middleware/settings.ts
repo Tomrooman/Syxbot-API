@@ -1,8 +1,9 @@
 'use strict';
 
 import settingsModel from '../models/settings';
+import { settingsType } from '../@types/models/settings';
 
-const getAllSettings = async (req, res, next) => {
+export const getAllSettings = async (req, res, next) => {
     const settings = await settingsModel.getAllSettings();
     if (settings) {
         res.settings = settings;
@@ -10,9 +11,9 @@ const getAllSettings = async (req, res, next) => {
     next();
 };
 
-const createOrUpdateSettings = async (req, res, next) => {
+export const createOrUpdateSettings = async (req, res, next) => {
     if (req.body.guildId) {
-        let settings = false;
+        let settings: settingsType | false = false;
         const allSettings = await settingsModel.get(req.body.guildId);
         if (allSettings) {
             settings = await settingsModel.updateSettings(allSettings, req.body.notif, req.body.audio);
@@ -25,9 +26,4 @@ const createOrUpdateSettings = async (req, res, next) => {
         }
     }
     next();
-};
-
-export {
-    getAllSettings,
-    createOrUpdateSettings
 };

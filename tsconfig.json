@@ -11,12 +11,12 @@
         "noImplicitAny": false,
         "moduleResolution": "node",
         "sourceMap": false,
-        "allowJs": true,
+        "allowJs": false,
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "declaration": false,
         "outDir": "./dist",
-        "baseUrl": "./",
+        "baseUrl": "./"
     },
     "include": [
         "./index.ts",

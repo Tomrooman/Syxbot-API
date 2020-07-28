@@ -38,13 +38,14 @@ describe('Settings', () => {
 
     it('get() Get first settings', async () => {
         const settings = await settingsSchema.get(settingsObj.guildId);
-
-        expect(settings.guildId).to.equal(settingsObj.guildId);
-        expect(settings.notif.current).to.equal(settingsObj.notif.current);
-        expect(settings.notif.added).to.equal(settingsObj.notif.added);
-        expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
-        expect(settings.notif.radio).to.equal(settingsObj.notif.radio);
-        expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
+        if (settings) {
+            expect(settings.guildId).to.equal(settingsObj.guildId);
+            expect(settings.notif.current).to.equal(settingsObj.notif.current);
+            expect(settings.notif.added).to.equal(settingsObj.notif.added);
+            expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
+            expect(settings.notif.radio).to.equal(settingsObj.notif.radio);
+            expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
+        }
     });
 
     it('Add second settings', async () => {
@@ -65,13 +66,14 @@ describe('Settings', () => {
 
     it('get() Get second settings', async () => {
         const settings = await settingsSchema.get(settingsObj.guildId);
-
-        expect(settings.guildId).to.equal('987656789');
-        expect(settings.notif.current).to.equal(settingsObj.notif.current);
-        expect(settings.notif.added).to.equal(settingsObj.notif.added);
-        expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
-        expect(settings.notif.radio).to.equal('off');
-        expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
+        if (settings) {
+            expect(settings.guildId).to.equal('987656789');
+            expect(settings.notif.current).to.equal(settingsObj.notif.current);
+            expect(settings.notif.added).to.equal(settingsObj.notif.added);
+            expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
+            expect(settings.notif.radio).to.equal('off');
+            expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
+        }
     });
 
     it('Should drop test database', async () => {

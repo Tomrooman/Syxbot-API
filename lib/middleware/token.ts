@@ -4,8 +4,9 @@ import tokenModel from '../models/token';
 import Config from '../../config.json';
 import queryString from 'querystring';
 import Axios from 'axios';
+import { tokenType } from 'lib/@types/models/token';
 
-const getToken = async (req, res, next) => {
+export const getToken = async (req, res, next) => {
     if (req.body.userId) {
         const userId = req.body.userId;
         const token = await tokenModel.get(userId);
@@ -16,14 +17,14 @@ const getToken = async (req, res, next) => {
     next();
 };
 
-const createOrUpdateToken = async (req, res, next) => {
+export const createOrUpdateToken = async (req, res, next) => {
     const userId = req.body.userId;
     const access_token = req.body.access_token;
     const refresh_token = req.body.refresh_token;
     const scope = req.body.scope;
     const token_type = req.body.token_type;
     if (userId && access_token && refresh_token && scope && token_type) {
-        let token = false;
+        let token: tokenType | false = false;
         const tokenObj = {
             userId: userId,
             access_token: access_token,
@@ -45,7 +46,7 @@ const createOrUpdateToken = async (req, res, next) => {
     next();
 };
 
-const removeToken = async (req, res, next) => {
+export const removeToken = async (req, res, next) => {
     if (req.body.userId) {
         const userId = req.body.userId;
         const token = await tokenModel.deleteToken(userId);
@@ -56,7 +57,7 @@ const removeToken = async (req, res, next) => {
     next();
 };
 
-const setConnectDataToCallDiscordAPI = async (req, res, next) => {
+export const setConnectDataToCallDiscordAPI = async (req, res, next) => {
     if (req.body.code) {
         const data = queryString.stringify({
             'client_id': Config.clientId,
@@ -71,7 +72,7 @@ const setConnectDataToCallDiscordAPI = async (req, res, next) => {
     next();
 };
 
-const setUpdateDataToCallDiscordAPI = async (req, res, next) => {
+export const setUpdateDataToCallDiscordAPI = async (req, res, next) => {
     if (res.token) {
         const data = queryString.stringify({
             'client_id': Config.clientId,
@@ -86,7 +87,7 @@ const setUpdateDataToCallDiscordAPI = async (req, res, next) => {
     next();
 };
 
-const getTokenDiscordAPI = async (req, res, next) => {
+export const getTokenDiscordAPI = async (req, res, next) => {
     if (res.discordData) {
         const apiToken = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {
             headers: {
@@ -111,13 +112,4 @@ const getTokenDiscordAPI = async (req, res, next) => {
         }
     }
     next();
-};
-
-export {
-    getToken,
-    createOrUpdateToken,
-    removeToken,
-    setConnectDataToCallDiscordAPI,
-    setUpdateDataToCallDiscordAPI,
-    getTokenDiscordAPI
 };
