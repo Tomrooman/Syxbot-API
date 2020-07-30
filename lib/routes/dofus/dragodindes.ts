@@ -10,6 +10,17 @@ router.post('/',
         res.send(res.dragodindes || false);
     });
 
+router.post('/fecondator',
+    dragodindesMiddleware.getDragodindes,
+    dragodindesMiddleware.calculateTime,
+    dragodindesMiddleware.makeDragodindesEndParams,
+    (_req, res) => {
+        res.send({
+            dragodindes: res.fecondator || false,
+            ddFecond: Object.keys(res.ddFecond).length ? res.ddFecond : false
+        });
+    });
+
 router.post('/notif/all',
     dragodindesMiddleware.getAllDragodindesNotifInfos,
     (_req, res) => {

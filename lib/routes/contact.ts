@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/contact',
     contactMiddleware.sendMail,
     (_req, res) => {
-        res.send(res.mailStatus || false);
+        res.send(res.mail || false);
     });
 
 export default router;

@@ -23,6 +23,22 @@ export interface dragodindeType {
     };
 }
 
+export interface sortedDragoType {
+    name: string;
+    duration: number;
+    generation: number;
+    used: boolean;
+    selected?: boolean;
+    last: {
+        status: boolean;
+        date?: string;
+    };
+    end: {
+        time: string;
+        date: string;
+    };
+};
+
 export interface userStatic extends Model<dofusInfosType> {
     get(userId: string): Promise<dofusInfosType> | false;
 
