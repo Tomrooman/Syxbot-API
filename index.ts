@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import cookiesMiddleware from 'universal-cookie-express';
 import fs from 'fs';
 import https from 'https';
 import chalk from 'chalk';
+import bcrypt from 'bcrypt';
 import dateFormat from 'dateformat';
 import contactRouter from './lib/routes/contact';
 import settingsRouter from './lib/routes/settings';
@@ -14,10 +16,28 @@ import config from './config.json';
 
 const app = express();
 
-app.disable('x-powered-by');
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookiesMiddleware());
+
+app.use(async (req, res, next) => {
+    if (req.body.token && req.body.token === config.security.token) {
+        if (!req.body.type || req.body.type && req.body.type !== 'bot') {
+            const syxbotInfos = req.universalCookies.get('syxbot_infos');
+            const syxbot = req.universalCookies.get('syxbot');
+            if (syxbot && syxbotInfos) {
+                const compare = await bcrypt.compare(config.bcrypt.secret, syxbotInfos.secret);
+                if (compare) {
+                    req.body.userId = syxbotInfos.userId
+                    return next();
+                }
+                return res.writeHead(401, 'Invalid token');
+            }
+        }
+        return next();
+    }
+    return res.writeHead(401, 'Invalid token');
+});
 
 app.use('/docs', contactRouter);
 app.use('/settings', settingsRouter);

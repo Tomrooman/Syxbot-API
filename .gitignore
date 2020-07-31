@@ -12,6 +12,9 @@ server.crt
 server.key
 private
 dist
+id_rsa
+id_rsa.pub
+private.key
 
 .yarn/*
 !.yarn/releases

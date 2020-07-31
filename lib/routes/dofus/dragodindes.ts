@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/',
     dragodindesMiddleware.getDragodindes,
-    (_req, res) => {
+    (req, res) => {
         res.send(res.dragodindes || false);
     });
 

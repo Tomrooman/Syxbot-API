@@ -8,7 +8,8 @@
     "start-log": "yarn npm-run-all build server log-prod",
     "start": "yarn npm-run-all build server",
     "server": "pm2 start dist/index.js --name syxbot_prod_api",
-    "dev": "yarn rimraf dist && yarn tsc && yarn concurrently \"yarn tsc --watch\" \"yarn pm2 start dist/index.js --watch --name syxbot_dev_api\" \"npm run log-dev\"",
+    "dev": "yarn rimraf dist && yarn ts-node-dev --respawn --transpile-only --clear index.ts",
+    "dev-server": "yarn pm2 start index.js --watch --name syxbot_dev_api && npm run log-dev",
     "test": "yarn tsc && yarn mocha ./dist/lib/test/index.test.js --exit",
     "log-dev": "yarn pm2 log --lines 100 syxbot_dev_api ",
     "log-prod": "yarn pm2 log --lines 100 syxbot_prod_api",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "chai": "^4.2.0",
     "chalk": "^4.1.0",
@@ -36,7 +38,9 @@
     "npm-run-all": "^4.1.5",
     "pm2": "^4.4.0",
     "querystring": "^0.2.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "ts-node-dev": "^1.0.0-pre.56",
+    "universal-cookie-express": "^4.0.3"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
@@ -48,7 +52,6 @@
     "@types/node": "^14.0.26",
     "@typescript-eslint/eslint-plugin": "^3.7.0",
     "@typescript-eslint/parser": "^3.7.0",
-    "concurrently": "^5.2.0",
     "eslint": "^7.4.0",
     "mocha": "^8.0.1",
     "typescript": "^3.9.7"

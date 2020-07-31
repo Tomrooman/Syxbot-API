@@ -5,6 +5,7 @@ import Config from '../../config.json';
 import queryString from 'querystring';
 import Axios from 'axios';
 import { tokenType } from 'lib/@types/models/token';
+import bcrypt from 'bcrypt';
 
 export const getToken = async (req, res, next) => {
     if (req.body.userId) {
@@ -51,13 +52,15 @@ export const removeToken = async (req, res, next) => {
         const userId = req.body.userId;
         const token = await tokenModel.deleteToken(userId);
         if (token) {
+            res.clearCookie('syxbot');
+            res.clearCookie('syxbot_infos');
             res.token = true;
         }
     }
     next();
 };
 
-export const setConnectDataToCallDiscordAPI = async (req, res, next) => {
+export const setConnectDataToCallDiscordAPI = (req, res, next) => {
     if (req.body.code) {
         const data = queryString.stringify({
             'client_id': Config.clientId,
@@ -72,7 +75,7 @@ export const setConnectDataToCallDiscordAPI = async (req, res, next) => {
     next();
 };
 
-export const setUpdateDataToCallDiscordAPI = async (req, res, next) => {
+export const setUpdateDataToCallDiscordAPI = (_req, res, next) => {
     if (res.token) {
         const data = queryString.stringify({
             'client_id': Config.clientId,
@@ -101,15 +104,42 @@ export const getTokenDiscordAPI = async (req, res, next) => {
                 }
             });
             if (discordMe) {
-                const tokenObj = {
+                await setCookies(res, discordMe, apiToken);
+                res.token = {
                     ...apiToken.data,
-                    userId: discordMe.data.id,
-                    username: discordMe.data.username,
-                    discriminator: discordMe.data.discriminator
+                    expire_at: (Date.now() / 1000) + apiToken.data.expires_in
                 };
-                res.token = tokenObj;
             }
         }
     }
     next();
+};
+
+const setCookies = async (res, discordMe, apiToken) => {
+    const hash = await bcrypt.hash(Config.bcrypt.secret, Config.bcrypt.saltRounds);
+    const oneDay = 1000 * 60 * 60 * 24;
+    const expireDate = new Date(Date.now() + (oneDay * 10));
+    const options = {
+        path: '/',
+        expires: expireDate,
+        secure: true,
+        sameSite: true
+    }
+    res.cookie('syxbot_infos', {
+        userId: discordMe.data.id,
+        secret: hash
+    }, {
+        ...options,
+        httpOnly: true,
+    });
+    res.cookie('syxbot', {
+        username: discordMe.data.username,
+        discriminator: discordMe.data.discriminator,
+        token_type: apiToken.data.token_type,
+        expire_at: (Date.now() / 1000) + apiToken.data.expires_in,
+        countdown: true
+    }, {
+        ...options,
+        httpOnly: false
+    });
 };
