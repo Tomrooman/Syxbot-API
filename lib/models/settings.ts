@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import dateFormat from 'dateformat';
-import { settingsType, userStatic } from '../@types/models/settings';
+import { settingsType, userStatic, audioType, notifType } from '../@types/models/settings';
 
 const Schema = mongoose.Schema;
 
@@ -66,7 +66,7 @@ settingsSchema.statics.getAllSettings = async () => {
     return false;
 };
 
-settingsSchema.statics.get = async guildId => {
+settingsSchema.statics.get = async (guildId: string) => {
     if (guildId) {
         const Settings = mongoose.model<settingsType>('Settings');
         const settings = await Settings.findOne({
@@ -79,7 +79,7 @@ settingsSchema.statics.get = async guildId => {
     return false;
 };
 
-settingsSchema.statics.createSettings = async (guildId, notif, audio) => {
+settingsSchema.statics.createSettings = async (guildId: string, notif: notifType, audio: audioType) => {
     if (guildId && notif && audio) {
         const settingsObj = {
             guildId: guildId,
@@ -93,7 +93,7 @@ settingsSchema.statics.createSettings = async (guildId, notif, audio) => {
     return false;
 };
 
-settingsSchema.statics.updateSettings = async (allSettings, notif, audio) => {
+settingsSchema.statics.updateSettings = async (allSettings: settingsType, notif: notifType, audio: audioType) => {
     if (allSettings && notif && audio) {
         allSettings.notif = notif;
         allSettings.audio = audio;

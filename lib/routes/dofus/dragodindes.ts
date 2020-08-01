@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/',
     dragodindesMiddleware.getDragodindes,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.dragodindes || false);
     });
 
@@ -17,7 +17,7 @@ router.post('/fecondator',
     (_req, res) => {
         res.send({
             dragodindes: res.fecondator || false,
-            ddFecond: Object.keys(res.ddFecond).length ? res.ddFecond : false
+            ddFecond: res.ddFecond || false
         });
     });
 

@@ -16,7 +16,7 @@
     "eslint": "eslint ./",
     "status": "yarn pm2 status",
     "clean": "rimraf dist",
-    "transpile": "yarn tsc",
+    "transpile": "yarn tsc && yarn rimraf dist/test",
     "remove-modules": "yarn rimraf node_modules .yarn/build-state.yml .yarn/cache .yarn/install-state.gz .yarn/unplugged .pnp.js yarn.lock package-lock.json",
     "build": "yarn npm-run-all clean transpile",
     "stop-dev": "yarn pm2 stop syxbot_dev_api",

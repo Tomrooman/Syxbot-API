@@ -2,8 +2,9 @@
 
 import settingsModel from '../models/settings';
 import { settingsType } from '../@types/models/settings';
+import { Request, Response, NextFunction } from 'express';
 
-export const getAllSettings = async (req, res, next) => {
+export const getAllSettings = async (_req: Request, res: Response, next: NextFunction) => {
     const settings = await settingsModel.getAllSettings();
     if (settings) {
         res.settings = settings;
@@ -11,7 +12,7 @@ export const getAllSettings = async (req, res, next) => {
     next();
 };
 
-export const createOrUpdateSettings = async (req, res, next) => {
+export const createOrUpdateSettings = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.guildId) {
         let settings: settingsType | false = false;
         const allSettings = await settingsModel.get(req.body.guildId);

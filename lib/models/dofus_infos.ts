@@ -25,7 +25,7 @@ const dofusInfosSchema = new Schema({
     versionKey: false
 });
 
-dofusInfosSchema.statics.get = async (userId) => {
+dofusInfosSchema.statics.get = async (userId: string) => {
     if (userId) {
         const Dofus = mongoose.model<dofusInfosType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
@@ -53,7 +53,7 @@ dofusInfosSchema.statics.getAllDragodindesNotifInfos = async () => {
     return false;
 };
 
-dofusInfosSchema.statics.getDragodindes = async (userId) => {
+dofusInfosSchema.statics.getDragodindes = async (userId: string) => {
     if (userId) {
         const Dofus = mongoose.model<dofusInfosType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
@@ -66,7 +66,7 @@ dofusInfosSchema.statics.getDragodindes = async (userId) => {
     return false;
 };
 
-dofusInfosSchema.statics.createNotificationStatus = async (userId, status) => {
+dofusInfosSchema.statics.createNotificationStatus = async (userId: string, status: string) => {
     if (userId && status) {
         const dofusObj = {
             userId: userId,
@@ -81,7 +81,7 @@ dofusInfosSchema.statics.createNotificationStatus = async (userId, status) => {
     return false;
 };
 
-dofusInfosSchema.statics.addDragodindes = async (allDofusInfos, addedDragodindes) => {
+dofusInfosSchema.statics.addDragodindes = async (allDofusInfos: dofusInfosType, addedDragodindes: dragodindeType[]) => {
     if (allDofusInfos && addedDragodindes && addedDragodindes.length) {
         addedDragodindes.map(drago => {
             allDofusInfos.dragodindes.push(drago);
@@ -93,11 +93,12 @@ dofusInfosSchema.statics.addDragodindes = async (allDofusInfos, addedDragodindes
     return false;
 };
 
-dofusInfosSchema.statics.createDragodindes = async (userId, addedDragodindes) => {
+dofusInfosSchema.statics.createDragodindes = async (userId: string, addedDragodindes: dragodindeType[]) => {
     if (userId && addedDragodindes && addedDragodindes.length) {
         const dofusObj = {
             userId: userId,
-            dragodindes: [] as dragodindeType[]
+            dragodindes: [] as dragodindeType[],
+            notes: []
         };
         addedDragodindes.map((drago: dragodindeType) => {
             dofusObj.dragodindes.push(drago);
@@ -109,7 +110,7 @@ dofusInfosSchema.statics.createDragodindes = async (userId, addedDragodindes) =>
     return false;
 };
 
-dofusInfosSchema.statics.removeDragodindes = async (allDofusInfos, dragodindes) => {
+dofusInfosSchema.statics.removeDragodindes = async (allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]) => {
     if (allDofusInfos && dragodindes && dragodindes.length) {
         dragodindes.map(drago => {
             const index = _.findIndex(allDofusInfos.dragodindes, (o: dragodindeType) => drago.name === o.name);
@@ -117,6 +118,7 @@ dofusInfosSchema.statics.removeDragodindes = async (allDofusInfos, dragodindes) 
                 delete allDofusInfos.dragodindes[index];
                 allDofusInfos.dragodindes = _.compact(allDofusInfos.dragodindes);
             }
+
         });
         allDofusInfos.markModified('dragodindes');
         await allDofusInfos.save();
@@ -125,7 +127,7 @@ dofusInfosSchema.statics.removeDragodindes = async (allDofusInfos, dragodindes) 
     return false;
 };
 
-dofusInfosSchema.statics.setNotificationsByStatus = async (allDofusInfos, status) => {
+dofusInfosSchema.statics.setNotificationsByStatus = async (allDofusInfos: dofusInfosType, status: string) => {
     if (allDofusInfos && status) {
         allDofusInfos.notif = status === 'on' ? true : false;
         allDofusInfos.markModified('notif');
@@ -135,7 +137,7 @@ dofusInfosSchema.statics.setNotificationsByStatus = async (allDofusInfos, status
     return false;
 };
 
-dofusInfosSchema.statics.modifyLastDragodindes = async (action, allDofusInfos, dragodindes) => {
+dofusInfosSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]) => {
     if (action && allDofusInfos && dragodindes && dragodindes.length) {
         allDofusInfos.dragodindes.map(drago => {
             if (action === 'update') {
@@ -167,7 +169,7 @@ dofusInfosSchema.statics.modifyLastDragodindes = async (action, allDofusInfos, d
     return false;
 };
 
-dofusInfosSchema.statics.modifyUsedDragodindes = async (action, allDofusInfos, dragodindes) => {
+dofusInfosSchema.statics.modifyUsedDragodindes = async (action: string, allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]) => {
     if (action && allDofusInfos && dragodindes && dragodindes.length) {
         allDofusInfos.dragodindes.map(drago => {
             if (_.findIndex(dragodindes, (o: dragodindeType) => drago.name === o.name) !== -1) {
@@ -189,7 +191,7 @@ dofusInfosSchema.statics.modifyUsedDragodindes = async (action, allDofusInfos, d
     return false;
 };
 
-dofusInfosSchema.statics.addNotes = async (allDofusInfos, title, content) => {
+dofusInfosSchema.statics.addNotes = async (allDofusInfos: dofusInfosType, title: string, content: string) => {
     if (allDofusInfos && title && content) {
         allDofusInfos.notes.push({ title: title, content: content });
         allDofusInfos.markModified('notes');
@@ -199,10 +201,11 @@ dofusInfosSchema.statics.addNotes = async (allDofusInfos, title, content) => {
     return false;
 };
 
-dofusInfosSchema.statics.createNotes = async (userId, title, content) => {
+dofusInfosSchema.statics.createNotes = async (userId: string, title: string, content: string) => {
     if (userId && title && content) {
         const dofusObj = {
             userId: userId,
+            dragodindes: [],
             notes: [{
                 title: title,
                 content: content
@@ -215,7 +218,7 @@ dofusInfosSchema.statics.createNotes = async (userId, title, content) => {
     return false;
 };
 
-dofusInfosSchema.statics.updateNotes = async (allDofusInfos, title, oldContent, newContent) => {
+dofusInfosSchema.statics.updateNotes = async (allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string) => {
     if (allDofusInfos && title && oldContent && newContent) {
         allDofusInfos.notes.map(note => {
             if (note.title === title && note.content === oldContent) {
@@ -229,7 +232,7 @@ dofusInfosSchema.statics.updateNotes = async (allDofusInfos, title, oldContent, 
     return false;
 };
 
-dofusInfosSchema.statics.removeNotes = async (allDofusInfos, title, content) => {
+dofusInfosSchema.statics.removeNotes = async (allDofusInfos: dofusInfosType, title: string, content: string) => {
     if (allDofusInfos && title && content) {
         allDofusInfos.notes.map((n, index) => {
             if (n.title === title && n.content === content) {

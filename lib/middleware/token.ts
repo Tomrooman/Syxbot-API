@@ -4,10 +4,11 @@ import tokenModel from '../models/token';
 import Config from '../../config.json';
 import queryString from 'querystring';
 import Axios from 'axios';
-import { tokenType } from 'lib/@types/models/token';
+import { tokenType, discordMe, apiToken } from 'lib/@types/models/token';
 import bcrypt from 'bcrypt';
+import { Request, Response, NextFunction } from 'express';
 
-export const getToken = async (req, res, next) => {
+export const getToken = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.userId) {
         const userId = req.body.userId;
         const token = await tokenModel.get(userId);
@@ -18,7 +19,7 @@ export const getToken = async (req, res, next) => {
     next();
 };
 
-export const createOrUpdateToken = async (req, res, next) => {
+export const createOrUpdateToken = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.body.userId;
     const access_token = req.body.access_token;
     const refresh_token = req.body.refresh_token;
@@ -47,7 +48,7 @@ export const createOrUpdateToken = async (req, res, next) => {
     next();
 };
 
-export const removeToken = async (req, res, next) => {
+export const removeToken = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.userId) {
         const userId = req.body.userId;
         const token = await tokenModel.deleteToken(userId);
@@ -60,7 +61,7 @@ export const removeToken = async (req, res, next) => {
     next();
 };
 
-export const setConnectDataToCallDiscordAPI = (req, res, next) => {
+export const setConnectDataToCallDiscordAPI = (req: Request, res: Response, next: NextFunction) => {
     if (req.body.code) {
         const data = queryString.stringify({
             'client_id': Config.clientId,
@@ -75,22 +76,22 @@ export const setConnectDataToCallDiscordAPI = (req, res, next) => {
     next();
 };
 
-export const setUpdateDataToCallDiscordAPI = (_req, res, next) => {
-    if (res.token) {
+export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next: NextFunction) => {
+    if (res.token && typeof (res.token) !== 'boolean') {
         const data = queryString.stringify({
             'client_id': Config.clientId,
             'client_secret': Config.secret,
             'grant_type': 'refresh_token',
-            'refresh_token': res.token.refresh_token,
             'redirect_uri': decodeURIComponent(Config.OAuth.redirect_url),
-            'scope': Config.OAuth.scope
+            'scope': Config.OAuth.scope,
+            'refresh_token': res.token.refresh_token as string
         });
         res.discordData = data;
     }
     next();
 };
 
-export const getTokenDiscordAPI = async (req, res, next) => {
+export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction) => {
     if (res.discordData) {
         const apiToken = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {
             headers: {
@@ -115,7 +116,7 @@ export const getTokenDiscordAPI = async (req, res, next) => {
     next();
 };
 
-const setCookies = async (res, discordMe, apiToken) => {
+const setCookies = async (res: Response, discordMe: discordMe, apiToken: apiToken) => {
     const hash = await bcrypt.hash(Config.bcrypt.secret, Config.bcrypt.saltRounds);
     const oneDay = 1000 * 60 * 60 * 24;
     const expireDate = new Date(Date.now() + (oneDay * 10));

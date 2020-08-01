@@ -1,9 +1,9 @@
 import { Document, Model } from 'mongoose';
 
 export interface dofusInfosType extends Document {
-    userId: String;
-    notes?: noteType[];
-    dragodindes?: dragodindeType[];
+    userId: string;
+    notes: noteType[];
+    dragodindes: dragodindeType[];
     notif: boolean;
 }
 
@@ -19,7 +19,7 @@ export interface dragodindeType {
     used: boolean;
     last: {
         status: boolean;
-        date: Date;
+        date?: date;
     };
 }
 
@@ -31,11 +31,11 @@ export interface sortedDragoType {
     selected?: boolean;
     last: {
         status: boolean;
-        date?: string;
+        date?: date;
     };
     end: {
         time: string;
-        date: string;
+        date: number;
     };
 };
 

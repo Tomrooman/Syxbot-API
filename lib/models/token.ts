@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { tokenType, userStatic } from '../@types/models/token';
+import { tokenType, userStatic, tokenObjType } from '../@types/models/token';
 
 const Schema = mongoose.Schema;
 
@@ -14,7 +14,7 @@ const tokenSchema = new Schema({
     versionKey: false
 });
 
-tokenSchema.statics.get = async (userId) => {
+tokenSchema.statics.get = async (userId: string) => {
     if (userId) {
         const Token = mongoose.model<tokenType>('Token');
         const token = await Token.findOne({
@@ -27,7 +27,7 @@ tokenSchema.statics.get = async (userId) => {
     return false;
 };
 
-tokenSchema.statics.createToken = async (tokenObj, expires_in) => {
+tokenSchema.statics.createToken = async (tokenObj: tokenType, expires_in: number) => {
     if (tokenObj && expires_in) {
         const newTokenObj = {
             userId: tokenObj.userId,
@@ -44,7 +44,7 @@ tokenSchema.statics.createToken = async (tokenObj, expires_in) => {
     return false;
 };
 
-tokenSchema.statics.updateToken = async (tokenInfos, tokenObj, expire_at) => {
+tokenSchema.statics.updateToken = async (tokenInfos: tokenType, tokenObj: tokenObjType, expire_at: number) => {
     if (tokenInfos && tokenObj) {
         tokenInfos.access_token = tokenObj.access_token;
         tokenInfos.token_type = tokenObj.token_type;
@@ -62,7 +62,7 @@ tokenSchema.statics.updateToken = async (tokenInfos, tokenObj, expire_at) => {
     return false;
 };
 
-tokenSchema.statics.deleteToken = async (userId) => {
+tokenSchema.statics.deleteToken = async (userId: string) => {
     if (userId) {
         const Token = mongoose.model<tokenType>('Token');
         const result = await Token.deleteOne({ userId: userId });

@@ -9,26 +9,26 @@ router.post('/expiration',
     tokenMiddleware.getToken,
     tokenMiddleware.setUpdateDataToCallDiscordAPI,
     tokenMiddleware.getTokenDiscordAPI,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.token || false);
     });
 
 router.post('/connect',
     tokenMiddleware.setConnectDataToCallDiscordAPI,
     tokenMiddleware.getTokenDiscordAPI,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.token || false);
     });
 
 router.post('/update',
     tokenMiddleware.createOrUpdateToken,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.token || false);
     });
 
 router.post('/remove',
     tokenMiddleware.removeToken,
-    (req, res) => {
+    (_req, res) => {
         res.send(res.token || false);
     });
 
