@@ -37,8 +37,8 @@ export const getDragodindes = async (req: Request, res: Response, next: NextFunc
 export const calculateTime = (_req: Request, res: Response, next: NextFunction) => {
     if (res.dragodindes) {
         const now = Date.now();
-        let ddFecond: dragodindeType | undefined = _.find(res.dragodindes, status);
-        const baseDate = ddFecond ? Date.parse((ddFecond as dragodindeType).last.date) : now;
+        let ddFecond: dragodindeType | undefined = _.find(res.dragodindes, (drago: dragodindeType) => drago.last.status);
+        const baseDate = ddFecond ? (ddFecond as dragodindeType).last.date : now;
         const filteredDrago = (res.dragodindes as dragodindeType[]).filter((d) => !d.last.status && !d.used);
         const sortedDragodindes = filteredDrago.length ? _.reverse(_.sortBy(filteredDrago, 'duration', 'asc')) : [];
         const hoursDiff = ddFecond ? Math.floor((now - baseDate) / (1000 * 60 * 60)) : 0;
@@ -103,7 +103,7 @@ export const makeDragodindesEndParams = (_req: Request, res: Response, next: Nex
 };
 
 const setDragoObject = (drago: dragodindeType, goodDate: number, goodTime: string): sortedDragoType => {
-    let lastObj: { status: boolean, date?: Date } = {
+    let lastObj: { status: boolean, date?: number } = {
         status: drago.last.status
     };
     if (drago.last.status) {

@@ -4,7 +4,7 @@ import tokenModel from '../models/token';
 import Config from '../../config.json';
 import queryString from 'querystring';
 import Axios from 'axios';
-import { tokenType, discordMe, apiToken } from 'lib/@types/models/token';
+import { tokenType, discordMe, apiToken } from '../@types/models/token';
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
 

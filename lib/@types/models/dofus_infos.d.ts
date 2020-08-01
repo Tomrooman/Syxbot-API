@@ -19,7 +19,7 @@ export interface dragodindeType {
     used: boolean;
     last: {
         status: boolean;
-        date?: date;
+        date?: number;
     };
 }
 
@@ -31,13 +31,13 @@ export interface sortedDragoType {
     selected?: boolean;
     last: {
         status: boolean;
-        date?: date;
+        date?: number;
     };
     end: {
         time: string;
         date: number;
     };
-};
+}
 
 export interface userStatic extends Model<dofusInfosType> {
     get(userId: string): Promise<dofusInfosType> | false;

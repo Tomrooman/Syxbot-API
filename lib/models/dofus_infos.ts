@@ -18,7 +18,8 @@ const dofusInfosSchema = new Schema({
         last: {
             status: { type: Boolean, default: false },
             date: Date
-        }
+        },
+        sended: { type: Boolean, default: false }
     }],
     notif: { type: Boolean, default: false }
 }, {
