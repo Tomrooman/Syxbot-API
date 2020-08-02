@@ -57,7 +57,7 @@ settingsSchema.pre('save', function (next) {
     next();
 });
 
-settingsSchema.statics.getAllSettings = async () => {
+settingsSchema.statics.getAllSettings = async (): Promise<settingsType[] | false> => {
     const Settings = mongoose.model<settingsType>('Settings');
     const settings = await Settings.find();
     if (settings) {
@@ -66,7 +66,7 @@ settingsSchema.statics.getAllSettings = async () => {
     return false;
 };
 
-settingsSchema.statics.get = async (guildId: string) => {
+settingsSchema.statics.get = async (guildId: string): Promise<settingsType | false> => {
     if (guildId) {
         const Settings = mongoose.model<settingsType>('Settings');
         const settings = await Settings.findOne({
@@ -79,7 +79,7 @@ settingsSchema.statics.get = async (guildId: string) => {
     return false;
 };
 
-settingsSchema.statics.createSettings = async (guildId: string, notif: notifType, audio: audioType) => {
+settingsSchema.statics.createSettings = async (guildId: string, notif: notifType, audio: audioType): Promise<settingsType | false> => {
     if (guildId && notif && audio) {
         const settingsObj = {
             guildId: guildId,
@@ -87,13 +87,13 @@ settingsSchema.statics.createSettings = async (guildId: string, notif: notifType
             audio: audio
         };
         const Settings = mongoose.model<settingsType>('Settings');
-        await new Settings(settingsObj).save();
-        return settingsObj;
+        const settingsSaved = await new Settings(settingsObj).save();
+        return settingsSaved;
     }
     return false;
 };
 
-settingsSchema.statics.updateSettings = async (allSettings: settingsType, notif: notifType, audio: audioType) => {
+settingsSchema.statics.updateSettings = async (allSettings: settingsType, notif: notifType, audio: audioType): Promise<settingsType | false> => {
     if (allSettings && notif && audio) {
         allSettings.notif = notif;
         allSettings.audio = audio;

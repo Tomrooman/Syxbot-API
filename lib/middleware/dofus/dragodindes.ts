@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { sortedDragoType } from '../../@types/models/dofus_infos';
 import { Request, Response, NextFunction } from 'express';
 
-export const getAllDragodindesNotifInfos = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllDragodindesNotifInfos = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     const dragodindesNotif = await dofusInfosModel.getAllDragodindesNotifInfos();
     if (dragodindesNotif) {
         res.dragodindesNotif = dragodindesNotif;
@@ -14,7 +14,7 @@ export const getAllDragodindesNotifInfos = async (_req: Request, res: Response, 
     next();
 };
 
-export const getDofusInfos = async (req: Request, res: Response, next: NextFunction) => {
+export const getDofusInfos = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
@@ -24,7 +24,7 @@ export const getDofusInfos = async (req: Request, res: Response, next: NextFunct
     next();
 };
 
-export const getDragodindes = async (req: Request, res: Response, next: NextFunction) => {
+export const getDragodindes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId) {
         const dragodindes = await dofusInfosModel.getDragodindes(req.body.userId);
         if (dragodindes) {
@@ -34,11 +34,11 @@ export const getDragodindes = async (req: Request, res: Response, next: NextFunc
     next();
 };
 
-export const calculateTime = (_req: Request, res: Response, next: NextFunction) => {
+export const calculateTime = (_req: Request, res: Response, next: NextFunction): void => {
     if (res.dragodindes) {
         const now = Date.now();
         let ddFecond: dragodindeType | undefined = _.find(res.dragodindes, (drago: dragodindeType) => drago.last.status);
-        const baseDate = ddFecond ? (ddFecond as dragodindeType).last.date : now;
+        const baseDate = ddFecond ? Number((ddFecond as dragodindeType).last.date) : now;
         const filteredDrago = (res.dragodindes as dragodindeType[]).filter((d) => !d.last.status && !d.used);
         const sortedDragodindes = filteredDrago.length ? _.reverse(_.sortBy(filteredDrago, 'duration', 'asc')) : [];
         const hoursDiff = ddFecond ? Math.floor((now - baseDate) / (1000 * 60 * 60)) : 0;
@@ -60,7 +60,7 @@ export const calculateTime = (_req: Request, res: Response, next: NextFunction) 
     next();
 };
 
-export const makeDragodindesEndParams = (_req: Request, res: Response, next: NextFunction) => {
+export const makeDragodindesEndParams = (_req: Request, res: Response, next: NextFunction): void => {
     if (res.dragodindes && res.baseDate && res.ddFecond && res.sortedDragodindes && res.timeDiff) {
         let estimatedTime = 0;
         let prevDrago: sortedDragoType = {} as sortedDragoType;
@@ -145,7 +145,7 @@ const setTimeRemaining = (duration: number, hours: number, minutes: number, seco
     return returnedStr;
 };
 
-export const SetNotificationsByStatus = async (req: Request, res: Response, next: NextFunction) => {
+export const SetNotificationsByStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     let status: dofusInfosType | false = false;
     if (res.allDofusInfos && req.body.status) {
         status = await dofusInfosModel.setNotificationsByStatus(res.allDofusInfos, req.body.status);
@@ -162,7 +162,7 @@ export const SetNotificationsByStatus = async (req: Request, res: Response, next
     next();
 };
 
-export const CreateOrAddDragodindes = async (req: Request, res: Response, next: NextFunction) => {
+export const CreateOrAddDragodindes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId && req.body.dragodindes) {
         let dragodindes: dragodindeType[] | false = false;
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
@@ -176,7 +176,7 @@ export const CreateOrAddDragodindes = async (req: Request, res: Response, next: 
     next();
 };
 
-export const modifyDragodindesStatus = async (req: Request, res: Response, next: NextFunction) => {
+export const modifyDragodindesStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId && req.body.dragodindes && req.params.action && req.params.type) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos && req.body.dragodindes.length >= 1) {
@@ -194,7 +194,7 @@ export const modifyDragodindesStatus = async (req: Request, res: Response, next:
     next();
 };
 
-export const removeDragodindes = async (req: Request, res: Response, next: NextFunction) => {
+export const removeDragodindes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId && req.body.dragodindes) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {

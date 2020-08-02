@@ -14,7 +14,7 @@ const tokenSchema = new Schema({
     versionKey: false
 });
 
-tokenSchema.statics.get = async (userId: string) => {
+tokenSchema.statics.get = async (userId: string): Promise<tokenType | false> => {
     if (userId) {
         const Token = mongoose.model<tokenType>('Token');
         const token = await Token.findOne({
@@ -27,7 +27,7 @@ tokenSchema.statics.get = async (userId: string) => {
     return false;
 };
 
-tokenSchema.statics.createToken = async (tokenObj: tokenType, expires_in: number) => {
+tokenSchema.statics.createToken = async (tokenObj: tokenType, expires_in: number): Promise<tokenType | false> => {
     if (tokenObj && expires_in) {
         const newTokenObj = {
             userId: tokenObj.userId,
@@ -38,13 +38,13 @@ tokenSchema.statics.createToken = async (tokenObj: tokenType, expires_in: number
             scope: tokenObj.scope
         };
         const Token = mongoose.model<tokenType>('Token');
-        await new Token(newTokenObj).save();
-        return newTokenObj;
+        const tokenSaved = await new Token(newTokenObj).save();
+        return tokenSaved;
     }
     return false;
 };
 
-tokenSchema.statics.updateToken = async (tokenInfos: tokenType, tokenObj: tokenObjType, expire_at: number) => {
+tokenSchema.statics.updateToken = async (tokenInfos: tokenType, tokenObj: tokenObjType, expire_at: number): Promise<tokenType | false> => {
     if (tokenInfos && tokenObj) {
         tokenInfos.access_token = tokenObj.access_token;
         tokenInfos.token_type = tokenObj.token_type;
@@ -62,7 +62,7 @@ tokenSchema.statics.updateToken = async (tokenInfos: tokenType, tokenObj: tokenO
     return false;
 };
 
-tokenSchema.statics.deleteToken = async (userId: string) => {
+tokenSchema.statics.deleteToken = async (userId: string): Promise<boolean> => {
     if (userId) {
         const Token = mongoose.model<tokenType>('Token');
         const result = await Token.deleteOne({ userId: userId });

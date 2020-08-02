@@ -4,7 +4,7 @@ import nodeMailer from 'nodemailer';
 import config from '../../config.json';
 import { Request, Response, NextFunction } from 'express';
 
-export const sendMail = async (req: Request, res: Response, next: NextFunction) => {
+export const sendMail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.message && req.body.mail && req.body.object) {
         let message = req.body.message.split('\n');
         message = message.join('</br>');

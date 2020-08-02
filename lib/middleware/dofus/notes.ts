@@ -4,7 +4,7 @@ import dofusInfosModel from '../../models/dofus_infos';
 import { noteType } from '../../@types/models/dofus_infos';
 import { Request, Response, NextFunction } from 'express';
 
-export const getNotes = async (req: Request, res: Response, next: NextFunction) => {
+export const getNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
@@ -14,7 +14,7 @@ export const getNotes = async (req: Request, res: Response, next: NextFunction) 
     next();
 };
 
-export const createOrAddNotes = async (req: Request, res: Response, next: NextFunction) => {
+export const createOrAddNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId && req.body.title && req.body.content) {
         let notes: noteType[] | false = false;
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
@@ -30,7 +30,7 @@ export const createOrAddNotes = async (req: Request, res: Response, next: NextFu
     next();
 };
 
-export const updateNotes = async (req: Request, res: Response, next: NextFunction) => {
+export const updateNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId && req.body.title && req.body.oldContent && req.body.newContent) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
@@ -44,7 +44,7 @@ export const updateNotes = async (req: Request, res: Response, next: NextFunctio
     next();
 };
 
-export const removeNotes = async (req: Request, res: Response, next: NextFunction) => {
+export const removeNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId && req.body.title && req.body.content) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
