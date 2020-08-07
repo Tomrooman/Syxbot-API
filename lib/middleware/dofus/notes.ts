@@ -20,7 +20,6 @@ export const createOrAddNotes = async (req: Request, res: Response, next: NextFu
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
             notes = await dofusInfosModel.addNotes(allDofusInfos, req.body.title, req.body.content);
-
         }
         else {
             notes = await dofusInfosModel.createNotes(req.body.userId, req.body.title, req.body.content);

@@ -22,7 +22,7 @@ export const sendMail = async (req: Request, res: Response, next: NextFunction):
             subject: req.body.object,
             html: '<b>Email de la personne : </b>' + req.body.mail + '</br></br>' + message
         };
-        transporter.sendMail((_mailOptions: any, error: Error) => {
+        transporter.sendMail((mailOptions: any, error: Error) => {
             if (error) {
                 console.log('Error while sending mail : ', error);
             }

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import _ from 'lodash';
-import { dofusInfosType, dragodindeType, userStatic, noteType } from '../@types/models/dofus_infos';
+import { dofusInfosType, dragodindeType, userStatic, noteType, notifArrayType, userNotifInfos, sortedDragoType } from '../@types/models/dofus_infos';
 
 const Schema = mongoose.Schema;
 
@@ -39,7 +39,29 @@ dofusInfosSchema.statics.get = async (userId: string): Promise<dofusInfosType | 
     return false;
 };
 
-dofusInfosSchema.statics.getAllDragodindesNotifInfos = async (): Promise<{ userId: string, notif: boolean }[] | false> => {
+dofusInfosSchema.statics.getNotifications = async (): Promise<notifArrayType[] | false> => {
+    const Dofus = mongoose.model<dofusInfosType>('Dofus');
+    const allDofusInfos = await Dofus.find({
+        notif: true
+    });
+    if (allDofusInfos) {
+        const dragodindes: notifArrayType[] = [];
+        allDofusInfos.map((infos: dofusInfosType) => {
+            if (infos.dragodindes.length) {
+                if (_.findIndex(infos.dragodindes, drago => drago.last.status)) {
+                    dragodindes.push({
+                        userId: infos.userId,
+                        dragodindes: infos.dragodindes
+                    });
+                }
+            }
+        })
+        return dragodindes.length ? dragodindes : false;
+    }
+    return false
+};
+
+dofusInfosSchema.statics.getAllDragodindesNotifInfos = async (): Promise<userNotifInfos[] | false> => {
     const Dofus = mongoose.model<dofusInfosType>('Dofus');
     const allDofusInfos = await Dofus.find();
     if (allDofusInfos) {
@@ -62,6 +84,38 @@ dofusInfosSchema.statics.getDragodindes = async (userId: string): Promise<dragod
         });
         if (allDofusInfos) {
             return allDofusInfos.dragodindes;
+        }
+    }
+    return false;
+};
+
+dofusInfosSchema.statics.setDragodindesToSended = async (notifArray: notifArrayType[]): Promise<boolean> => {
+    if (notifArray && notifArray.length) {
+        const Dofus = mongoose.model<dofusInfosType, userStatic>('Dofus');
+        try {
+            notifArray.map(async (array: notifArrayType) => {
+                const dragoName = (array.dragodindes as sortedDragoType[]).map((drago: sortedDragoType) => {
+                    if (drago.end.time === 'Maintenant') {
+                        return drago.name
+                    }
+                });
+                if (dragoName && dragoName.length) {
+                    const allDofusInfos = await Dofus.get(array.userId);
+                    if (allDofusInfos) {
+                        allDofusInfos.dragodindes.map(drago => {
+                            if (_.findIndex(dragoName, drago.name)) {
+                                drago.sended = true;
+                            }
+                        });
+                        allDofusInfos.markModified('dragodindes');
+                        await allDofusInfos.save();
+                    }
+                }
+            });
+            return true;
+        } catch (e) {
+            console.log('Error during dragodindes.sended modifications : ', e.message);
+            return false;
         }
     }
     return false;
@@ -141,26 +195,19 @@ dofusInfosSchema.statics.setNotificationsByStatus = async (allDofusInfos: dofusI
 dofusInfosSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
     if (action && allDofusInfos && dragodindes && dragodindes.length) {
         allDofusInfos.dragodindes.map(drago => {
-            if (action === 'update') {
-                if (drago.name === dragodindes[0].name) {
-                    drago.last = {
-                        status: true,
-                        date: Date.now()
-                    };
-                    drago.used = false;
-                }
-                else {
-                    drago.last = {
-                        status: false
-                    };
-                }
+            if (drago.last.status || drago.name === dragodindes[0].name) {
+                drago.sended = false;
             }
-            else if (action === 'remove') {
-                if (drago.name === dragodindes[0].name) {
-                    drago.last = {
-                        status: false
-                    };
-                }
+            if (action === 'update ' && drago.name === dragodindes[0].name) {
+                drago.last = {
+                    status: true,
+                    date: Date.now()
+                };
+                drago.used = false;
+            } else if ((action === 'update' && drago.name !== dragodindes[0].name) || (action === 'remove' && drago.name === dragodindes[0].name)) {
+                drago.last = {
+                    status: false
+                };
             }
         });
         allDofusInfos.markModified('dragodindes');
@@ -183,6 +230,7 @@ dofusInfosSchema.statics.modifyUsedDragodindes = async (action: string, allDofus
                 else if (action === 'remove') {
                     drago.used = false;
                 }
+                drago.sended = false;
             }
         });
         allDofusInfos.markModified('dragodindes');

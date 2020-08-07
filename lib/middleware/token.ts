@@ -7,6 +7,7 @@ import Axios from 'axios';
 import { tokenType, discordMe, apiToken } from '../@types/models/token';
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId) {
@@ -25,7 +26,8 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
     const refresh_token = req.body.refresh_token;
     const scope = req.body.scope;
     const token_type = req.body.token_type;
-    if (userId && access_token && refresh_token && scope && token_type) {
+    const jwt = req.body.jwt;
+    if (userId && access_token && refresh_token && scope && token_type && jwt) {
         let token: tokenType | false = false;
         const tokenObj = {
             userId: userId,
@@ -93,31 +95,38 @@ export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next
 
 export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (res.discordData) {
-        const apiToken = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        });
-        if (apiToken) {
-            const discordMe = await Axios.get('https://discord.com/api/users/@me', {
+        try {
+            const apiToken = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {
                 headers: {
-                    authorization: `${apiToken.data.token_type} ${apiToken.data.access_token}`
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             });
-            if (discordMe) {
-                await setCookies(res, discordMe, apiToken);
-                res.token = {
-                    ...apiToken.data,
-                    expire_at: (Date.now() / 1000) + apiToken.data.expires_in
-                };
+            if (apiToken) {
+                const discordMe = await Axios.get('https://discord.com/api/users/@me', {
+                    headers: {
+                        authorization: `${apiToken.data.token_type} ${apiToken.data.access_token}`
+                    }
+                });
+                if (discordMe) {
+                    const hash = await bcrypt.hash(Config.security.secret, Config.bcrypt.saltRounds);
+                    const signature: string = jwt.sign({ secret: hash, userId: discordMe.data.id }, Config.security.secret);
+                    setCookies(res, discordMe, apiToken, signature);
+                    res.token = {
+                        ...apiToken.data,
+                        expire_at: (Date.now() / 1000) + apiToken.data.expires_in,
+                        type: 'site',
+                        jwt: signature
+                    };
+                }
             }
+        } catch (e) {
+            console.log('Error call discord API');
         }
     }
     next();
 };
 
-const setCookies = async (res: Response, discordMe: discordMe, apiToken: apiToken): Promise<void> => {
-    const hash = await bcrypt.hash(Config.bcrypt.secret, Config.bcrypt.saltRounds);
+const setCookies = (res: Response, discordMe: discordMe, apiToken: apiToken, signature: string): void => {
     const oneDay = 1000 * 60 * 60 * 24;
     const expireDate = new Date(Date.now() + (oneDay * 10));
     const options = {
@@ -127,8 +136,7 @@ const setCookies = async (res: Response, discordMe: discordMe, apiToken: apiToke
         sameSite: true
     }
     res.cookie('syxbot_infos', {
-        userId: discordMe.data.id,
-        secret: hash
+        jwt: signature
     }, {
         ...options,
         httpOnly: true,

@@ -49,5 +49,5 @@ export interface userStatic extends Model<tokenType> {
 
     updateToken(tokenInfos: tokenType, tokenObj: tokenObjType, expire_at: number): Promise<tokenType> | false;
 
-    deleteToken(userId: string): boolean;
+    deleteToken(userId: string): Promise<boolean>;
 };

@@ -4,16 +4,18 @@ import bodyParser from 'body-parser';
 import cookiesMiddleware from 'universal-cookie-express';
 import fs from 'fs';
 import https from 'https';
+import jwt from 'jsonwebtoken';
 import chalk from 'chalk';
-import bcrypt from 'bcrypt';
 import dateFormat from 'dateformat';
 import contactRouter from './lib/routes/contact';
 import settingsRouter from './lib/routes/settings';
 import tokenRouter from './lib/routes/token';
 import notesRouter from './lib/routes/dofus/notes';
 import dragodindesRouter from './lib/routes/dofus/dragodindes';
+import { websiteAuthVerif, discordBotAuthVerif } from './lib/middleware/security';
 import config from './config.json';
-import { ServerResponse } from 'http';
+
+let discord_bot_connection = false;
 
 const app = express();
 
@@ -21,30 +23,37 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookiesMiddleware());
 
-app.use(async (req: Request, res: Response, next: NextFunction): Promise<ServerResponse | void> => {
-    if (req.body.token && req.body.token === config.security.token) {
-        if (!req.body.type || req.body.type && req.body.type !== 'bot') {
-            const syxbotInfos = req.universalCookies.get('syxbot_infos');
-            const syxbot = req.universalCookies.get('syxbot');
-            if (syxbot && syxbotInfos) {
-                const compare = await bcrypt.compare(config.bcrypt.secret, syxbotInfos.secret);
-                if (compare) {
-                    req.body.userId = syxbotInfos.userId
-                    return next();
-                }
-                return res.writeHead(401, 'Invalid token');
-            }
-        }
-        return next();
-    }
-    return res.writeHead(401, 'Invalid token');
-});
+app.use(
+    websiteAuthVerif,
+    discordBotAuthVerif,
+    (_req: Request, _res: Response, next: NextFunction): void => {
+        next();
+    });
 
 app.use('/docs', contactRouter);
 app.use('/settings', settingsRouter);
 app.use('/token', tokenRouter);
 app.use('/dofus/notes', notesRouter);
 app.use('/dofus/dragodindes', dragodindesRouter);
+
+app.post('/bot/auth', (req: Request, res: Response) => {
+    if (!discord_bot_connection) {
+        discord_bot_connection = true;
+        const signature = jwt.sign({ type: 'bot' }, config.security.secret);
+        res.send({ jwt: signature });
+    } else {
+        res.status(401).json('Unhautorized call !');
+    }
+});
+
+app.post('/bot/auth/close', (req: Request, res: Response) => {
+    discord_bot_connection = false;
+    res.sendStatus(200);
+});
+
+export const getDiscordConnection = (): boolean => {
+    return discord_bot_connection;
+};
 
 app.post('/', (_req: Request, res: Response) => {
     res.sendStatus(200);

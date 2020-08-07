@@ -5,12 +5,33 @@ export interface dofusInfosType extends Document {
     notes: noteType[];
     dragodindes: dragodindeType[];
     notif: boolean;
-}
+};
 
 export interface noteType {
     title: string;
     content: string;
-}
+};
+
+export interface dataObjType {
+    baseDate: number;
+    ddFecond: dragodindeType | {};
+    sortedDragodindes: dragodindeType[];
+    timeDiff: {
+        hours: number;
+        min: number;
+        sec: number;
+    };
+};
+
+export interface notifArrayType {
+    userId: string;
+    dragodindes: dragodindesType[] | sortedDragoType[];
+};
+
+export interface userNotifInfos {
+    userId: string;
+    notif: boolean;
+};
 
 export interface dragodindeType {
     name: string;
@@ -21,7 +42,8 @@ export interface dragodindeType {
         status: boolean;
         date?: number;
     };
-}
+    sended: boolean;
+};
 
 export interface sortedDragoType {
     name: string;
@@ -37,10 +59,15 @@ export interface sortedDragoType {
         time: string;
         date: number;
     };
-}
+    sended: boolean;
+};
 
 export interface userStatic extends Model<dofusInfosType> {
     get(userId: string): Promise<dofusInfosType> | false;
+
+    getNotifications(): Promise<notifArrayType[]> | false;
+
+    setDragodindesToSended(notifArray: notifArrayType[]): Promise<boolean>;
 
     getAllDragodindesNotifInfos(): Promise<dofusInfosType[]> | false;
 
@@ -67,4 +94,4 @@ export interface userStatic extends Model<dofusInfosType> {
     updateNotes(allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string): Promise<noteType[]> | false;
 
     removeNotes(allDofusInfos: dofusInfosType, title: string, content: string): Promise<noteType[]> | false;
-}
+};

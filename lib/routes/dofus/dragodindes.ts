@@ -21,6 +21,13 @@ router.post('/fecondator',
         });
     });
 
+router.post('/notif/verify',
+    dragodindesMiddleware.verifySendedDragodindesNotif,
+    dragodindesMiddleware.getAndSetDragodindesToSend,
+    (_req, res) => {
+        res.send(res.notifArray || false);
+    });
+
 router.post('/notif/all',
     dragodindesMiddleware.getAllDragodindesNotifInfos,
     (_req, res) => {

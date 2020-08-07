@@ -1,9 +1,9 @@
 'use strict';
 
 import dofusInfosModel from '../../models/dofus_infos';
-import { dofusInfosType, dragodindeType } from '../../@types/models/dofus_infos';
+import { dofusInfosType, dragodindeType, notifArrayType } from '../../@types/models/dofus_infos';
 import _ from 'lodash';
-import { sortedDragoType } from '../../@types/models/dofus_infos';
+import { sortedDragoType, dataObjType } from '../../@types/models/dofus_infos';
 import { Request, Response, NextFunction } from 'express';
 
 export const getAllDragodindesNotifInfos = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -34,12 +34,55 @@ export const getDragodindes = async (req: Request, res: Response, next: NextFunc
     next();
 };
 
-export const calculateTime = (_req: Request, res: Response, next: NextFunction): void => {
+export const verifySendedDragodindesNotif = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const infos = await dofusInfosModel.getNotifications();
+    if (infos && infos.length) {
+        const notifArray: notifArrayType[] = [];
+        infos.map((info: notifArrayType) => {
+            const dataObj = calculateTime(_req, res, next, info.dragodindes) as dataObjType;
+            const dragodindesEndArray = makeDragodindesEndParams(_req, res, next, dataObj);
+            notifArray.push({
+                userId: info.userId,
+                dragodindes: dragodindesEndArray as sortedDragoType[]
+            });
+        });
+        res.dragodindes = notifArray;
+    }
+    next();
+};
+
+export const getAndSetDragodindesToSend = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (res.dragodindes) {
+        const notifArrayToSend: notifArrayType[] = [];
+        (res.dragodindes as notifArrayType[]).map((infos: notifArrayType) => {
+            const dragoToSend: dragodindeType[] = [];
+            (infos.dragodindes as sortedDragoType[]).map((drago: sortedDragoType) => {
+                if (drago.end.time === 'Maintenant' && !drago.sended) {
+                    dragoToSend.push(drago);
+                }
+            })
+            if (dragoToSend.length) {
+                notifArrayToSend.push({
+                    userId: infos.userId,
+                    dragodindes: dragoToSend
+                });
+            }
+        })
+        const sendedStatus = await dofusInfosModel.setDragodindesToSended(notifArrayToSend as notifArrayType[]);
+        if (sendedStatus) {
+            res.notifArray = notifArrayToSend;
+        }
+    }
+    next();
+};
+
+export const calculateTime = (_req: Request, res: Response, next: NextFunction, receivedDragodindes: boolean | dragodindeType[] = false): void | dataObjType => {
+    const dragodindes: any = receivedDragodindes || res.dragodindes;
+    if (dragodindes) {
         const now = Date.now();
-        let ddFecond: dragodindeType | undefined = _.find(res.dragodindes, (drago: dragodindeType) => drago.last.status);
+        let ddFecond: dragodindeType | undefined = _.find(dragodindes, (drago: dragodindeType) => drago.last.status);
         const baseDate = ddFecond ? Number((ddFecond as dragodindeType).last.date) : now;
-        const filteredDrago = (res.dragodindes as dragodindeType[]).filter((d) => !d.last.status && !d.used);
+        const filteredDrago = (dragodindes as dragodindeType[]).filter((d) => !d.last.status && !d.used);
         const sortedDragodindes = filteredDrago.length ? _.reverse(_.sortBy(filteredDrago, 'duration', 'asc')) : [];
         const hoursDiff = ddFecond ? Math.floor((now - baseDate) / (1000 * 60 * 60)) : 0;
         let minDiff = ddFecond ? Math.floor((now - baseDate) / (1000 * 60)) : 0;
@@ -48,8 +91,20 @@ export const calculateTime = (_req: Request, res: Response, next: NextFunction):
         let secondDiff = ddFecond ? Math.floor((now - baseDate) / 1000) : 0;
         secondDiff = ddFecond ? secondDiff - Math.floor(secondDiff / 60) * 60 : 0;
         secondDiff = 60 - secondDiff;
+        if (receivedDragodindes) {
+            return ({
+                baseDate,
+                ddFecond: ddFecond || {},
+                sortedDragodindes,
+                timeDiff: {
+                    hours: hoursDiff,
+                    min: minDiff,
+                    sec: secondDiff
+                }
+            }) as dataObjType
+        }
         res.baseDate = baseDate;
-        res.ddFecond = ddFecond;
+        res.ddFecond = ddFecond || {};
         res.sortedDragodindes = sortedDragodindes;
         res.timeDiff = {
             hours: hoursDiff,
@@ -60,13 +115,14 @@ export const calculateTime = (_req: Request, res: Response, next: NextFunction):
     next();
 };
 
-export const makeDragodindesEndParams = (_req: Request, res: Response, next: NextFunction): void => {
-    if (res.dragodindes && res.baseDate && res.ddFecond && res.sortedDragodindes && res.timeDiff) {
+export const makeDragodindesEndParams = (_req: Request, res: Response, next: NextFunction, dataObj: dataObjType | false = false): void | sortedDragoType[] => {
+    if ((res.dragodindes && res.baseDate && res.ddFecond && res.sortedDragodindes && res.timeDiff) || dataObj) {
         let estimatedTime = 0;
         let prevDrago: sortedDragoType = {} as sortedDragoType;
         let isEnded = false;
-        const { sortedDragodindes, ddFecond, timeDiff } = res;
-        let { baseDate } = res;
+        const { sortedDragodindes, timeDiff } = dataObj ? dataObj : res;
+        const ddFecond: dragodindeType = dataObj ? dataObj.ddFecond as dragodindeType : res.ddFecond as dragodindeType;
+        let { baseDate } = dataObj ? dataObj : res;
         const goodDragodindes: sortedDragoType[] = [];
         sortedDragodindes.map((drago: dragodindeType, index: number) => {
             let goodTime = '';
@@ -97,6 +153,7 @@ export const makeDragodindesEndParams = (_req: Request, res: Response, next: Nex
             goodDragodindes.push(newDragoObj);
             prevDrago = newDragoObj;
         });
+        if (dataObj) return goodDragodindes;
         res.fecondator = goodDragodindes;
     }
     next();
@@ -118,7 +175,8 @@ const setDragoObject = (drago: dragodindeType, goodDate: number, goodTime: strin
         end: {
             time: goodTime,
             date: goodDate
-        }
+        },
+        sended: drago.sended
     };
 };
 
