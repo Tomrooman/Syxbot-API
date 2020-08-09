@@ -12,8 +12,7 @@ router.post('/',
 
 router.post('/fecondator',
     dragodindesMiddleware.getDragodindes,
-    dragodindesMiddleware.calculateTime,
-    dragodindesMiddleware.makeDragodindesEndParams,
+    dragodindesMiddleware.callMakeEndParams,
     (_req, res) => {
         res.send({
             dragodindes: res.fecondator || false,

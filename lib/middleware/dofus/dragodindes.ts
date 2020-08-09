@@ -40,7 +40,7 @@ export const verifySendedDragodindesNotif = async (_req: Request, res: Response,
         const notifArray: notifArrayType[] = [];
         infos.map((info: notifArrayType) => {
             const dataObj = calculateTime(_req, res, next, info.dragodindes) as dataObjType;
-            const dragodindesEndArray = makeDragodindesEndParams(_req, res, next, dataObj);
+            const dragodindesEndArray = makeDragodindesEndParams(dataObj);
             notifArray.push({
                 userId: info.userId,
                 dragodindes: dragodindesEndArray as sortedDragoType[]
@@ -76,9 +76,19 @@ export const getAndSetDragodindesToSend = async (_req: Request, res: Response, n
     next();
 };
 
-export const calculateTime = (_req: Request, res: Response, next: NextFunction, receivedDragodindes: boolean | dragodindeType[] = false): void | dataObjType => {
-    const dragodindes: any = receivedDragodindes || res.dragodindes;
-    if (dragodindes) {
+export const callMakeEndParams = (_req: Request, res: Response, next: NextFunction): void => {
+    if (res.dragodindes) {
+        const dataObj = calculateTime(_req, res, next, res.dragodindes as dragodindeType[]) as dataObjType;
+        const dragodindes = makeDragodindesEndParams(dataObj);
+        res.ddFecond = dataObj.ddFecond;
+        res.fecondator = dragodindes as sortedDragoType[];
+    }
+    next();
+};
+
+export const calculateTime = (_req: Request, res: Response, next: NextFunction, receivedDragodindes: dragodindeType[] = []): void | dataObjType => {
+    const dragodindes: any = receivedDragodindes;
+    if (dragodindes && dragodindes.length) {
         const now = Date.now();
         let ddFecond: dragodindeType | undefined = _.find(dragodindes, (drago: dragodindeType) => drago.last.status);
         const baseDate = ddFecond ? Number((ddFecond as dragodindeType).last.date) : now;
@@ -91,38 +101,28 @@ export const calculateTime = (_req: Request, res: Response, next: NextFunction, 
         let secondDiff = ddFecond ? Math.floor((now - baseDate) / 1000) : 0;
         secondDiff = ddFecond ? secondDiff - Math.floor(secondDiff / 60) * 60 : 0;
         secondDiff = 60 - secondDiff;
-        if (receivedDragodindes) {
-            return ({
-                baseDate,
-                ddFecond: ddFecond || {},
-                sortedDragodindes,
-                timeDiff: {
-                    hours: hoursDiff,
-                    min: minDiff,
-                    sec: secondDiff
-                }
-            }) as dataObjType
-        }
-        res.baseDate = baseDate;
-        res.ddFecond = ddFecond || {};
-        res.sortedDragodindes = sortedDragodindes;
-        res.timeDiff = {
-            hours: hoursDiff,
-            min: minDiff,
-            sec: secondDiff
-        }
+        return ({
+            baseDate,
+            ddFecond: ddFecond || {},
+            sortedDragodindes,
+            timeDiff: {
+                hours: hoursDiff,
+                min: minDiff,
+                sec: secondDiff
+            }
+        }) as dataObjType
     }
-    next();
+    return;
 };
 
-export const makeDragodindesEndParams = (_req: Request, res: Response, next: NextFunction, dataObj: dataObjType | false = false): void | sortedDragoType[] => {
-    if ((res.dragodindes && res.baseDate && res.ddFecond && res.sortedDragodindes && res.timeDiff) || dataObj) {
+export const makeDragodindesEndParams = (dataObj: dataObjType | false = false): void | sortedDragoType[] => {
+    if (dataObj) {
         let estimatedTime = 0;
         let prevDrago: sortedDragoType = {} as sortedDragoType;
         let isEnded = false;
-        const { sortedDragodindes, timeDiff } = dataObj ? dataObj : res;
-        const ddFecond: dragodindeType = dataObj ? dataObj.ddFecond as dragodindeType : res.ddFecond as dragodindeType;
-        let { baseDate } = dataObj ? dataObj : res;
+        const { sortedDragodindes, timeDiff } = dataObj;
+        const ddFecond: dragodindeType = dataObj.ddFecond as dragodindeType;
+        let { baseDate } = dataObj;
         const goodDragodindes: sortedDragoType[] = [];
         sortedDragodindes.map((drago: dragodindeType, index: number) => {
             let goodTime = '';
@@ -153,10 +153,9 @@ export const makeDragodindesEndParams = (_req: Request, res: Response, next: Nex
             goodDragodindes.push(newDragoObj);
             prevDrago = newDragoObj;
         });
-        if (dataObj) return goodDragodindes;
-        res.fecondator = goodDragodindes;
+        return goodDragodindes;
     }
-    next();
+    return;
 };
 
 const setDragoObject = (drago: dragodindeType, goodDate: number, goodTime: string): sortedDragoType => {
