@@ -20,6 +20,12 @@ router.post('/fecondator',
         });
     });
 
+router.post('/fecondator/automate',
+    dragodindesMiddleware.modifyAutomateDragodindesStatus,
+    (_req, res) => {
+        res.send(res.dragodindes || false);
+    });
+
 router.post('/notif/verify',
     dragodindesMiddleware.verifySendedDragodindesNotif,
     dragodindesMiddleware.getAndSetDragodindesToSend,

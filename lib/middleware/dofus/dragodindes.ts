@@ -103,7 +103,7 @@ export const calculateTime = (_req: Request, res: Response, next: NextFunction, 
         secondDiff = 60 - secondDiff;
         return ({
             baseDate,
-            ddFecond: ddFecond || {},
+            ddFecond: ddFecond,
             sortedDragodindes,
             timeDiff: {
                 hours: hoursDiff,
@@ -132,12 +132,12 @@ export const makeDragodindesEndParams = (dataObj: dataObjType | false = false): 
                 goodTime = estimatedTime === 0 ? 'Maintenant' : estimatedTime + 'H';
                 goodDate = Date.now() + (estimatedTime * 60 * 60 * 1000);
                 isEnded = true;
-            } else if (Object.keys(ddFecond).length && index === 0 && ddFecond.duration !== drago.duration && timeDiff.hours < ddFecond.duration - drago.duration) {
+            } else if (ddFecond && Object.keys(ddFecond).length && index === 0 && ddFecond.duration !== drago.duration && timeDiff.hours < ddFecond.duration - drago.duration) {
                 estimatedTime += ddFecond.duration - drago.duration;
                 const showedTime = setTimeRemaining(estimatedTime, timeDiff.hours, timeDiff.min, timeDiff.sec);
                 goodDate = baseDate + ((ddFecond.duration - drago.duration) * 60 * 60 * 1000);
                 goodTime = showedTime;
-            } else if ((!Object.keys(ddFecond).length && !prevDrago && index === 0) || (Object.keys(ddFecond).length && ddFecond.duration === drago.duration) || (Object.keys(ddFecond).length && timeDiff.hours >= ddFecond.duration - drago.duration)) {
+            } else if ((!ddFecond && !prevDrago && index === 0) || (ddFecond && ddFecond.duration === drago.duration) || (ddFecond && timeDiff.hours >= ddFecond.duration - drago.duration)) {
                 goodTime = 'Maintenant';
                 goodDate = Object.keys(ddFecond).length && timeDiff.hours >= ddFecond.duration - drago.duration ? baseDate + (timeDiff.hours * 1000 * 60 * 60) : baseDate;
                 baseDate = Object.keys(ddFecond).length && timeDiff.hours >= ddFecond.duration - drago.duration ? baseDate + (timeDiff.hours * 60 * 60 * 1000) : baseDate;
@@ -219,6 +219,17 @@ export const SetNotificationsByStatus = async (req: Request, res: Response, next
     next();
 };
 
+export const modifyAutomateDragodindesStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (req.body.userId && req.body.dragodindes) {
+        const allDofusInfos = await dofusInfosModel.get(req.body.userId);
+        if (allDofusInfos) {
+            const dragodindes = await dofusInfosModel.automateStatus(allDofusInfos, req.body.dragodindes);
+            res.dragodindes = dragodindes;
+        }
+    }
+    next();
+};
+
 export const CreateOrAddDragodindes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId && req.body.dragodindes) {
         let dragodindes: dragodindeType[] | false = false;
@@ -238,7 +249,7 @@ export const modifyDragodindesStatus = async (req: Request, res: Response, next:
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos && req.body.dragodindes.length >= 1) {
             let dragodindes: dragodindeType[] | false = false;
-            const action = req.params.action;
+            const action: string = req.params.action;
             if (req.params.type === 'last') {
                 dragodindes = await dofusInfosModel.modifyLastDragodindes(action, allDofusInfos, req.body.dragodindes);
             }

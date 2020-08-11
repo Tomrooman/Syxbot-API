@@ -1,19 +1,15 @@
-FROM node:12.18.2
+FROM node:12.18.3-alpine3.12
+
+LABEL author="Tom Rooman"
 
 # Create Directory for the Container
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
-# Only copy the package.json file to work directory
-COPY package.json .
+# Copy all files to work directory
+COPY . .
 
 # Install all Packages
 RUN yarn
-
-# Copy all other source code to work directory
-ADD . /usr/src/app
-
-# TypeScript
-# RUN npm run tsc
 
 # Start
 CMD [ "yarn", "start-log" ]

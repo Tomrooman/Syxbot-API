@@ -15,6 +15,8 @@ dist
 id_rsa
 id_rsa.pub
 private.key
+cert
+data
 
 .yarn/*
 !.yarn/releases

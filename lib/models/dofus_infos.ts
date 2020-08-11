@@ -195,19 +195,52 @@ dofusInfosSchema.statics.setNotificationsByStatus = async (allDofusInfos: dofusI
 dofusInfosSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
     if (action && allDofusInfos && dragodindes && dragodindes.length) {
         allDofusInfos.dragodindes.map(drago => {
-            if (drago.last.status || drago.name === dragodindes[0].name) {
+            if (action === 'update') {
+                if (drago.name === dragodindes[0].name) {
+                    drago.last = {
+                        status: true,
+                        date: Date.now()
+                    };
+                    drago.used = false;
+                    drago.sended = true;
+                } else {
+                    drago.last = { status: false };
+                    drago.sended = false;
+                }
+            }
+            else if (action === 'remove') {
+                if (drago.name === dragodindes[0].name)
+                    drago.last = {
+                        status: false
+                    };
                 drago.sended = false;
             }
-            if (action === 'update ' && drago.name === dragodindes[0].name) {
+        });
+        allDofusInfos.markModified('dragodindes');
+        await allDofusInfos.save();
+        return allDofusInfos.dragodindes;
+    }
+    return false;
+};
+
+dofusInfosSchema.statics.automateStatus = async (allDofusInfos: dofusInfosType, dragodindes: { last: dragodindeType[], used: dragodindeType[] }): Promise<dragodindeType[] | false> => {
+    if (allDofusInfos && dragodindes) {
+        allDofusInfos.dragodindes.map(drago => {
+            const isLast = _.find(dragodindes.last, (o: dragodindeType) => drago.name === o.name);
+            const isUsed = _.find(dragodindes.used, (o: dragodindeType) => drago.name === o.name);
+            if (isLast) {
                 drago.last = {
                     status: true,
                     date: Date.now()
                 };
                 drago.used = false;
-            } else if ((action === 'update' && drago.name !== dragodindes[0].name) || (action === 'remove' && drago.name === dragodindes[0].name)) {
+                drago.sended = true;
+            } else if (isUsed) {
+                drago.used = true;
                 drago.last = {
                     status: false
                 };
+                drago.sended = true;
             }
         });
         allDofusInfos.markModified('dragodindes');
@@ -226,11 +259,12 @@ dofusInfosSchema.statics.modifyUsedDragodindes = async (action: string, allDofus
                     drago.last = {
                         status: false
                     };
+                    drago.sended = true;
                 }
                 else if (action === 'remove') {
                     drago.used = false;
+                    drago.sended = false;
                 }
-                drago.sended = false;
             }
         });
         allDofusInfos.markModified('dragodindes');

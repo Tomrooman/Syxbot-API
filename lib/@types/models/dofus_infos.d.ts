@@ -83,6 +83,8 @@ export interface userStatic extends Model<dofusInfosType> {
 
     setNotificationsByStatus(allDofusInfos: dofusInfosType, status: string): Promise<dofusInfosType> | false;
 
+    automateStatus(allDofusInfos: dofusInfosType, dragodindes: { last: dragodindeType[], used: dragodindeType[] }): Promise<dragodindeType[]> | false;
+
     modifyLastDragodindes(action: string, allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;
 
     modifyUsedDragodindes(action: string, allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;

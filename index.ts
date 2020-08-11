@@ -64,7 +64,9 @@ console.log('----- ' + dateFormat(Date.now(), 'HH:MM:ss dd/mm/yyyy') + ' -----')
 if (config.WHAT === 'DEV') console.log(chalk.bgRgb(25, 108, 207)('         CONNECTION         '));
 console.log('Connecting to database ...');
 
-mongoose.connect('mongodb://db:27017/syxbot-database', {
+const mongoURL = process.env.APP_DB_HOST ? process.env.APP_DB_HOST + '/syxbot-database' : 'localhost/syxbot-database';
+
+mongoose.connect(`mongodb://${mongoURL}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: false,
@@ -74,8 +76,8 @@ mongoose.connection.once('open', (): void => {
     console.log(' - Connected to database !');
     if (config.WHAT === 'DEV') console.log(chalk.bgRgb(60, 121, 0)(`\n         CONNECTED          `));
     https.createServer({
-        key: fs.readFileSync('/etc/letsencrypt/live/syxbot.com/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/syxbot.com/cert.pem')
+        key: fs.readFileSync('./cert/privkey.pem'),
+        cert: fs.readFileSync('./cert/cert.pem')
     }, app)
         .listen(9000, (): void => {
             if (config.WHAT === 'DEV') console.log('      Port => 9000');
