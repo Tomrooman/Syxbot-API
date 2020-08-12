@@ -41,10 +41,12 @@ export const verifySendedDragodindesNotif = async (_req: Request, res: Response,
         infos.map((info: notifArrayType) => {
             const dataObj = calculateTime(_req, res, next, info.dragodindes) as dataObjType;
             const dragodindesEndArray = makeDragodindesEndParams(dataObj);
-            notifArray.push({
-                userId: info.userId,
-                dragodindes: dragodindesEndArray as sortedDragoType[]
-            });
+            if (dataObj.ddFecond) {
+                notifArray.push({
+                    userId: info.userId,
+                    dragodindes: dragodindesEndArray as sortedDragoType[]
+                });
+            }
         });
         res.dragodindes = notifArray;
     }
