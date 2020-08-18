@@ -10,7 +10,7 @@ import dateFormat from 'dateformat';
 import contactRouter from './lib/routes/contact';
 import settingsRouter from './lib/routes/settings';
 import tokenRouter from './lib/routes/token';
-import notesRouter from './lib/routes/dofus/notes';
+import enclosRouter from './lib/routes/dofus/enclos';
 import dragodindesRouter from './lib/routes/dofus/dragodindes';
 import { websiteAuthVerif, discordBotAuthVerif } from './lib/middleware/security';
 import config from './config.json';
@@ -33,10 +33,10 @@ app.use(
 app.use('/docs', contactRouter);
 app.use('/settings', settingsRouter);
 app.use('/token', tokenRouter);
-app.use('/dofus/notes', notesRouter);
+app.use('/dofus/enclos', enclosRouter);
 app.use('/dofus/dragodindes', dragodindesRouter);
 
-app.post('/bot/auth', (req: Request, res: Response) => {
+app.post('/bot/auth', (_req: Request, res: Response) => {
     if (!discord_bot_connection) {
         discord_bot_connection = true;
         const signature = jwt.sign({ type: 'bot' }, config.security.secret);
@@ -46,7 +46,7 @@ app.post('/bot/auth', (req: Request, res: Response) => {
     }
 });
 
-app.post('/bot/auth/close', (req: Request, res: Response) => {
+app.post('/bot/auth/close', (_req: Request, res: Response) => {
     discord_bot_connection = false;
     res.sendStatus(200);
 });
@@ -64,7 +64,7 @@ console.log('----- ' + dateFormat(Date.now(), 'HH:MM:ss dd/mm/yyyy') + ' -----')
 if (config.WHAT === 'DEV') console.log(chalk.bgRgb(25, 108, 207)('         CONNECTION         '));
 console.log('Connecting to database ...');
 
-mongoose.connect(`mongodb://localhost/syxbot-database`, {
+mongoose.connect(`mongodb://${config.mongo.user}:${config.mongo.password}@localhost/syxbot-database`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: false,

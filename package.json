@@ -26,7 +26,7 @@
     "status": "yarn pm2 status",
     "clean": "rm -rf dist",
     "stop:mongo": "docker stop mongoDB && docker container rm mongoDB",
-    "start:mongo": "docker run -p 27017:27017 -v /data/db:/data/db -d --restart=always --name mongoDB mongo:latest",
+    "start:mongo": "docker run -p 27017:27017 -v /data/db:/data/db -d --restart=always --name mongoDB mongo mongod --auth",
     "transpile": "yarn tsc && rm -rf dist/test",
     "remove:containers": "docker rm $(docker ps -a -q)",
     "remove:untagged": "docker rmi -f $(docker images | grep '<none>')",

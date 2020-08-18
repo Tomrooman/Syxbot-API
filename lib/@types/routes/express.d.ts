@@ -1,4 +1,4 @@
-import { dofusInfosType, dragodindeType, noteType, sortedDragoType, notifArrayType } from "../models/dofus_infos";
+import { dofusInfosType, dragodindeType, enclosType, sortedDragoType, notifArrayType } from "../models/dofus_infos";
 import { settingsType } from "../models/settings";
 import { tokenType, discordData } from "../models/token";
 
@@ -19,7 +19,7 @@ declare global {
             };
             notif: boolean | undefined,
             mail: boolean;
-            notes: noteType[] | false;
+            enclos: enclosType[] | false;
             settings: settingsType | settingsType[] | boolean;
             token: tokenType | boolean;
             discordData: string | false;

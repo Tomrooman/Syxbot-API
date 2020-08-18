@@ -2,12 +2,12 @@ import { Document, Model } from 'mongoose';
 
 export interface dofusInfosType extends Document {
     userId: string;
-    notes: noteType[];
+    enclos: enclosType[];
     dragodindes: dragodindeType[];
     notif: boolean;
 };
 
-export interface noteType {
+export interface enclosType {
     title: string;
     content: string;
 };
@@ -89,11 +89,11 @@ export interface userStatic extends Model<dofusInfosType> {
 
     modifyUsedDragodindes(action: string, allDofusInfos: dofusInfosType, dragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;
 
-    addNotes(allDofusInfos: dofusInfosType, title: string, content: string): Promise<noteType[]> | false;
+    addEnclos(allDofusInfos: dofusInfosType, title: string, content: string): Promise<enclosType[]> | false;
 
-    createNotes(userId: string, title: string, content: string): Promise<noteType[]> | false;
+    createEnclos(userId: string, title: string, content: string): Promise<enclosType[]> | false;
 
-    updateNotes(allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string): Promise<noteType[]> | false;
+    updateEnclos(allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string): Promise<enclosType[]> | false;
 
-    removeNotes(allDofusInfos: dofusInfosType, title: string, content: string): Promise<noteType[]> | false;
+    removeEnclos(allDofusInfos: dofusInfosType, title: string, content: string): Promise<enclosType[]> | false;
 };

@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 import _ from 'lodash';
-import { dofusInfosType, dragodindeType, userStatic, noteType, notifArrayType, userNotifInfos, sortedDragoType } from '../@types/models/dofus_infos';
+import { dofusInfosType, dragodindeType, userStatic, enclosType, notifArrayType, userNotifInfos, sortedDragoType } from '../@types/models/dofus_infos';
 
 const Schema = mongoose.Schema;
 
 const dofusInfosSchema = new Schema({
     userId: String,
-    notes: [{
+    enclos: [{
         title: String,
         content: String
     }],
@@ -125,7 +125,7 @@ dofusInfosSchema.statics.createNotificationStatus = async (userId: string, statu
     if (userId && status) {
         const dofusObj = {
             userId: userId,
-            notes: [],
+            enclos: [],
             dragodindes: [],
             notif: status === 'on' ? true : false
         };
@@ -153,7 +153,7 @@ dofusInfosSchema.statics.createDragodindes = async (userId: string, addedDragodi
         const dofusObj = {
             userId: userId,
             dragodindes: [] as dragodindeType[],
-            notes: []
+            enclos: []
         };
         addedDragodindes.map((drago: dragodindeType) => {
             dofusObj.dragodindes.push(drago);
@@ -274,58 +274,58 @@ dofusInfosSchema.statics.modifyUsedDragodindes = async (action: string, allDofus
     return false;
 };
 
-dofusInfosSchema.statics.addNotes = async (allDofusInfos: dofusInfosType, title: string, content: string): Promise<noteType[] | false> => {
+dofusInfosSchema.statics.addEnclos = async (allDofusInfos: dofusInfosType, title: string, content: string): Promise<enclosType[] | false> => {
     if (allDofusInfos && title && content) {
-        allDofusInfos.notes.push({ title: title, content: content });
-        allDofusInfos.markModified('notes');
+        allDofusInfos.enclos.push({ title: title, content: content });
+        allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
-        return allDofusInfos.notes;
+        return allDofusInfos.enclos;
     }
     return false;
 };
 
-dofusInfosSchema.statics.createNotes = async (userId: string, title: string, content: string): Promise<noteType[] | false> => {
+dofusInfosSchema.statics.createEnclos = async (userId: string, title: string, content: string): Promise<enclosType[] | false> => {
     if (userId && title && content) {
         const dofusObj = {
             userId: userId,
             dragodindes: [],
-            notes: [{
+            enclos: [{
                 title: title,
                 content: content
             }]
         };
         const Dofus = mongoose.model<dofusInfosType>('Dofus');
         const dofusSaved = await new Dofus(dofusObj).save();
-        return dofusSaved.notes;
+        return dofusSaved.enclos;
     }
     return false;
 };
 
-dofusInfosSchema.statics.updateNotes = async (allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string): Promise<noteType[] | false> => {
+dofusInfosSchema.statics.updateEnclos = async (allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string): Promise<enclosType[] | false> => {
     if (allDofusInfos && title && oldContent && newContent) {
-        allDofusInfos.notes.map(note => {
-            if (note.title === title && note.content === oldContent) {
-                note.content = newContent;
+        allDofusInfos.enclos.map(enclo => {
+            if (enclo.title === title && enclo.content === oldContent) {
+                enclo.content = newContent;
             }
         });
-        allDofusInfos.markModified('notes');
+        allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
-        return allDofusInfos.notes;
+        return allDofusInfos.enclos;
     }
     return false;
 };
 
-dofusInfosSchema.statics.removeNotes = async (allDofusInfos: dofusInfosType, title: string, content: string): Promise<noteType[] | false> => {
+dofusInfosSchema.statics.removeEnclos = async (allDofusInfos: dofusInfosType, title: string, content: string): Promise<enclosType[] | false> => {
     if (allDofusInfos && title && content) {
-        allDofusInfos.notes.map((n, index) => {
+        allDofusInfos.enclos.map((n, index) => {
             if (n.title === title && n.content === content) {
-                delete allDofusInfos.notes[index];
+                delete allDofusInfos.enclos[index];
             }
         });
-        allDofusInfos.notes = _.compact(allDofusInfos.notes);
-        allDofusInfos.markModified('notes');
+        allDofusInfos.enclos = _.compact(allDofusInfos.enclos);
+        allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
-        return allDofusInfos.notes;
+        return allDofusInfos.enclos;
     }
     return false;
 };
