@@ -14,7 +14,7 @@
     "push:container": "docker push syxbot.com:5000/syxbot-api",
     "deploy:container": "yarn build:container && yarn tag:container && yarn push:container",
     "server": "yarn pm2 start dist/index.js --name syxbot_prod_api",
-    "build:container": "yarn cp:ssl:files && yarn cp:master:config && docker build -t syxbot-api . && yarn cp:dev:config",
+    "build:container": "docker image prune -f && yarn cp:ssl:files && yarn cp:master:config && docker build -t syxbot-api . && yarn cp:dev:config",
     "cp:master:config": "rm config.json && cp 'private/config - master.json' ./ && mv 'config - master.json' config.json",
     "cp:dev:config": "rm config.json && cp 'private/config - dev.json' ./ && mv 'config - dev.json' config.json",
     "dev": "yarn cp:ssl:files && yarn ts-node-dev --respawn --transpile-only --clear index.ts",
