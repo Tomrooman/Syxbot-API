@@ -114,7 +114,7 @@ dofusInfosSchema.statics.setDragodindesToSended = async (notifArray: notifArrayT
             });
             return true;
         } catch (e) {
-            console.log('Error during dragodindes.sended modifications : ', e.message);
+            console.log('Error while sending dragodindes.sended modifications : ', e.message);
             return false;
         }
     }

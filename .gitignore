@@ -17,6 +17,7 @@ id_rsa.pub
 private.key
 cert
 data
+UPDATER.js
 
 .yarn/*
 !.yarn/releases
