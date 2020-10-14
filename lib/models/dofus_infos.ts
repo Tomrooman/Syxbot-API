@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import _ from 'lodash';
-import { dofusInfosType, dragodindeType, userStatic, enclosType, notifArrayType, userNotifInfos, sortedDragoType } from '../@types/models/dofus_infos';
+import {
+    dofusInfosType, dragodindeType, userStatic, enclosType,
+    notifArrayType, userNotifInfos, sortedDragoType
+} from '../@types/models/dofus_infos';
 
 const Schema = mongoose.Schema;
 
@@ -55,10 +58,10 @@ dofusInfosSchema.statics.getNotifications = async (): Promise<notifArrayType[] |
                     });
                 }
             }
-        })
+        });
         return dragodindes.length ? dragodindes : false;
     }
-    return false
+    return false;
 };
 
 dofusInfosSchema.statics.getAllDragodindesNotifInfos = async (): Promise<userNotifInfos[] | false> => {
@@ -96,7 +99,7 @@ dofusInfosSchema.statics.setDragodindesToSended = async (notifArray: notifArrayT
             notifArray.map(async (array: notifArrayType) => {
                 const dragoName = (array.dragodindes as sortedDragoType[]).map((drago: sortedDragoType) => {
                     if (drago.end.time === 'Maintenant') {
-                        return drago.name
+                        return drago.name;
                     }
                 });
                 if (dragoName && dragoName.length) {
@@ -113,7 +116,8 @@ dofusInfosSchema.statics.setDragodindesToSended = async (notifArray: notifArrayT
                 }
             });
             return true;
-        } catch (e) {
+        }
+        catch (e) {
             console.log('Error while sending dragodindes.sended modifications : ', e.message);
             return false;
         }
@@ -203,17 +207,19 @@ dofusInfosSchema.statics.modifyLastDragodindes = async (action: string, allDofus
                     };
                     drago.used = false;
                     drago.sended = true;
-                } else {
+                }
+                else {
                     drago.last = { status: false };
-                    drago.sended = false;
                 }
             }
             else if (action === 'remove') {
-                if (drago.name === dragodindes[0].name)
+                if (drago.name === dragodindes[0].name) {
                     drago.last = {
                         status: false
                     };
-                drago.sended = false;
+                    drago.used = false;
+                    drago.sended = false;
+                }
             }
         });
         allDofusInfos.markModified('dragodindes');
@@ -235,7 +241,8 @@ dofusInfosSchema.statics.automateStatus = async (allDofusInfos: dofusInfosType, 
                 };
                 drago.used = false;
                 drago.sended = true;
-            } else if (isUsed) {
+            }
+            else if (isUsed) {
                 drago.used = true;
                 drago.last = {
                     status: false

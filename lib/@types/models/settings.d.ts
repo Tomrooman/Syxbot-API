@@ -1,7 +1,7 @@
 import { Document, Model } from 'mongoose';
 
 export interface settingsType extends Document {
-    guildId: String;
+    guildId: string;
     notif: notifType;
     audio: audioType;
     createdAt?: {
@@ -15,10 +15,10 @@ export interface settingsType extends Document {
 }
 
 interface notifType {
-    current: String;
-    added: String;
-    removed: String;
-    radio: String;
+    current: string;
+    added: string;
+    removed: string;
+    radio: string;
 }
 
 interface audioType {

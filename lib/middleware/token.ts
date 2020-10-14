@@ -4,7 +4,7 @@ import tokenModel from '../models/token';
 import Config from '../../config.json';
 import queryString from 'querystring';
 import Axios from 'axios';
-import { tokenType, discordMe, apiToken } from '../@types/models/token';
+import { tokenType, discordMeType, apiTokenType } from '../@types/models/token';
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
@@ -26,8 +26,8 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
     const refresh_token = req.body.refresh_token;
     const scope = req.body.scope;
     const token_type = req.body.token_type;
-    const jwt = req.body.jwt;
-    if (userId && access_token && refresh_token && scope && token_type && jwt) {
+    const body_jwt = req.body.jwt;
+    if (userId && access_token && refresh_token && scope && token_type && body_jwt) {
         let token: tokenType | false = false;
         const tokenObj = {
             userId: userId,
@@ -86,7 +86,7 @@ export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next
             'grant_type': 'refresh_token',
             'redirect_uri': decodeURIComponent(Config.OAuth.redirect_url),
             'scope': Config.OAuth.scope,
-            'refresh_token': res.token.refresh_token as string
+            'refresh_token': (res.token as tokenType).refresh_token as string
         });
         res.discordData = data;
     }
@@ -96,13 +96,13 @@ export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next
 export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (res.discordData) {
         try {
-            const apiToken = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {
+            const apiToken: apiTokenType = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             });
             if (apiToken) {
-                const discordMe = await Axios.get('https://discord.com/api/users/@me', {
+                const discordMe: discordMeType = await Axios.get('https://discord.com/api/users/@me', {
                     headers: {
                         authorization: `${apiToken.data.token_type} ${apiToken.data.access_token}`
                     }
@@ -119,14 +119,15 @@ export const getTokenDiscordAPI = async (_req: Request, res: Response, next: Nex
                     };
                 }
             }
-        } catch (e) {
+        }
+        catch (e) {
             console.log('Error call discord API');
         }
     }
     next();
 };
 
-const setCookies = (res: Response, discordMe: discordMe, apiToken: apiToken, signature: string): void => {
+const setCookies = (res: Response, discordMe: discordMeType, apiToken: apiTokenType, signature: string): void => {
     const oneDay = 1000 * 60 * 60 * 24;
     const expireDate = new Date(Date.now() + (oneDay * 10));
     const options = {
@@ -134,12 +135,12 @@ const setCookies = (res: Response, discordMe: discordMe, apiToken: apiToken, sig
         expires: expireDate,
         secure: true,
         sameSite: true
-    }
+    };
     res.cookie('syxbot_infos', {
         jwt: signature
     }, {
         ...options,
-        httpOnly: true,
+        httpOnly: true
     });
     res.cookie('syxbot', {
         username: discordMe.data.username,

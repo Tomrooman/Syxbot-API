@@ -62,14 +62,14 @@ export const getAndSetDragodindesToSend = async (_req: Request, res: Response, n
                 if (drago.end.time === 'Maintenant' && !drago.sended) {
                     dragoToSend.push(drago);
                 }
-            })
+            });
             if (dragoToSend.length) {
                 notifArrayToSend.push({
                     userId: infos.userId,
                     dragodindes: dragoToSend
                 });
             }
-        })
+        });
         const sendedStatus = await dofusInfosModel.setDragodindesToSended(notifArrayToSend as notifArrayType[]);
         if (sendedStatus) {
             res.notifArray = notifArrayToSend;
@@ -92,7 +92,7 @@ export const calculateTime = (_req: Request, res: Response, next: NextFunction, 
     const dragodindes: any = receivedDragodindes;
     if (dragodindes && dragodindes.length) {
         const now = Date.now();
-        let ddFecond: dragodindeType | undefined = _.find(dragodindes, (drago: dragodindeType) => drago.last.status);
+        const ddFecond: dragodindeType | undefined = _.find(dragodindes, (drago: dragodindeType) => drago.last.status);
         const baseDate = ddFecond ? Number((ddFecond as dragodindeType).last.date) : now;
         const filteredDrago = (dragodindes as dragodindeType[]).filter((d) => !d.last.status && !d.used);
         const sortedDragodindes = filteredDrago.length ? _.reverse(_.sortBy(filteredDrago, 'duration', 'asc')) : [];
@@ -112,11 +112,13 @@ export const calculateTime = (_req: Request, res: Response, next: NextFunction, 
                 min: minDiff,
                 sec: secondDiff
             }
-        }) as dataObjType
+        }) as dataObjType;
     }
     return;
 };
 
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-len */
 export const makeDragodindesEndParams = (dataObj: dataObjType | false = false): void | sortedDragoType[] => {
     if (dataObj) {
         let estimatedTime = 0;
@@ -134,16 +136,19 @@ export const makeDragodindesEndParams = (dataObj: dataObjType | false = false): 
                 goodTime = estimatedTime === 0 ? 'Maintenant' : estimatedTime + 'H';
                 goodDate = Date.now() + (estimatedTime * 60 * 60 * 1000);
                 isEnded = true;
-            } else if (ddFecond && Object.keys(ddFecond).length && index === 0 && ddFecond.duration !== drago.duration && timeDiff.hours < ddFecond.duration - drago.duration) {
+            }
+            else if (ddFecond && Object.keys(ddFecond).length && index === 0 && ddFecond.duration !== drago.duration && timeDiff.hours < ddFecond.duration - drago.duration) {
                 estimatedTime += ddFecond.duration - drago.duration;
                 const showedTime = setTimeRemaining(estimatedTime, timeDiff.hours, timeDiff.min, timeDiff.sec);
                 goodDate = baseDate + ((ddFecond.duration - drago.duration) * 60 * 60 * 1000);
                 goodTime = showedTime;
-            } else if ((!ddFecond && !prevDrago && index === 0) || (ddFecond && ddFecond.duration === drago.duration) || (ddFecond && timeDiff.hours >= ddFecond.duration - drago.duration)) {
+            }
+            else if ((!ddFecond && !prevDrago && index === 0) || (ddFecond && ddFecond.duration === drago.duration) || (ddFecond && timeDiff.hours >= ddFecond.duration - drago.duration)) {
                 goodTime = 'Maintenant';
                 goodDate = Object.keys(ddFecond).length && timeDiff.hours >= ddFecond.duration - drago.duration ? baseDate + (timeDiff.hours * 1000 * 60 * 60) : baseDate;
                 baseDate = Object.keys(ddFecond).length && timeDiff.hours >= ddFecond.duration - drago.duration ? baseDate + (timeDiff.hours * 60 * 60 * 1000) : baseDate;
-            } else {
+            }
+            else {
                 if (Object.keys(prevDrago).length && prevDrago.duration !== drago.duration) {
                     estimatedTime += prevDrago.duration - drago.duration;
                 }
@@ -160,8 +165,10 @@ export const makeDragodindesEndParams = (dataObj: dataObjType | false = false): 
     return;
 };
 
+/* eslint-enable max-lines-per-function */
+/* eslint-enable max-len */
 const setDragoObject = (drago: dragodindeType, goodDate: number, goodTime: string): sortedDragoType => {
-    let lastObj: { status: boolean, date?: number } = {
+    const lastObj: { status: boolean, date?: number } = {
         status: drago.last.status
     };
     if (drago.last.status) {
@@ -188,17 +195,20 @@ const setTimeRemaining = (duration: number, hours: number, minutes: number, seco
     minutes = seconds > 0 ? minutes - 1 : minutes;
     if (seconds === 60) {
         minutes += 1;
-    } else if (minutes > 0 && seconds === 0) {
+    }
+    else if (minutes > 0 && seconds === 0) {
         minutes -= 1;
     }
     const stringMinutes = (minutes > 0 && minutes < 10 ? '0' + minutes + 'M' : minutes + 'M');
     const stringSeconds = (seconds > 0 && seconds < 10 ? '0' + seconds + 'S' : seconds + 'S');
     if (seconds !== 60 && minutes !== 60) {
         returnedStr = goodHours > 0 ? goodHours + 'H' + stringMinutes + stringSeconds : stringMinutes + stringSeconds;
-    } else if (seconds === 60 && minutes === 60) {
+    }
+    else if (seconds === 60 && minutes === 60) {
         goodHours = goodHours <= 0 ? '1H' : goodHours + 1;
         returnedStr = goodHours === '1H' ? goodHours : goodHours + 'H';
-    } else if (seconds === 60 && minutes !== 60) {
+    }
+    else if (seconds === 60 && minutes !== 60) {
         returnedStr = goodHours <= 0 ? stringMinutes + '00S' : goodHours + 'H' + stringMinutes + '00S';
     }
     return returnedStr;
@@ -238,7 +248,8 @@ export const CreateOrAddDragodindes = async (req: Request, res: Response, next: 
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
         if (allDofusInfos) {
             dragodindes = await dofusInfosModel.addDragodindes(allDofusInfos, req.body.dragodindes);
-        } else {
+        }
+        else {
             dragodindes = await dofusInfosModel.createDragodindes(req.body.userId, req.body.dragodindes);
         }
         res.dragodindes = dragodindes;

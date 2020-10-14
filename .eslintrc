@@ -60,7 +60,8 @@
         "max-len": [
             "error",
             {
-                "code": 125
+                "code": 125,
+                "ignorePattern": "^(\\w[a-zA-Z]+(.| ))+= [a-zA-Z()\\[\\]=_:,<>|{ ]*"
             }
         ],
         "max-nested-callbacks": [

@@ -15,7 +15,7 @@ export const websiteAuthVerif = async (req: Request, res: Response, next: NextFu
             if (syxbot && syxbotInfos) {
                 const userId = verifyJsonToken(syxbotInfos.jwt);
                 if (userId) {
-                    req.body.userId = userId
+                    req.body.userId = userId;
                     return next();
                 }
                 return res.status(401).json('Invalid token');
@@ -35,7 +35,8 @@ const verifyJsonToken = (signature: string): boolean | string => {
             return verify.userId;
         }
         return false;
-    } catch (e) {
+    }
+    catch (e) {
         console.log('verify json token website failed : ', e.message);
         return false;
     }
@@ -51,7 +52,8 @@ export const discordBotAuthVerif = (req: Request, res: Response, next: NextFunct
                 try {
                     jwt.verify(req.body.jwt, config.security.secret);
                     return next();
-                } catch (e) {
+                }
+                catch (e) {
                     console.log('Error while verifyng jwt token : ', e.message);
                     return res.status(401).json('Invalid token');
                 }

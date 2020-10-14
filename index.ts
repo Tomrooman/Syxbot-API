@@ -41,7 +41,8 @@ app.post('/bot/auth', (_req: Request, res: Response) => {
         discord_bot_connection = true;
         const signature = jwt.sign({ type: 'bot' }, config.security.secret);
         res.send({ jwt: signature });
-    } else {
+    }
+    else {
         res.status(401).json('Unhautorized call !');
     }
 });
@@ -72,13 +73,15 @@ mongoose.connect(`mongodb://${config.mongo.user}:${config.mongo.password}@localh
 });
 mongoose.connection.once('open', (): void => {
     console.log(' - Connected to database !');
-    if (config.WHAT === 'DEV') console.log(chalk.bgRgb(60, 121, 0)(`\n         CONNECTED          `));
+    if (config.WHAT === 'DEV') console.log(chalk.bgRgb(60, 121, 0)('\n         CONNECTED          '));
     https.createServer({
         key: fs.readFileSync('./cert/privkey.pem'),
         cert: fs.readFileSync('./cert/cert.pem')
     }, app)
         .listen(9000, (): void => {
-            if (config.WHAT === 'DEV') console.log('      Port => 9000');
+            if (config.WHAT === 'DEV') {
+                console.log('      Port => 9000');
+            }
             else if (config.WHAT === 'MASTER') {
                 console.log(' ');
                 console.log('Port => 9000');

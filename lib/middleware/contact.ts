@@ -22,13 +22,14 @@ export const sendMail = async (req: Request, res: Response, next: NextFunction):
             subject: req.body.object,
             html: '<b>Email de la personne : </b>' + req.body.mail + '</br></br>' + message
         };
-        transporter.sendMail((mailOptions: any, error: Error) => {
-            if (error) {
-                console.log('Error while sending mail : ', error);
+        transporter.sendMail(mailOptions, (err: Error, info: { envelope: string, messageId: string }) => {
+            if (err) {
+                console.log('Error while sending mail : ', err);
             }
             else {
                 res.mail = true;
             }
+            console.log('Info : ', info);
             next();
         });
     }

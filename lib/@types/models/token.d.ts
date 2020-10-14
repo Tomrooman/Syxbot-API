@@ -1,13 +1,22 @@
 import { Document, Model } from 'mongoose';
 
 export interface tokenType extends Document {
-    userId: String;
-    access_token: String;
-    token_type: String;
+    userId: string;
+    access_token: string;
+    token_type: string;
     expire_at?: number;
-    refresh_token: String;
-    scope: String;
-};
+    refresh_token: string;
+    scope: string;
+}
+
+export interface tokenObjResponse {
+    token_type: string;
+    expires_in: number;
+    access_token: string;
+    expire_at: number;
+    type: string;
+    jwt: string;
+}
 
 export interface tokenObjType {
     userId: string;
@@ -15,32 +24,23 @@ export interface tokenObjType {
     token_type: string;
     refresh_token: string;
     scope: string;
-};
+}
 
-export interface discordMe {
+export interface discordMeType {
     data: {
         id: string;
         username: string;
         discriminator: string;
     };
-};
+}
 
-export interface discordData {
-    client_id: string;
-    client_secret: string;
-    grant_type: string;
-    redirect_uri: string;
-    scope: string;
-    code?: string;
-    refresh_token?: string
-};
-
-export interface apiToken {
+export interface apiTokenType {
     data: {
         token_type: string;
         expires_in: number;
+        access_token: string;
     };
-};
+}
 
 export interface userStatic extends Model<tokenType> {
     get(userId: string): Promise<tokenType> | false;
@@ -50,4 +50,4 @@ export interface userStatic extends Model<tokenType> {
     updateToken(tokenInfos: tokenType, tokenObj: tokenObjType, expire_at: number): Promise<tokenType> | false;
 
     deleteToken(userId: string): Promise<boolean>;
-};
+}

@@ -5,33 +5,33 @@ export interface dofusInfosType extends Document {
     enclos: enclosType[];
     dragodindes: dragodindeType[];
     notif: boolean;
-};
+}
 
 export interface enclosType {
     title: string;
     content: string;
-};
+}
 
 export interface dataObjType {
     baseDate: number;
-    ddFecond: dragodindeType | {};
+    ddFecond: dragodindeType | Partial<dragodindeType>;
     sortedDragodindes: dragodindeType[];
     timeDiff: {
         hours: number;
         min: number;
         sec: number;
     };
-};
+}
 
 export interface notifArrayType {
     userId: string;
     dragodindes: dragodindesType[] | sortedDragoType[];
-};
+}
 
 export interface userNotifInfos {
     userId: string;
     notif: boolean;
-};
+}
 
 export interface dragodindeType {
     name: string;
@@ -43,7 +43,7 @@ export interface dragodindeType {
         date?: number;
     };
     sended: boolean;
-};
+}
 
 export interface sortedDragoType {
     name: string;
@@ -60,8 +60,9 @@ export interface sortedDragoType {
         date: number;
     };
     sended: boolean;
-};
+}
 
+/* eslint-disable max-len */
 export interface userStatic extends Model<dofusInfosType> {
     get(userId: string): Promise<dofusInfosType> | false;
 
@@ -96,4 +97,4 @@ export interface userStatic extends Model<dofusInfosType> {
     updateEnclos(allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string): Promise<enclosType[]> | false;
 
     removeEnclos(allDofusInfos: dofusInfosType, title: string, content: string): Promise<enclosType[]> | false;
-};
+}

@@ -1,13 +1,13 @@
-import { dofusInfosType, dragodindeType, enclosType, sortedDragoType, notifArrayType } from "../models/dofus_infos";
-import { settingsType } from "../models/settings";
-import { tokenType, discordData } from "../models/token";
+import { dofusInfosType, dragodindeType, enclosType, sortedDragoType, notifArrayType } from '../models/dofus_infos';
+import { settingsType } from '../models/settings';
+import { tokenType, tokenObjResponse } from '../models/token';
 
 declare global {
     namespace Express {
         interface Response {
             dragodindes: dofusInfosType | dragodindeType | dragodindeType[] | notifArrayType[] | false;
             fecondator: sortedDragoType[] | false;
-            ddFecond: dragodindeType | {};
+            ddFecond: dragodindeType | Partial<dragodindeType>;
             baseDate: number;
             dragodindesNotif: dofusInfosType[] | false;
             notifArray: notifArrayType[] | false;
@@ -21,7 +21,7 @@ declare global {
             mail: boolean;
             enclos: enclosType[] | false;
             settings: settingsType | settingsType[] | boolean;
-            token: tokenType | boolean;
+            token: tokenType | tokenObjResponse | boolean;
             discordData: string | false;
             allDofusInfos: dofusInfosType | false;
         }
