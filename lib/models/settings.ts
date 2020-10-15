@@ -5,15 +5,33 @@ import { settingsType, userStatic, audioType, notifType } from '../@types/models
 const Schema = mongoose.Schema;
 
 const settingsSchema = new Schema({
-    guildId: String,
+    guildId: {
+        type: String,
+        required: true
+    },
     notif: {
-        current: String,
-        added: String,
-        removed: String,
-        radio: String
+        current: {
+            type: String,
+            required: true
+        },
+        added: {
+            type: String,
+            required: true
+        },
+        removed: {
+            type: String,
+            required: true
+        },
+        radio: {
+            type: String,
+            required: true
+        }
     },
     audio: {
-        volume: Number
+        volume: {
+            type: Number,
+            required: true
+        }
     },
     // twitter: {
     //     wolcen: {
