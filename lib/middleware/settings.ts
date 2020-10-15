@@ -15,16 +15,14 @@ export const getAllSettings = async (_req: Request, res: Response, next: NextFun
 export const createOrUpdateSettings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.guildId) {
         let settings: settingsType | false = false;
-        const allSettings = await settingsModel.get(req.body.guildId);
-        if (allSettings) {
-            settings = await settingsModel.updateSettings(allSettings, req.body.notif, req.body.audio);
+        const oldSettings = await settingsModel.get(req.body.guildId);
+        if (oldSettings) {
+            settings = await settingsModel.updateSettings(oldSettings, req.body.notif, req.body.audio);
         }
         else {
             settings = await settingsModel.createSettings(req.body.guildId, req.body.notif, req.body.audio);
         }
-        if (settings) {
-            res.settings = true;
-        }
+        res.settings = settings;
     }
     next();
 };

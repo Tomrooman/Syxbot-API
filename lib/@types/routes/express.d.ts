@@ -3,6 +3,15 @@ import { settingsType } from '../models/settings';
 import { tokenType, tokenObjResponse } from '../models/token';
 
 declare global {
+    namespace NodeJS {
+        interface Global {
+            BOTsession: {
+                jwt: string;
+                token: string;
+                type: string;
+            };
+        }
+    }
     namespace Express {
         interface Response {
             dragodindes: dofusInfosType | dragodindeType | dragodindeType[] | notifArrayType[] | false;
@@ -17,7 +26,7 @@ declare global {
                 min: number,
                 sec: number
             };
-            notif: boolean | undefined,
+            notif: boolean | undefined;
             mail: boolean;
             enclos: enclosType[] | false;
             settings: settingsType | settingsType[] | boolean;
@@ -29,13 +38,13 @@ declare global {
         interface Request {
             universalCookies: {
                 get(name: string): {
-                    username: string,
-                    discriminator: string,
-                    userId: string
-                    token_type: string,
-                    expire_at: number,
-                    secret: string,
-                    jwt: string
+                    username: string;
+                    discriminator: string;
+                    userId: string;
+                    token_type: string;
+                    expire_at: number;
+                    secret: string;
+                    jwt: string;
                 }
             };
             user: any;

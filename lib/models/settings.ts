@@ -93,15 +93,15 @@ settingsSchema.statics.createSettings = async (guildId: string, notif: notifType
     return false;
 };
 
-settingsSchema.statics.updateSettings = async (allSettings: settingsType, notif: notifType, audio: audioType): Promise<settingsType | false> => {
-    if (allSettings && notif && audio) {
-        allSettings.notif = notif;
-        allSettings.audio = audio;
+settingsSchema.statics.updateSettings = async (settings: settingsType, notif: notifType, audio: audioType): Promise<settingsType | false> => {
+    if (settings && notif && audio) {
+        settings.notif = notif;
+        settings.audio = audio;
         // allSettings.twitter = req.body.twitter;
-        allSettings.markModified('notif');
-        allSettings.markModified('audio');
-        await allSettings.save();
-        return allSettings;
+        settings.markModified('notif');
+        settings.markModified('audio');
+        await settings.save();
+        return settings;
     }
     return false;
 };

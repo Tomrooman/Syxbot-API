@@ -1,11 +1,16 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
 import settingsSchema from '../models/settings';
 import chai from 'chai';
+// import chaiHttp from 'chai-http';
+import server from './../../index';
 
 const expect = chai.expect;
 
-describe('Settings', () => {
-    const settingsObj = {
+// chai.use(chaiHttp);
+
+describe('SETTINGS', () => {
+    let session: { jwt: string, token: string, type: string };
+    let settingsObj = {
         guildId: '1234554321',
         notif: {
             current: 'on',
@@ -18,68 +23,118 @@ describe('Settings', () => {
         }
     };
 
-    it('Settings should be empty', async () => {
-        const users = await settingsSchema.find();
-        expect(users).to.be.an('array').that.is.empty;
+    describe('Api', () => {
+        before(() => {
+            session = global.BOTsession;
+        });
+
+        after((done) => {
+            settingsSchema.deleteMany({}, (err) => {
+                done();
+            });
+        });
+
+        it('Settings should be empty', done => {
+            chai.request(server)
+                .post('/settings')
+                .send(session)
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('array').that.have.lengthOf(0);
+                    done();
+                });
+        });
+
+        it('Add settings', done => {
+            chai.request(server)
+                .post('/settings/update')
+                .send({ ...session, ...settingsObj })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(6);
+                    expect(res.body._id).to.be.string;
+                    expect(res.body.guildId).to.equal(settingsObj.guildId);
+                    expect(res.body.notif).to.deep.equal(settingsObj.notif);
+                    expect(res.body.audio).to.deep.equal(settingsObj.audio);
+                    done();
+                });
+        });
+
+        it('Update settings', done => {
+            const updatedSettings = {
+                guildId: settingsObj.guildId,
+                notif: {
+                    current: 'off',
+                    added: 'on',
+                    removed: 'on',
+                    radio: 'off'
+                },
+                audio: {
+                    volume: 0.5
+                }
+            }
+            chai.request(server)
+                .post('/settings/update')
+                .send({ ...session, ...updatedSettings })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(6);
+                    expect(res.body._id).to.be.string;
+                    expect(res.body.guildId).to.equal(settingsObj.guildId);
+                    expect(res.body.notif).to.deep.equal(updatedSettings.notif);
+                    expect(res.body.audio).to.deep.equal(updatedSettings.audio);
+                    done();
+                });
+        });
+
+        it('Must not create settings without guildId', done => {
+            const falsySettings = {
+                ...settingsObj,
+                guildId: undefined
+            }
+            chai.request(server)
+                .post('/settings/update')
+                .send({ ...session, ...falsySettings })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('boolean').that.be.false;
+                    done();
+                });
+        });
+
+        it('Must not create settings without notif object', done => {
+            const falsySettings = {
+                ...settingsObj,
+                notif: undefined
+            }
+            chai.request(server)
+                .post('/settings/update')
+                .send({ ...session, ...falsySettings })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('boolean').that.be.false;
+                    done();
+                });
+        });
+
+        it('Must not create settings without audio object', done => {
+            const falsySettings = {
+                ...settingsObj,
+                audio: undefined
+            }
+            chai.request(server)
+                .post('/settings/update')
+                .send({ ...session, ...falsySettings })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('boolean').that.be.false;
+                    done();
+                });
+        });
     });
 
-    it('Add first settings', async () => {
-        await new settingsSchema(settingsObj).save();
-        const settings = await settingsSchema.find();
+    describe('Models', () => {
 
-        expect(settings).to.be.an('array').that.have.lengthOf(1);
-        expect(settings[0].guildId).to.equal(settingsObj.guildId);
-        expect(settings[0].notif.current).to.equal(settingsObj.notif.current);
-        expect(settings[0].notif.added).to.equal(settingsObj.notif.added);
-        expect(settings[0].notif.removed).to.equal(settingsObj.notif.removed);
-        expect(settings[0].notif.radio).to.equal(settingsObj.notif.radio);
-        expect(settings[0].audio.volume).to.equal(settingsObj.audio.volume);
     });
 
-    it('get() Get first settings', async () => {
-        const settings = await settingsSchema.get(settingsObj.guildId);
-        if (settings) {
-            expect(settings.guildId).to.equal(settingsObj.guildId);
-            expect(settings.notif.current).to.equal(settingsObj.notif.current);
-            expect(settings.notif.added).to.equal(settingsObj.notif.added);
-            expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
-            expect(settings.notif.radio).to.equal(settingsObj.notif.radio);
-            expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
-        }
-    });
-
-    it('Add second settings', async () => {
-        settingsObj.guildId = '987656789';
-        settingsObj.notif.radio = 'off';
-
-        await new settingsSchema(settingsObj).save();
-        const settings = await settingsSchema.find();
-
-        expect(settings).to.be.an('array').that.have.lengthOf(2);
-        expect(settings[1].guildId).to.equal('987656789');
-        expect(settings[1].notif.current).to.equal(settingsObj.notif.current);
-        expect(settings[1].notif.added).to.equal(settingsObj.notif.added);
-        expect(settings[1].notif.removed).to.equal(settingsObj.notif.removed);
-        expect(settings[1].notif.radio).to.equal('off');
-        expect(settings[1].audio.volume).to.equal(settingsObj.audio.volume);
-    });
-
-    it('get() Get second settings', async () => {
-        const settings = await settingsSchema.get(settingsObj.guildId);
-        if (settings) {
-            expect(settings.guildId).to.equal('987656789');
-            expect(settings.notif.current).to.equal(settingsObj.notif.current);
-            expect(settings.notif.added).to.equal(settingsObj.notif.added);
-            expect(settings.notif.removed).to.equal(settingsObj.notif.removed);
-            expect(settings.notif.radio).to.equal('off');
-            expect(settings.audio.volume).to.equal(settingsObj.audio.volume);
-        }
-    });
-
-    it('Should drop test database', async () => {
-        mongoose.connection.db.dropDatabase();
-        const settings = await settingsSchema.find();
-
-        expect(settings).to.be.an('array').that.is.empty;
-    });
 });

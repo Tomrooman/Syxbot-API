@@ -18,7 +18,7 @@
     "cp:master:config": "rm config.json && cp 'private/config - master.json' ./ && mv 'config - master.json' config.json",
     "cp:dev:config": "rm config.json && cp 'private/config - dev.json' ./ && mv 'config - dev.json' config.json",
     "dev": "yarn cp:ssl:files && yarn ts-node-dev --respawn --transpile-only --clear index.ts",
-    "test": "yarn tsc && yarn mocha ./dist/lib/test/index.test.js --exit",
+    "test": "NODE_ENV=test && yarn tsc && yarn mocha ./dist/lib/test/index.test.js --exit",
     "log-dev": "yarn pm2 log --lines 100 syxbot_dev_api ",
     "log-prod": "yarn pm2 log --lines 100 syxbot_prod_api",
     "eslint": "eslint ./",

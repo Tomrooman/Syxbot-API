@@ -18,6 +18,7 @@ import config from './config.json';
 let discord_bot_connection = false;
 
 const app = express();
+const DB_url = `mongodb://${config.mongo.user}:${config.mongo.password}@localhost/` + (process.env.NODE_ENV === 'test' ? 'syxbot-database-test' : 'syxbot-database')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -60,31 +61,39 @@ app.post('/', (_req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
-console.log(' ');
-console.log('----- ' + dateFormat(Date.now(), 'HH:MM:ss dd/mm/yyyy') + ' -----');
-if (config.WHAT === 'DEV') console.log(chalk.bgRgb(25, 108, 207)('         CONNECTION         '));
-console.log('Connecting to database ...');
+if (process.env.NODE_ENV !== 'test') {
+    console.log(' ');
+    console.log('----- ' + dateFormat(Date.now(), 'HH:MM:ss dd/mm/yyyy') + ' -----');
+    if (config.env === 'DEV') console.log(chalk.bgRgb(25, 108, 207)('         CONNECTION         '));
+    console.log('Connecting to database ...');
+}
 
-mongoose.connect(`mongodb://${config.mongo.user}:${config.mongo.password}@localhost/syxbot-database`, {
+mongoose.connect(DB_url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: false,
     useFindAndModify: false
 });
 mongoose.connection.once('open', (): void => {
-    console.log(' - Connected to database !');
-    if (config.WHAT === 'DEV') console.log(chalk.bgRgb(60, 121, 0)('\n         CONNECTED          '));
+    if (process.env.NODE_ENV !== 'test') {
+        console.log(' - Connected to database !');
+        if (config.env === 'DEV') console.log(chalk.bgRgb(60, 121, 0)('\n         CONNECTED          '));
+    }
     https.createServer({
         key: fs.readFileSync('./cert/privkey.pem'),
         cert: fs.readFileSync('./cert/cert.pem')
     }, app)
         .listen(9000, (): void => {
-            if (config.WHAT === 'DEV') {
-                console.log('      Port => 9000');
-            }
-            else if (config.WHAT === 'MASTER') {
-                console.log(' ');
-                console.log('Port => 9000');
+            if (process.env.NODE_ENV !== 'test') {
+                if (config.env === 'DEV') {
+                    console.log('      Port => 9000');
+                }
+                else if (config.env === 'MASTER') {
+                    console.log(' ');
+                    console.log('Port => 9000');
+                }
             }
         });
 });
+
+export default app;
