@@ -10,6 +10,11 @@ declare global {
                 token: string;
                 type: string;
             };
+            websiteCookies: string;
+            websiteSession: {
+                type: string;
+                token: string;
+            }
         }
     }
     namespace Express {

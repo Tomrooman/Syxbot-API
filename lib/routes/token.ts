@@ -13,7 +13,7 @@ router.post('/expiration',
         res.send(res.token || false);
     });
 
-router.post('/connect',
+router.post('/createCookie',
     tokenMiddleware.setConnectDataToCallDiscordAPI,
     tokenMiddleware.getTokenDiscordAPI,
     (_req, res) => {

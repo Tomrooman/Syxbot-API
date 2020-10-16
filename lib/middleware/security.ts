@@ -10,6 +10,7 @@ import { getDiscordConnection } from '../../index';
 export const websiteAuthVerif = async (req: Request, res: Response, next: NextFunction): Promise<ServerResponse | void> => {
     if (req.body.token === config.security.token) {
         if (req.body.type === 'site') {
+            req.body.userId = undefined;
             const syxbotInfos = req.universalCookies.get('syxbot_infos');
             const syxbot = req.universalCookies.get('syxbot');
             if (syxbot && syxbotInfos) {

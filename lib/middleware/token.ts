@@ -26,8 +26,7 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
     const refresh_token = req.body.refresh_token;
     const scope = req.body.scope;
     const token_type = req.body.token_type;
-    const body_jwt = req.body.jwt;
-    if (userId && access_token && refresh_token && scope && token_type && body_jwt) {
+    if (userId && access_token && refresh_token && scope && token_type) {
         let token: tokenType | false = false;
         const tokenObj = {
             userId: userId,
@@ -44,7 +43,7 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
             token = await tokenModel.createToken(tokenObj, req.body.expires_in);
         }
         if (token) {
-            res.token = true;
+            res.token = token;
         }
     }
     next();

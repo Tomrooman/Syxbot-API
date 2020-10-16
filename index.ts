@@ -18,7 +18,7 @@ import config from './config.json';
 let discord_bot_connection = false;
 
 const app = express();
-const DB_url = `mongodb://${config.mongo.user}:${config.mongo.password}@localhost/` + (process.env.NODE_ENV === 'test' ? 'syxbot-database-test' : 'syxbot-database')
+const DB_url = `mongodb://${config.mongo.user}:${config.mongo.password}@localhost/` + (process.env.NODE_ENV === 'test' ? 'syxbot-database-test' : 'syxbot-database');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

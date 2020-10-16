@@ -1,89 +1,166 @@
-import mongoose from 'mongoose';
 import tokenSchema from '../models/token';
 import chai from 'chai';
+import server from './../../index';
 
 const expect = chai.expect;
 
-describe('Token', () => {
+describe('TOKEN', () => {
     const tokenObj = {
         userId: '1234554321',
         access_token: 'bad access token',
-        token_type: 'little type',
-        expire_at: '10000',
+        token_type: 'test type',
         refresh_token: 'big refresh token',
         scope: 'identify guilds'
     };
 
-    it('Token should be empty', async () => {
-        const token = await tokenSchema.find();
+    describe('Routes', () => {
+        let websiteCookies: string;
+        let websiteSession: { type: string, token: string };
 
-        expect(token).to.be.an('array').that.is.empty;
-    });
+        before(() => {
+            websiteCookies = global.websiteCookies;
+            websiteSession = global.websiteSession;
+        });
 
-    it('Add first token', async () => {
-        await new tokenSchema(tokenObj).save();
-        const token = await tokenSchema.find();
+        after(async () => {
+            await tokenSchema.deleteMany({});
+        });
 
-        expect(token).to.be.an('array').that.have.lengthOf(1);
-        expect(token[0].userId).to.equal(tokenObj.userId);
-        expect(token[0].access_token).to.equal(tokenObj.access_token);
-        expect(token[0].token_type).to.equal(tokenObj.token_type);
-        expect(token[0].expire_at).to.equal(tokenObj.expire_at);
-        expect(token[0].refresh_token).to.equal(tokenObj.refresh_token);
-        expect(token[0].scope).to.equal(tokenObj.scope);
-    });
+        it('Token should be empty', async () => {
+            const token = await tokenSchema.find();
+            expect(token).to.be.an('array').that.is.empty;
+        });
 
-    it('get() Get first token', async () => {
-        const token = await tokenSchema.get(tokenObj.userId);
-        if (token) {
-            expect(token.userId).to.equal(tokenObj.userId);
-            expect(token.access_token).to.equal(tokenObj.access_token);
-            expect(token.token_type).to.equal(tokenObj.token_type);
-            expect(token.expire_at).to.equal(tokenObj.expire_at);
-            expect(token.refresh_token).to.equal(tokenObj.refresh_token);
-            expect(token.scope).to.equal(tokenObj.scope);
-        }
-    });
+        it('/token/update => Add token', done => {
+            chai.request(server)
+                .post('/token/update')
+                .set('Cookie', websiteCookies)
+                .send({ ...tokenObj, ...websiteSession, expires_in: 200 })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(7);
+                    expect(res.body._id).to.be.string;
+                    expect(res.body.userId).to.equal(tokenObj.userId);
+                    expect(res.body.access_token).to.equal(tokenObj.access_token);
+                    expect(res.body.token_type).to.equal(tokenObj.token_type);
+                    expect(res.body.expire_at).to.exist;
+                    expect(res.body.refresh_token).to.equal(tokenObj.refresh_token);
+                    expect(res.body.scope).to.equal(tokenObj.scope);
+                    done();
+                });
+        });
 
-    it('Add second token', async () => {
-        tokenObj.userId = '987656789';
-        tokenObj.access_token = 'good good';
+        it('/token/update => Update token', done => {
+            const modifiedTokenObj = {
+                ...tokenObj,
+                access_token: 'test access token',
+                token_type: 'test token type',
+                refresh_token: 'little test refresh token',
+            };
+            chai.request(server)
+                .post('/token/update')
+                .set('Cookie', websiteCookies)
+                .send({ ...modifiedTokenObj, ...websiteSession, expire_at: 2000 })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(7);
+                    expect(res.body._id).to.be.string;
+                    expect(res.body.userId).to.equal(tokenObj.userId);
+                    expect(res.body.access_token).to.equal(modifiedTokenObj.access_token);
+                    expect(res.body.token_type).to.equal(modifiedTokenObj.token_type);
+                    expect(res.body.expire_at).to.exist;
+                    expect(res.body.refresh_token).to.equal(modifiedTokenObj.refresh_token);
+                    expect(res.body.scope).to.equal(tokenObj.scope);
+                    done();
+                });
+        });
 
-        await new tokenSchema(tokenObj).save();
-        const token = await tokenSchema.find();
+        it('/token/remove => Remove token', done => {
+            chai.request(server)
+                .post('/token/remove')
+                .set('Cookie', websiteCookies)
+                .send({ ...tokenObj, ...websiteSession })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.true;
+                    done();
+                });
+        });
 
-        expect(token).to.be.an('array').that.have.lengthOf(2);
-        expect(token[1].userId).to.equal('987656789');
-        expect(token[1].access_token).to.equal('good good');
-        expect(token[1].token_type).to.equal(tokenObj.token_type);
-        expect(token[1].expire_at).to.equal(tokenObj.expire_at);
-        expect(token[1].refresh_token).to.equal(tokenObj.refresh_token);
-        expect(token[1].scope).to.equal(tokenObj.scope);
-    });
+        it('/token/remove => Return false if token does not exist', done => {
+            chai.request(server)
+                .post('/token/remove')
+                .set('Cookie', websiteCookies)
+                .send({ ...tokenObj, ...websiteSession })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.false;
+                    done();
+                });
+        });
 
-    it('get() Get second token', async () => {
-        const token = await tokenSchema.get(tokenObj.userId);
-        if (token) {
-            expect(token.userId).to.equal('987656789');
-            expect(token.access_token).to.equal('good good');
-            expect(token.token_type).to.equal(tokenObj.token_type);
-            expect(token.expire_at).to.equal(tokenObj.expire_at);
-            expect(token.refresh_token).to.equal(tokenObj.refresh_token);
-            expect(token.scope).to.equal(tokenObj.scope);
-        }
-    });
+        it('/token/update => Return false without access_token', done => {
+            const modifiedTokenObj = {
+                ...tokenObj,
+                access_token: undefined,
+            };
+            chai.request(server)
+                .post('/token/update')
+                .set('Cookie', websiteCookies)
+                .send({ ...modifiedTokenObj, ...websiteSession })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('boolean').that.be.false;
+                    done();
+                });
+        });
 
-    it('Remove first token', async () => {
-        await tokenSchema.deleteOne({ userId: '1234554321' });
-        const token = await tokenSchema.find();
+        it('/token/update => Return false without refresh_token', done => {
+            const modifiedTokenObj = {
+                ...tokenObj,
+                refresh_token: undefined,
+            };
+            chai.request(server)
+                .post('/token/update')
+                .set('Cookie', websiteCookies)
+                .send({ ...modifiedTokenObj, ...websiteSession })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('boolean').that.be.false;
+                    done();
+                });
+        });
 
-        expect(token).to.be.an('array').that.have.lengthOf(1);
-    });
+        it('/token/update => Return false without scope', done => {
+            const modifiedTokenObj = {
+                ...tokenObj,
+                scope: undefined,
+            };
+            chai.request(server)
+                .post('/token/update')
+                .set('Cookie', websiteCookies)
+                .send({ ...modifiedTokenObj, ...websiteSession })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('boolean').that.be.false;
+                    done();
+                });
+        });
 
-    it('Should drop test database', async () => {
-        mongoose.connection.db.dropDatabase();
-        const token = await tokenSchema.find();
-
-        expect(token).to.be.an('array').that.is.empty;
+        it('/token/update => Return false without token_type', done => {
+            const modifiedTokenObj = {
+                ...tokenObj,
+                token_type: undefined,
+            };
+            chai.request(server)
+                .post('/token/update')
+                .set('Cookie', websiteCookies)
+                .send({ ...modifiedTokenObj, ...websiteSession })
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('boolean').that.be.false;
+                    done();
+                });
+        });
     });
 });

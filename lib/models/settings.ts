@@ -98,7 +98,7 @@ settingsSchema.statics.get = async (guildId: string): Promise<settingsType | fal
 };
 
 settingsSchema.statics.createSettings = async (guildId: string, notif: notifType, audio: audioType): Promise<settingsType | false> => {
-    if (guildId && notif && audio) {
+    if (guildId && (notif && Object.keys(notif).length) && (audio && Object.keys(audio).length)) {
         const settingsObj = {
             guildId: guildId,
             notif: notif,
@@ -112,7 +112,9 @@ settingsSchema.statics.createSettings = async (guildId: string, notif: notifType
 };
 
 settingsSchema.statics.updateSettings = async (settings: settingsType, notif: notifType, audio: audioType): Promise<settingsType | false> => {
-    if (settings && notif && audio) {
+    if ((settings && Object.keys(settings).length) &&
+        (notif && Object.keys(notif).length) &&
+        (audio && Object.keys(audio).length)) {
         settings.notif = notif;
         settings.audio = audio;
         // allSettings.twitter = req.body.twitter;

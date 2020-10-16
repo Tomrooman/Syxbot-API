@@ -56,8 +56,8 @@ tokenSchema.statics.updateToken = async (tokenInfos: tokenType, tokenObj: tokenO
         tokenInfos.markModified('expire_at');
         tokenInfos.markModified('refresh_token');
         tokenInfos.markModified('scope');
-        await tokenInfos.save();
-        return tokenInfos;
+        const tokenSaved = await tokenInfos.save();
+        return tokenSaved;
     }
     return false;
 };
@@ -66,7 +66,7 @@ tokenSchema.statics.deleteToken = async (userId: string): Promise<boolean> => {
     if (userId) {
         const Token = mongoose.model<tokenType>('Token');
         const result = await Token.deleteOne({ userId: userId });
-        if (result && result.ok === 1) {
+        if (result && result.ok === 1 && result.n === 1) {
             return true;
         }
     }
