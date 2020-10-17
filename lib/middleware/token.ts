@@ -46,9 +46,7 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
             token = await tokenModel.createToken(tokenObj, req.body.expires_in);
             res.status(201);
         }
-        if (token) {
-            res.token = token;
-        }
+        if (token) res.token = token;
     }
     else res.status(400);
     next();
@@ -103,6 +101,7 @@ export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next
     next();
 };
 
+/* eslint-disable max-lines-per-function */
 export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (res.discordData) {
         try {
@@ -119,7 +118,10 @@ export const getTokenDiscordAPI = async (_req: Request, res: Response, next: Nex
                 });
                 if (discordMe) {
                     const hash = await bcrypt.hash(Config.security.secret, Config.bcrypt.saltRounds);
-                    const signature: string = jwt.sign({ secret: hash, userId: discordMe.data.id }, Config.security.secret);
+                    const signature: string = jwt.sign({
+                        secret: hash,
+                        userId: discordMe.data.id
+                    }, Config.security.secret);
                     setCookies(res, discordMe, apiToken, signature);
                     res.token = {
                         ...apiToken.data,
@@ -138,6 +140,7 @@ export const getTokenDiscordAPI = async (_req: Request, res: Response, next: Nex
     else res.status(400);
     next();
 };
+/* eslint-enable max-lines-per-function */
 
 const setCookies = (res: Response, discordMe: discordMeType, apiToken: apiTokenType, signature: string): void => {
     const oneDay = 1000 * 60 * 60 * 24;

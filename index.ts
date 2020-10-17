@@ -43,9 +43,7 @@ app.post('/bot/auth', (_req: Request, res: Response) => {
         const signature = jwt.sign({ type: 'bot' }, config.security.secret);
         res.send({ jwt: signature });
     }
-    else {
-        res.status(401).json('Unhautorized call !');
-    }
+    else res.status(401).json('Unhautorized call !');
 });
 
 app.post('/bot/auth/close', (_req: Request, res: Response) => {
@@ -84,14 +82,10 @@ mongoose.connection.once('open', (): void => {
         cert: fs.readFileSync('./cert/cert.pem')
     }, app)
         .listen(9000, (): void => {
-            if (process.env.NODE_ENV !== 'test') {
-                if (config.env === 'DEV') {
-                    console.log('      Port => 9000');
-                }
-                else if (config.env === 'MASTER') {
-                    console.log(' ');
-                    console.log('Port => 9000');
-                }
+            if (config.env === 'DEV' && process.env.NODE_ENV !== 'test') console.log('      Port => 9000');
+            else if (config.env === 'MASTER' && process.env.NODE_ENV !== 'test') {
+                console.log(' ');
+                console.log('Port => 9000');
             }
         });
 });

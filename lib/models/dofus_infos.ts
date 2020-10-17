@@ -35,9 +35,7 @@ dofusInfosSchema.statics.get = async (userId: string): Promise<dofusInfosType | 
         const allDofusInfos = await Dofus.findOne({
             userId: userId
         });
-        if (allDofusInfos) {
-            return allDofusInfos;
-        }
+        if (allDofusInfos) return allDofusInfos;
     }
     return false;
 };
@@ -85,9 +83,7 @@ dofusInfosSchema.statics.getDragodindes = async (userId: string): Promise<dragod
         const allDofusInfos = await Dofus.findOne({
             userId: userId
         });
-        if (allDofusInfos) {
-            return allDofusInfos.dragodindes;
-        }
+        if (allDofusInfos) return allDofusInfos.dragodindes;
     }
     return false;
 };
@@ -98,17 +94,13 @@ dofusInfosSchema.statics.setDragodindesToSended = async (notifArray: notifArrayT
         try {
             notifArray.map(async (array: notifArrayType) => {
                 const dragoName = (array.dragodindes as sortedDragoType[]).map((drago: sortedDragoType) => {
-                    if (drago.end.time === 'Maintenant') {
-                        return drago.name;
-                    }
+                    if (drago.end.time === 'Maintenant') return drago.name;
                 });
                 if (dragoName && dragoName.length) {
                     const allDofusInfos = await Dofus.get(array.userId);
                     if (allDofusInfos) {
                         allDofusInfos.dragodindes.map(drago => {
-                            if (_.findIndex(dragoName, drago.name)) {
-                                drago.sended = true;
-                            }
+                            if (_.findIndex(dragoName, drago.name)) drago.sended = true;
                         });
                         allDofusInfos.markModified('dragodindes');
                         await allDofusInfos.save();
@@ -208,9 +200,7 @@ dofusInfosSchema.statics.modifyLastDragodindes = async (action: string, allDofus
                     drago.used = false;
                     drago.sended = true;
                 }
-                else {
-                    drago.last = { status: false };
-                }
+                else drago.last = { status: false };
             }
             else if (action === 'remove') {
                 if (drago.name === dragodindes[0].name) {
@@ -311,9 +301,7 @@ dofusInfosSchema.statics.createEnclos = async (userId: string, title: string, co
 dofusInfosSchema.statics.updateEnclos = async (allDofusInfos: dofusInfosType, title: string, oldContent: string, newContent: string): Promise<enclosType[] | false> => {
     if (allDofusInfos && title && oldContent && newContent) {
         allDofusInfos.enclos.map(enclo => {
-            if (enclo.title === title && enclo.content === oldContent) {
-                enclo.content = newContent;
-            }
+            if (enclo.title === title && enclo.content === oldContent) enclo.content = newContent;
         });
         allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
@@ -325,9 +313,7 @@ dofusInfosSchema.statics.updateEnclos = async (allDofusInfos: dofusInfosType, ti
 dofusInfosSchema.statics.removeEnclos = async (allDofusInfos: dofusInfosType, title: string, content: string): Promise<enclosType[] | false> => {
     if (allDofusInfos && title && content) {
         allDofusInfos.enclos.map((n, index) => {
-            if (n.title === title && n.content === content) {
-                delete allDofusInfos.enclos[index];
-            }
+            if (n.title === title && n.content === content) delete allDofusInfos.enclos[index];
         });
         allDofusInfos.enclos = _.compact(allDofusInfos.enclos);
         allDofusInfos.markModified('enclos');

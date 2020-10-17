@@ -32,9 +32,7 @@ const verifyJsonToken = (signature: string): boolean | string => {
     try {
         const verify = jwt.verify(signature, config.security.secret);
         const compare = bcrypt.compare(config.security.secret, verify.secret);
-        if (compare) {
-            return verify.userId;
-        }
+        if (compare) return verify.userId;
         return false;
     }
     catch (e) {
@@ -46,9 +44,7 @@ const verifyJsonToken = (signature: string): boolean | string => {
 export const discordBotAuthVerif = (req: Request, res: Response, next: NextFunction): void | ServerResponse => {
     if (req.body.token === config.security.token) {
         if (req.body.type === 'bot') {
-            if (!req.body.jwt && req.url === '/bot/auth' && !getDiscordConnection()) {
-                return next();
-            }
+            if (!req.body.jwt && req.url === '/bot/auth' && !getDiscordConnection()) return next();
             if (req.body.jwt) {
                 try {
                     jwt.verify(req.body.jwt, config.security.secret);

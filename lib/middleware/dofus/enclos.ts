@@ -7,9 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 export const getEnclos = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.userId) {
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
-        if (allDofusInfos) {
-            res.enclos = allDofusInfos.enclos;
-        }
+        if (allDofusInfos) res.enclos = allDofusInfos.enclos;
     }
     next();
 };
@@ -18,12 +16,8 @@ export const createOrAddEnclos = async (req: Request, res: Response, next: NextF
     if (req.body.userId && req.body.title && req.body.content) {
         let enclos: enclosType[] | false = false;
         const allDofusInfos = await dofusInfosModel.get(req.body.userId);
-        if (allDofusInfos) {
-            enclos = await dofusInfosModel.addEnclos(allDofusInfos, req.body.title, req.body.content);
-        }
-        else {
-            enclos = await dofusInfosModel.createEnclos(req.body.userId, req.body.title, req.body.content);
-        }
+        if (allDofusInfos) enclos = await dofusInfosModel.addEnclos(allDofusInfos, req.body.title, req.body.content);
+        else enclos = await dofusInfosModel.createEnclos(req.body.userId, req.body.title, req.body.content);
         res.enclos = enclos;
     }
     next();

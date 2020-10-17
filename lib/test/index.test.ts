@@ -1,3 +1,6 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-len */
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import Config from './../../config.json';
@@ -29,7 +32,10 @@ describe('SESSION', () => {
 
     it('Create website cookies', async () => {
         const hash = await bcrypt.hash(Config.security.secret, Config.bcrypt.saltRounds);
-        const signature: string = jwt.sign({ secret: hash, userId: '1234554321' }, Config.security.secret);
+        const signature: string = jwt.sign({
+            secret: hash,
+            userId: '1234554321'
+        }, Config.security.secret);
         const syxbot_infos = 'syxbot_infos=' + JSON.stringify({
             jwt: signature
         });

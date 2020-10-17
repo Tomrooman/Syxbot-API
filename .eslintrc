@@ -40,8 +40,7 @@
         "comma-style": "error",
         "curly": [
             "error",
-            "multi-line",
-            "consistent"
+            "multi-or-nest"
         ],
         "dot-location": [
             "error",
@@ -59,7 +58,7 @@
         "max-len": [
             "error",
             {
-                "code": 125,
+                "code": 120,
                 "ignorePattern": "^(\\w[a-zA-Z]+(.| ))+= [a-zA-Z()\\[\\]=_:,<>|{ ]*"
             }
         ],

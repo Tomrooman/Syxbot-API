@@ -25,9 +25,7 @@ export const createOrUpdateSettings = async (req: Request, res: Response, next: 
             settings = await settingsModel.createSettings(req.body.guildId, req.body.notif, req.body.audio);
             res.status(201);
         }
-        if (settings) {
-            res.settings = settings;
-        }
+        if (settings) res.settings = settings;
         else res.status(400);
     }
     else res.status(400);
