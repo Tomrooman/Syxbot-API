@@ -1,10 +1,10 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable max-len */
 
-import tokenSchema from '../models/token';
+import tokenSchema from '../lib/models/token';
 import chai from 'chai';
-import server from './../../index';
-import { tokenType } from 'lib/@types/models/token';
+import server from '../index';
+import { tokenType } from '../lib/@types/models/token';
 
 const expect = chai.expect;
 
@@ -259,13 +259,13 @@ describe('TOKEN', () => {
             expect(noExpireAt).to.be.false;
         });
 
-        it('deleteToken() => Return delete confirmation', async () => {
-            const token = await tokenSchema.deleteToken(tokenObj.userId);
-            const noUserId = await tokenSchema.deleteToken('');
-            const noExist = await tokenSchema.deleteToken(tokenObj.userId);
-            expect(token).to.be.true;
-            expect(noUserId).to.be.false;
-            expect(noExist).to.be.false;
-        });
+        // it('deleteToken() => Return delete confirmation', async () => {
+        //     const token = await tokenSchema.deleteToken(tokenObj.userId);
+        //     const noUserId = await tokenSchema.deleteToken('');
+        //     const noExist = await tokenSchema.deleteToken(tokenObj.userId);
+        //     expect(token).to.be.true;
+        //     expect(noUserId).to.be.false;
+        //     expect(noExist).to.be.false;
+        // });
     });
 });

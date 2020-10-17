@@ -28,7 +28,7 @@ interface audioType {
 export interface userStatic extends Model<settingsType> {
     get(guildId: string): Promise<settingsType> | false;
 
-    getAllSettings(): Promise<settingsType[]> | false;
+    getAllSettings(): Promise<settingsType[]>;
 
     createSettings(guildId: string, notif: notifType, audio: audioType): Promise<settingsType> | false;
 

@@ -75,11 +75,10 @@ settingsSchema.pre('save', function (next) {
     next();
 });
 
-settingsSchema.statics.getAllSettings = async (): Promise<settingsType[] | false> => {
+settingsSchema.statics.getAllSettings = async (): Promise<settingsType[]> => {
     const Settings = mongoose.model<settingsType>('Settings');
     const settings = await Settings.find();
-    if (settings) return settings;
-    return false;
+    return settings;
 };
 
 settingsSchema.statics.get = async (guildId: string): Promise<settingsType | false> => {

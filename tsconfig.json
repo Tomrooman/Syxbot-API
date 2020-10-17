@@ -10,7 +10,7 @@
         "strict": true,
         "noImplicitAny": true,
         "moduleResolution": "node",
-        "sourceMap": false,
+        "sourceMap": true,
         "allowJs": false,
         "resolveJsonModule": true,
         "skipLibCheck": true,
@@ -20,7 +20,8 @@
     },
     "include": [
         "./index.ts",
-        "./lib/**/*"
+        "./lib/**/*",
+        "tests/*"
     ],
     "exclude": [
         ".yarn",

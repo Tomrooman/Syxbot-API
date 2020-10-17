@@ -3,8 +3,8 @@
 
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import Config from './../../config.json';
-import server from './../../index';
+import Config from '../config.json';
+import server from '../index';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 

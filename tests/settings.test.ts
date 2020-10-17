@@ -1,10 +1,10 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable max-len */
 
-import settingsSchema from '../models/settings';
+import settingsSchema from '../lib/models/settings';
 import chai from 'chai';
-import server from './../../index';
-import { notifType, audioType, settingsType } from 'lib/@types/models/settings';
+import server from '../index';
+import { notifType, audioType, settingsType } from '../lib/@types/models/settings';
 
 const expect = chai.expect;
 

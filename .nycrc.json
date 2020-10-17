@@ -1,0 +1,17 @@
+{
+  "all": true,
+  "check-coverage": true,
+  "exclude": [
+    ".yarn",
+    "node_modules",
+    ".nyc_output",
+    "coverage",
+    "cert",
+    "private",
+    "UPDATER.js",
+    "index.ts",
+    "lib/middleware/**/*",
+    "lib/routes/**/*",
+    "tests"
+  ]
+}
