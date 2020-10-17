@@ -20,13 +20,13 @@ router.post('/createCookie',
         res.send(res.token || false);
     });
 
-router.post('/update',
+router.put('/update',
     tokenMiddleware.createOrUpdateToken,
     (_req, res) => {
         res.send(res.token || false);
     });
 
-router.post('/remove',
+router.delete('/remove',
     tokenMiddleware.removeToken,
     (_req, res) => {
         res.send(res.token || false);

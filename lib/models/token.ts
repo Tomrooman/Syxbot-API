@@ -4,12 +4,30 @@ import { tokenType, userStatic, tokenObjType } from '../@types/models/token';
 const Schema = mongoose.Schema;
 
 const tokenSchema = new Schema({
-    userId: String,
-    access_token: String,
-    token_type: String,
-    expire_at: String,
-    refresh_token: String,
-    scope: String
+    userId: {
+        type: String,
+        required: true
+    },
+    access_token: {
+        type: String,
+        required: true
+    },
+    token_type: {
+        type: String,
+        required: true
+    },
+    expire_at: {
+        type: String,
+        required: true
+    },
+    refresh_token: {
+        type: String,
+        required: true
+    },
+    scope: {
+        type: String,
+        required: true
+    }
 }, {
     versionKey: false
 });
@@ -28,7 +46,7 @@ tokenSchema.statics.get = async (userId: string): Promise<tokenType | false> => 
 };
 
 tokenSchema.statics.createToken = async (tokenObj: tokenType, expires_in: number): Promise<tokenType | false> => {
-    if (tokenObj && expires_in) {
+    if ((tokenObj && Object.keys(tokenObj).length) && expires_in) {
         const newTokenObj = {
             userId: tokenObj.userId,
             access_token: tokenObj.access_token,
@@ -45,7 +63,7 @@ tokenSchema.statics.createToken = async (tokenObj: tokenType, expires_in: number
 };
 
 tokenSchema.statics.updateToken = async (tokenInfos: tokenType, tokenObj: tokenObjType, expire_at: number): Promise<tokenType | false> => {
-    if (tokenInfos && tokenObj) {
+    if ((tokenInfos && Object.keys(tokenInfos).length) && (tokenObj && Object.keys(tokenObj).length) && expire_at) {
         tokenInfos.access_token = tokenObj.access_token;
         tokenInfos.token_type = tokenObj.token_type;
         tokenInfos.expire_at = expire_at;

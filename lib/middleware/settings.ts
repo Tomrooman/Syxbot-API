@@ -8,6 +8,7 @@ export const getAllSettings = async (_req: Request, res: Response, next: NextFun
     const settings = await settingsModel.getAllSettings();
     if (settings) {
         res.settings = settings;
+        res.status(200);
     }
     next();
 };
@@ -18,11 +19,17 @@ export const createOrUpdateSettings = async (req: Request, res: Response, next: 
         const oldSettings = await settingsModel.get(req.body.guildId);
         if (oldSettings) {
             settings = await settingsModel.updateSettings(oldSettings, req.body.notif, req.body.audio);
+            res.status(200);
         }
         else {
             settings = await settingsModel.createSettings(req.body.guildId, req.body.notif, req.body.audio);
+            res.status(201);
         }
-        res.settings = settings;
+        if (settings) {
+            res.settings = settings;
+        }
+        else res.status(400);
     }
+    else res.status(400);
     next();
 };

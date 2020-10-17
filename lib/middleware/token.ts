@@ -15,8 +15,10 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
         const token = await tokenModel.get(userId);
         if (token) {
             res.token = token;
+            res.status(200);
         }
     }
+    else res.status(400);
     next();
 };
 
@@ -38,14 +40,17 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
         const tokenInfos = await tokenModel.get(req.body.userId);
         if (tokenInfos) {
             token = await tokenModel.updateToken(tokenInfos, tokenObj, req.body.expire_at);
+            res.status(200);
         }
         else {
             token = await tokenModel.createToken(tokenObj, req.body.expires_in);
+            res.status(201);
         }
         if (token) {
             res.token = token;
         }
     }
+    else res.status(400);
     next();
 };
 
@@ -56,9 +61,12 @@ export const removeToken = async (req: Request, res: Response, next: NextFunctio
         if (token) {
             res.clearCookie('syxbot');
             res.clearCookie('syxbot_infos');
+            res.status(200);
             res.token = true;
         }
+        else res.status(404);
     }
+    else res.status(400);
     next();
 };
 
@@ -73,7 +81,9 @@ export const setConnectDataToCallDiscordAPI = (req: Request, res: Response, next
             'code': req.body.code
         });
         res.discordData = data;
+        res.status(200);
     }
+    else res.status(400);
     next();
 };
 
@@ -89,6 +99,7 @@ export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next
         });
         res.discordData = data;
     }
+    else res.status(400);
     next();
 };
 
@@ -120,9 +131,11 @@ export const getTokenDiscordAPI = async (_req: Request, res: Response, next: Nex
             }
         }
         catch (e) {
+            res.status(500);
             console.log('Error call discord API');
         }
     }
+    else res.status(400);
     next();
 };
 

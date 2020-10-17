@@ -11,7 +11,7 @@ router.post('/',
         res.send(res.settings || false);
     });
 
-router.post('/update',
+router.put('/update',
     settingsMiddleware.createOrUpdateSettings,
     (_req, res) => {
         res.send(res.settings || false);
