@@ -259,13 +259,13 @@ describe('TOKEN', () => {
             expect(noExpireAt).to.be.false;
         });
 
-        // it('deleteToken() => Return delete confirmation', async () => {
-        //     const token = await tokenSchema.deleteToken(tokenObj.userId);
-        //     const noUserId = await tokenSchema.deleteToken('');
-        //     const noExist = await tokenSchema.deleteToken(tokenObj.userId);
-        //     expect(token).to.be.true;
-        //     expect(noUserId).to.be.false;
-        //     expect(noExist).to.be.false;
-        // });
+        it('deleteToken() => Return delete confirmation', async () => {
+            const token = await tokenSchema.deleteToken(tokenObj.userId);
+            const noUserId = await tokenSchema.deleteToken('');
+            const noExist = await tokenSchema.deleteToken(tokenObj.userId);
+            expect(token).to.be.true;
+            expect(noUserId).to.be.false;
+            expect(noExist).to.be.false;
+        });
     });
 });
