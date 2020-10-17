@@ -5,7 +5,7 @@ import * as contactMiddleware from './../middleware/contact';
 
 const router = express.Router();
 
-router.post('/contact',
+router.post('/',
     contactMiddleware.sendMail,
     (_req, res) => {
         res.send(res.mail || false);

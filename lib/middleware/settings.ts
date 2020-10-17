@@ -6,10 +6,8 @@ import { Request, Response, NextFunction } from 'express';
 
 export const getAllSettings = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     const settings = await settingsModel.getAllSettings();
-    if (settings) {
-        res.settings = settings;
-        res.status(200);
-    }
+    res.settings = settings;
+    res.status(200);
     next();
 };
 

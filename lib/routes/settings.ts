@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/',
     settingsMiddleware.getAllSettings,
     (_req, res) => {
-        res.send(res.settings || false);
+        res.send(res.settings);
     });
 
 router.put('/update',

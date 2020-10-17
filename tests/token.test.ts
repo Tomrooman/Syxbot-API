@@ -18,6 +18,13 @@ describe('TOKEN', () => {
         scope: 'identify guilds'
     };
 
+    const modifiedTokenObj = {
+        ...tokenObj,
+        access_token: 'test access token',
+        token_type: 'test token type',
+        refresh_token: 'little test refresh token'
+    };
+
     describe('Routes', () => {
         let websiteCookies: string;
         let websiteSession: { type: string, token: string };
@@ -56,18 +63,31 @@ describe('TOKEN', () => {
         });
 
         it('/token/update => Return updated token', done => {
-            const modifiedTokenObj = {
-                ...tokenObj,
-                access_token: 'test access token',
-                token_type: 'test token type',
-                refresh_token: 'little test refresh token'
-            };
             chai.request(server)
                 .put('/token/update')
                 .set('Cookie', websiteCookies)
                 .send({ ...modifiedTokenObj, ...websiteSession, expire_at: 2000 })
                 .end((_err, res) => {
                     expect(res).to.have.status(200);
+                    expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(7);
+                    expect(res.body._id).to.be.string;
+                    expect(res.body.userId).to.equal(tokenObj.userId);
+                    expect(res.body.access_token).to.equal(modifiedTokenObj.access_token);
+                    expect(res.body.token_type).to.equal(modifiedTokenObj.token_type);
+                    expect(res.body.expire_at).to.exist;
+                    expect(res.body.refresh_token).to.equal(modifiedTokenObj.refresh_token);
+                    expect(res.body.scope).to.equal(tokenObj.scope);
+                    done();
+                });
+        });
+
+        it('/token/expiration => Return existing token + 500 status because requesting discord api with false value', done => {
+            chai.request(server)
+                .post('/token/expiration')
+                .set('Cookie', websiteCookies)
+                .send(websiteSession)
+                .end((_err, res) => {
+                    expect(res).to.have.status(500);
                     expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(7);
                     expect(res.body._id).to.be.string;
                     expect(res.body.userId).to.equal(tokenObj.userId);
@@ -92,6 +112,18 @@ describe('TOKEN', () => {
                 });
         });
 
+        it('/token/expiration => Return false + 400 status if token does not exist', done => {
+            chai.request(server)
+                .post('/token/expiration')
+                .set('Cookie', websiteCookies)
+                .send(websiteSession)
+                .end((_err, res) => {
+                    expect(res).to.have.status(400);
+                    expect(res.body).to.be.false;
+                    done();
+                });
+        });
+
         it('/token/remove => Return false + 404 status if token does not exist', done => {
             chai.request(server)
                 .delete('/token/remove')
@@ -104,15 +136,39 @@ describe('TOKEN', () => {
                 });
         });
 
+        it('/token/createCookie => Return false + 400 status without code data', done => {
+            chai.request(server)
+                .post('/token/createCookie')
+                .set('Cookie', websiteCookies)
+                .send(websiteSession)
+                .end((_err, res) => {
+                    expect(res).to.have.status(400);
+                    expect(res.body).to.be.false;
+                    done();
+                });
+        });
+
+        it('/token/createCookie => Return false + 500 status with code data because requesting discord api with false value', done => {
+            chai.request(server)
+                .post('/token/createCookie')
+                .set('Cookie', websiteCookies)
+                .send({ ...websiteSession, code: 'fake' })
+                .end((_err, res) => {
+                    expect(res).to.have.status(500);
+                    expect(res.body).to.be.false;
+                    done();
+                });
+        });
+
         it('/token/update => Return false + 400 status without access_token', done => {
-            const modifiedTokenObj = {
+            const alternativeTokenObj = {
                 ...tokenObj,
                 access_token: undefined
             };
             chai.request(server)
                 .put('/token/update')
                 .set('Cookie', websiteCookies)
-                .send({ ...modifiedTokenObj, ...websiteSession })
+                .send({ ...alternativeTokenObj, ...websiteSession })
                 .end((_err, res) => {
                     expect(res).to.have.status(400);
                     expect(res.body).to.false;
@@ -121,14 +177,14 @@ describe('TOKEN', () => {
         });
 
         it('/token/update => Return false + 400 status without refresh_token', done => {
-            const modifiedTokenObj = {
+            const alternativeTokenObj = {
                 ...tokenObj,
                 refresh_token: undefined
             };
             chai.request(server)
                 .put('/token/update')
                 .set('Cookie', websiteCookies)
-                .send({ ...modifiedTokenObj, ...websiteSession })
+                .send({ ...alternativeTokenObj, ...websiteSession })
                 .end((_err, res) => {
                     expect(res).to.have.status(400);
                     expect(res.body).to.be.false;
@@ -137,14 +193,14 @@ describe('TOKEN', () => {
         });
 
         it('/token/update => Return false + 400 status without scope', done => {
-            const modifiedTokenObj = {
+            const alternativeTokenObj = {
                 ...tokenObj,
                 scope: undefined
             };
             chai.request(server)
                 .put('/token/update')
                 .set('Cookie', websiteCookies)
-                .send({ ...modifiedTokenObj, ...websiteSession })
+                .send({ ...alternativeTokenObj, ...websiteSession })
                 .end((_err, res) => {
                     expect(res).to.have.status(400);
                     expect(res.body).to.be.false;
@@ -153,14 +209,14 @@ describe('TOKEN', () => {
         });
 
         it('/token/update => Return false + 400 status without token_type', done => {
-            const modifiedTokenObj = {
+            const alternativeTokenObj = {
                 ...tokenObj,
                 token_type: undefined
             };
             chai.request(server)
                 .put('/token/update')
                 .set('Cookie', websiteCookies)
-                .send({ ...modifiedTokenObj, ...websiteSession })
+                .send({ ...alternativeTokenObj, ...websiteSession })
                 .end((_err, res) => {
                     expect(res).to.have.status(400);
                     expect(res.body).to.be.false;

@@ -19,7 +19,7 @@
     "cp:dev:config": "rm config.json && cp 'private/config - dev.json' ./ && mv 'config - dev.json' config.json",
     "dev": "yarn cp:ssl:files && yarn ts-node-dev --respawn --transpile-only --clear index.ts",
     "test": "NODE_ENV=test && yarn tsc && yarn mocha ./dist/tests/index.test.js --exit",
-    "coverage": "NODE_ENV=test && yarn tsc && nyc yarn mocha ./dist/tests/index.test.js --exit",
+    "coverage": "yarn nyc yarn test",
     "log-dev": "yarn pm2 log --lines 100 syxbot_dev_api ",
     "log-prod": "yarn pm2 log --lines 100 syxbot_prod_api",
     "eslint": "eslint ./",

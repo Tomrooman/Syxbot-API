@@ -13,10 +13,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     if (req.body.userId) {
         const userId = req.body.userId;
         const token = await tokenModel.get(userId);
-        if (token) {
-            res.token = token;
-            res.status(200);
-        }
+        if (token) res.token = token;
     }
     else res.status(400);
     next();
@@ -79,7 +76,6 @@ export const setConnectDataToCallDiscordAPI = (req: Request, res: Response, next
             'code': req.body.code
         });
         res.discordData = data;
-        res.status(200);
     }
     else res.status(400);
     next();
@@ -129,12 +125,14 @@ export const getTokenDiscordAPI = async (_req: Request, res: Response, next: Nex
                         type: 'site',
                         jwt: signature
                     };
+                    res.status(200);
                 }
+                else res.status(500);
             }
+            else res.status(500);
         }
         catch (e) {
             res.status(500);
-            console.log('Error call discord API');
         }
     }
     else res.status(400);

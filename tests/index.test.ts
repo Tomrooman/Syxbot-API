@@ -51,6 +51,6 @@ describe('SESSION', () => {
 
 });
 
-
+import './contact.test';
 import './settings.test';
 import './token.test';

@@ -31,7 +31,7 @@ app.use(
         next();
     });
 
-app.use('/docs', contactRouter);
+app.use('/contact', contactRouter);
 app.use('/settings', settingsRouter);
 app.use('/token', tokenRouter);
 app.use('/dofus/enclos', enclosRouter);
