@@ -1,4 +1,4 @@
-import { dofusInfosType, dragodindeType, enclosType, sortedDragoType, notifArrayType } from '../models/dofus_infos';
+import { dofusType, dragodindeType, enclosType, sortedDragoType, notifArrayType } from '../models/dofus';
 import { settingsType } from '../models/settings';
 import { tokenType, tokenObjResponse } from '../models/token';
 
@@ -14,16 +14,18 @@ declare global {
             websiteSession: {
                 type: string;
                 token: string;
-            }
+            },
+            badWebsiteCookies: string;
+            customWebsiteCookies: string;
         }
     }
     namespace Express {
         interface Response {
-            dragodindes: dofusInfosType | dragodindeType | dragodindeType[] | notifArrayType[] | false;
+            dragodindes: dofusType | dragodindeType | dragodindeType[] | notifArrayType[] | false;
             fecondator: sortedDragoType[] | false;
             ddFecond: dragodindeType | Partial<dragodindeType>;
             baseDate: number;
-            dragodindesNotif: dofusInfosType[] | false;
+            dragodindesNotif: dofusType[] | false;
             notifArray: notifArrayType[] | false;
             sortedDragodindes: dragodindeType[];
             timeDiff: {
@@ -37,7 +39,7 @@ declare global {
             settings: settingsType | settingsType[] | boolean;
             token: tokenType | tokenObjResponse | boolean;
             discordData: string | false;
-            allDofusInfos: dofusInfosType | false;
+            allDofusInfos: dofusType | false;
         }
 
         interface Request {

@@ -45,12 +45,26 @@ describe('SESSION', () => {
             token_type: 'test_type',
             countdown: true
         });
+        const badSyxbotInfos = 'syxbot_infos=' + JSON.stringify({
+            jwt: 'fakeToken'
+        });
+        const customSignature: string = jwt.sign({
+            secret: 'fake hash',
+            userId: '1234554321'
+        }, Config.security.secret);
+        const customSyxbotInfos = 'syxbot_infos=' + JSON.stringify({
+            jwt: customSignature
+        });
         global.websiteSession = { type: 'site', token: Config.security.token };
         global.websiteCookies = syxbot_infos + ';' + syxbot;
+        global.badWebsiteCookies = badSyxbotInfos + ';' + syxbot;
+        global.customWebsiteCookies = customSyxbotInfos + '.' + syxbot;
     });
 
 });
 
+import './security.test';
 import './contact.test';
 import './settings.test';
 import './token.test';
+import './dofus/index.test';

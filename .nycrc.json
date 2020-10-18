@@ -2,8 +2,8 @@
   "exclude": [
     "index.ts",
     ".yarn",
-    "lib/middleware",
-    "tests"
+    "tests",
+    "lib/middleware/contact.ts"
   ],
   "check-coverage": true
 }

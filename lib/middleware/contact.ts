@@ -6,10 +6,6 @@ import { Request, Response, NextFunction } from 'express';
 
 export const sendMail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.message && req.body.mail && req.body.object) {
-        if (req.body.test) {
-            res.status(200);
-            return next();
-        }
         let message = req.body.message.split('\n');
         message = message.join('</br>');
         const transporter = nodeMailer.createTransport({
@@ -26,6 +22,10 @@ export const sendMail = async (req: Request, res: Response, next: NextFunction):
             subject: req.body.object,
             html: '<b>Email de la personne : </b>' + req.body.mail + '</br></br>' + message
         };
+        if (req.body.test) {
+            res.status(200);
+            return next();
+        }
         transporter.sendMail(mailOptions, (err: Error, info: { envelope: string, messageId: string }) => {
             if (err) console.log('Error while sending mail : ', err);
             else res.mail = true;

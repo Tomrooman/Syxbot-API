@@ -16,7 +16,7 @@ describe('CONTACT', () => {
             websiteSession = global.websiteSession;
         });
 
-        it('/contact => Get false + status 200', done => {
+        it('/contact => Return false + status 200', done => {
             chai.request(server)
                 .post('/contact')
                 .set('Cookie', websiteCookies)
@@ -27,7 +27,8 @@ describe('CONTACT', () => {
                     done();
                 });
         });
-        it('/contact => Get false + status 400 without a data', done => {
+
+        it('/contact => Return false + status 400 without a data', done => {
             chai.request(server)
                 .post('/contact')
                 .set('Cookie', websiteCookies)

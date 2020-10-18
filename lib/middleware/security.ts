@@ -8,8 +8,8 @@ import jwt from 'jsonwebtoken';
 import { getDiscordConnection } from '../../index';
 
 export const websiteAuthVerif = async (req: Request, res: Response, next: NextFunction): Promise<ServerResponse | void> => {
-    if (req.body.token === config.security.token) {
-        if (req.body.type === 'site') {
+    if (req.body.type === 'site') {
+        if (req.body.token === config.security.token) {
             req.body.userId = undefined;
             const syxbotInfos = req.universalCookies.get('syxbot_infos');
             const syxbot = req.universalCookies.get('syxbot');
@@ -19,31 +19,30 @@ export const websiteAuthVerif = async (req: Request, res: Response, next: NextFu
                     req.body.userId = userId;
                     return next();
                 }
-                return res.status(401).json('Invalid token');
+                return res.status(401).json('Invalid data');
             }
-            return next();
+            else return res.status(401).json('Invalid data');
         }
-        if (req.body.type === 'bot') return next();
+        return res.status(401).json('Invalid data');
     }
-    return res.status(401).json('Invalid token');
+    else return next();
 };
 
-const verifyJsonToken = (signature: string): boolean | string => {
+const verifyJsonToken = (signature: string): boolean | string | undefined => {
     try {
         const verify = jwt.verify(signature, config.security.secret);
         const compare = bcrypt.compare(config.security.secret, verify.secret);
-        if (compare) return verify.userId;
-        return false;
+        if (compare)
+            return verify.userId;
     }
     catch (e) {
-        console.log('verify json token website failed : ', e.message);
         return false;
     }
 };
 
 export const discordBotAuthVerif = (req: Request, res: Response, next: NextFunction): void | ServerResponse => {
-    if (req.body.token === config.security.token) {
-        if (req.body.type === 'bot') {
+    if (req.body.type === 'bot') {
+        if (req.body.token === config.security.token) {
             if (!req.body.jwt && req.url === '/bot/auth' && !getDiscordConnection()) return next();
             if (req.body.jwt) {
                 try {
@@ -51,13 +50,12 @@ export const discordBotAuthVerif = (req: Request, res: Response, next: NextFunct
                     return next();
                 }
                 catch (e) {
-                    console.log('Error while verifyng jwt token : ', e.message);
-                    return res.status(401).json('Invalid token');
+                    return res.status(401).json('Invalid data');
                 }
             }
-            return res.status(401).json('Invalid token');
         }
-        if (req.body.type === 'site') return next();
+        return res.status(401).json('Invalid data');
     }
-    return res.status(401).json('Invalid token');
+    else if (req.body.type === 'site') return next();
+    else return res.status(400).json('Invalid data');
 };
