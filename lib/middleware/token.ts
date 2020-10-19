@@ -10,12 +10,9 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (req.body.userId) {
-        const userId = req.body.userId;
-        const token = await tokenModel.get(userId);
-        if (token) res.token = token;
-    }
-    else res.status(400);
+    const userId = req.body.userId;
+    const token = await tokenModel.get(userId);
+    if (token) res.token = token;
     next();
 };
 
@@ -25,7 +22,7 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
     const refresh_token = req.body.refresh_token;
     const scope = req.body.scope;
     const token_type = req.body.token_type;
-    if (userId && access_token && refresh_token && scope && token_type) {
+    if (access_token && refresh_token && scope && token_type) {
         let token: tokenType | false = false;
         const tokenObj = {
             userId: userId,
@@ -50,16 +47,13 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
 };
 
 export const removeToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (req.body.userId) {
-        const userId = req.body.userId;
-        const token = await tokenModel.deleteToken(userId);
-        if (token) {
-            res.clearCookie('syxbot');
-            res.clearCookie('syxbot_infos');
-            res.status(200);
-            res.token = true;
-        }
-        else res.status(404);
+    const userId = req.body.userId;
+    const token = await tokenModel.deleteToken(userId);
+    if (token) {
+        res.clearCookie('syxbot');
+        res.clearCookie('syxbot_infos');
+        res.status(200);
+        res.token = true;
     }
     else res.status(400);
     next();

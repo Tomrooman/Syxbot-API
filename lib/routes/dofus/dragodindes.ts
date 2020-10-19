@@ -10,6 +10,12 @@ router.post('/',
         res.send(res.dragodindes || false);
     });
 
+router.post('/create',
+    dragodindesMiddleware.CreateOrAddDragodindes,
+    (_req, res) => {
+        res.send(res.dragodindes || false);
+    });
+
 router.post('/fecondator',
     dragodindesMiddleware.getDragodindes,
     dragodindesMiddleware.callMakeEndParams,
@@ -42,12 +48,6 @@ router.post('/notif/all',
 router.post('/notif',
     dragodindesMiddleware.getDofusInfos,
     dragodindesMiddleware.SetNotificationsByStatus,
-    (_req, res) => {
-        res.send(res.dragodindes || false);
-    });
-
-router.post('/create',
-    dragodindesMiddleware.CreateOrAddDragodindes,
     (_req, res) => {
         res.send(res.dragodindes || false);
     });

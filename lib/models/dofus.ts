@@ -19,6 +19,7 @@ const dofusSchema = new Schema({
         content: String
     }],
     dragodindes: [{
+        _id: false,
         name: String,
         duration: Number,
         generation: Number,

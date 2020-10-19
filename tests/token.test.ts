@@ -124,13 +124,13 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/remove => Return false + 404 status if token does not exist', done => {
+        it('/token/remove => Return false + 400 status if token does not exist', done => {
             chai.request(server)
                 .delete('/token/remove')
                 .set('Cookie', websiteCookies)
                 .send({ ...tokenObj, ...websiteSession })
                 .end((_err, res) => {
-                    expect(res).to.have.status(404);
+                    expect(res).to.have.status(400);
                     expect(res.body).to.be.false;
                     done();
                 });
