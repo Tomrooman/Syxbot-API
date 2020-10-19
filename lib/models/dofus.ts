@@ -10,6 +10,11 @@ const Schema = mongoose.Schema;
 const dofusSchema = new Schema({
     userId: String,
     enclos: [{
+        _id: {
+            type: mongoose.Types.ObjectId,
+            default: new mongoose.Types.ObjectId(),
+            auto: true
+        },
         title: String,
         content: String
     }],
@@ -298,10 +303,10 @@ dofusSchema.statics.createEnclos = async (userId: string, title: string, content
     return false;
 };
 
-dofusSchema.statics.updateEnclos = async (allDofusInfos: dofusType, title: string, oldContent: string, newContent: string): Promise<enclosType[] | false> => {
-    if (allDofusInfos && title && oldContent && newContent) {
+dofusSchema.statics.updateEnclos = async (allDofusInfos: dofusType, id: string, content: string): Promise<enclosType[] | false> => {
+    if (allDofusInfos && id && content) {
         allDofusInfos.enclos.map(enclo => {
-            if (enclo.title === title && enclo.content === oldContent) enclo.content = newContent;
+            if (enclo._id?.toString() === id) enclo.content = content;
         });
         allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
@@ -310,10 +315,10 @@ dofusSchema.statics.updateEnclos = async (allDofusInfos: dofusType, title: strin
     return false;
 };
 
-dofusSchema.statics.removeEnclos = async (allDofusInfos: dofusType, title: string, content: string): Promise<enclosType[] | false> => {
-    if (allDofusInfos && title && content) {
-        allDofusInfos.enclos.map((n, index) => {
-            if (n.title === title && n.content === content) delete allDofusInfos.enclos[index];
+dofusSchema.statics.removeEnclos = async (allDofusInfos: dofusType, id: string): Promise<enclosType[] | false> => {
+    if (allDofusInfos && id) {
+        allDofusInfos.enclos.map((enclo, index) => {
+            if (enclo._id?.toString() === id) delete allDofusInfos.enclos[index];
         });
         allDofusInfos.enclos = _.compact(allDofusInfos.enclos);
         allDofusInfos.markModified('enclos');

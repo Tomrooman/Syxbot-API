@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable max-len */
 
+import dofusSchema from '../../lib/models/dofus';
 import chai from 'chai';
 import server from '../../index';
 
@@ -13,6 +14,10 @@ export const dragodindes = () => {
     before(() => {
         websiteCookies = global.websiteCookies;
         websiteSession = global.websiteSession;
+    });
+
+    after(async () => {
+        await dofusSchema.deleteMany({});
     });
 
     it('/dofus/dragodindes => Return 200 + false if does not exist', done => {

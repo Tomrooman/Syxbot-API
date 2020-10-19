@@ -8,6 +8,7 @@ export interface dofusType extends Document {
 }
 
 export interface enclosType {
+    _id?: string;
     title: string;
     content: string;
 }
@@ -94,7 +95,7 @@ export interface userStatic extends Model<dofusType> {
 
     createEnclos(userId: string, title: string, content: string): Promise<enclosType[]> | false;
 
-    updateEnclos(allDofusInfos: dofusType, title: string, oldContent: string, newContent: string): Promise<enclosType[]> | false;
+    updateEnclos(allDofusInfos: dofusType, id: string, content: string): Promise<enclosType[]> | false;
 
-    removeEnclos(allDofusInfos: dofusType, title: string, content: string): Promise<enclosType[]> | false;
+    removeEnclos(allDofusInfos: dofusType, id: string): Promise<enclosType[]> | false;
 }

@@ -31,9 +31,8 @@ export const websiteAuthVerif = async (req: Request, res: Response, next: NextFu
 const verifyJsonToken = (signature: string): boolean | string | undefined => {
     try {
         const verify = jwt.verify(signature, config.security.secret);
-        const compare = bcrypt.compare(config.security.secret, verify.secret);
-        if (compare)
-            return verify.userId;
+        bcrypt.compare(config.security.secret, verify.secret);
+        return verify.userId;
     }
     catch (e) {
         return false;
