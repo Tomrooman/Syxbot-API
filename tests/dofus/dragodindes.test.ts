@@ -157,7 +157,7 @@ export const dragodindes = () => {
             });
     });
 
-    it('/dofus/dragodindes/fecondator/automate => Return 400 + false with empty data', done => {
+    it('/dofus/dragodindes/fecondator/automate => Return 200 + last & used dragodindes', done => {
         chai.request(server)
             .post('/dofus/dragodindes/fecondator/automate')
             .set('Cookie', websiteCookies)
