@@ -207,13 +207,16 @@ export const SetNotificationsByStatus = async (req: Request, res: Response, next
 };
 
 export const modifyAutomateDragodindesStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (req.body.dragodindes) {
+    if (req.body.dragodindes && (req.body.dragodindes.used.length || req.body.dragodindes.last.length)) {
         const allDofusInfos = await dofusModel.get(req.body.userId);
         if (allDofusInfos) {
             const dragodindes = await dofusModel.automateStatus(allDofusInfos, req.body.dragodindes);
             res.dragodindes = dragodindes;
+            res.status(200);
         }
+        else res.status(400);
     }
+    else res.status(400);
     next();
 };
 
