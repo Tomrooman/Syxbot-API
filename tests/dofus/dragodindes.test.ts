@@ -3,6 +3,7 @@
 
 import dofusSchema from '../../lib/models/dofus';
 import chai from 'chai';
+import _ from 'lodash';
 import server from '../../index';
 
 const expect = chai.expect;
@@ -57,6 +58,30 @@ export const dragodindes = () => {
                 expect(res).to.have.status(400);
                 expect(res.body.dragodindes).to.be.false;
                 expect(res.body.ddFecond).to.be.false;
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/fecondator/automate => Return 400 + false with no dragodindes', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/fecondator/automate')
+            .set('Cookie', websiteCookies)
+            .send(websiteSession)
+            .end((_err, res) => {
+                expect(res).to.have.status(400);
+                expect(res.body).to.be.false;
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/fecondator/automate => Return 400 + false with empty data', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/fecondator/automate')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession, dragodindes: { last: [], used: [] } })
+            .end((_err, res) => {
+                expect(res).to.have.status(400);
+                expect(res.body).to.be.false;
                 done();
             });
     });
@@ -128,6 +153,22 @@ export const dragodindes = () => {
                 expect(res.body.dragodindes[1].name).to.equal(dragodindesObj.name);
                 expect(res.body.dragodindes[0].end.time).to.equal('Maintenant');
                 expect(res.body.dragodindes[1].end.time).to.equal((secondDragoObj.duration - dragodindesObj.duration) + 'H');
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/fecondator/automate => Return 400 + false with empty data', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/fecondator/automate')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession, dragodindes: { last: [dragodindesObj], used: [secondDragoObj] } })
+            .end((_err, res) => {
+                const firstDrago = _.find(res.body.dragodindes, { name: dragodindesObj.name });
+                const secondDrago = _.find(res.body.dragodindes, { name: secondDragoObj.name });
+                expect(res).to.have.status(200);
+                expect(res.body.dragodindes).to.be.an('array').that.have.lengthOf(2);
+                console.log('First : ', firstDrago);
+                console.log('Second : ', secondDrago);
                 done();
             });
     });
