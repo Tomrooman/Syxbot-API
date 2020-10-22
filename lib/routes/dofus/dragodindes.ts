@@ -32,9 +32,16 @@ router.post('/fecondator/automate',
         res.send(res.dragodindes || false);
     });
 
+router.post('/notif',
+    dragodindesMiddleware.getDofusInfos,
+    dragodindesMiddleware.SetNotificationsByStatus,
+    (_req, res) => {
+        res.send(res.dragodindes || false);
+    });
+
 router.post('/notif/verify',
     dragodindesMiddleware.verifySendedDragodindesNotif,
-    dragodindesMiddleware.getAndSetDragodindesToSend,
+    dragodindesMiddleware.setDragodindesToSend,
     (_req, res) => {
         res.send(res.notifArray || false);
     });
@@ -43,13 +50,6 @@ router.post('/notif/all',
     dragodindesMiddleware.getAllDragodindesNotifInfos,
     (_req, res) => {
         res.send(res.dragodindesNotif || false);
-    });
-
-router.post('/notif',
-    dragodindesMiddleware.getDofusInfos,
-    dragodindesMiddleware.SetNotificationsByStatus,
-    (_req, res) => {
-        res.send(res.dragodindes || false);
     });
 
 router.post('/status/:type/:action',

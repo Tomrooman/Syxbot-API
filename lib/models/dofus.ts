@@ -55,7 +55,7 @@ dofusSchema.statics.getNotifications = async (): Promise<notifArrayType[] | fals
         const dragodindes: notifArrayType[] = [];
         allDofusInfos.map((infos: dofusType) => {
             if (infos.dragodindes.length) {
-                if (_.findIndex(infos.dragodindes, drago => drago.last.status)) {
+                if (_.find(infos.dragodindes, drago => drago.last.status)) {
                     dragodindes.push({
                         userId: infos.userId,
                         dragodindes: infos.dragodindes
@@ -106,7 +106,9 @@ dofusSchema.statics.setDragodindesToSended = async (notifArray: notifArrayType[]
                     const allDofusInfos = await Dofus.get(array.userId);
                     if (allDofusInfos) {
                         allDofusInfos.dragodindes.map(drago => {
-                            if (_.findIndex(dragoName, drago.name)) drago.sended = true;
+                            if (dragoName.includes(drago.name)) {
+                                drago.sended = true
+                            };
                         });
                         allDofusInfos.markModified('dragodindes');
                         await allDofusInfos.save();

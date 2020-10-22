@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 
 const expect = chai.expect;
 
-export const enclos = () => {
+export const enclos = (): void => {
     const enclosObj = {
         title: 'testTitle',
         content: 'testContent'
@@ -211,4 +211,4 @@ export const enclos = () => {
                 done();
             });
     });
-}
+};

@@ -7,7 +7,7 @@ import { dragodindes } from './dragodindes.test';
 
 describe('DOFUS', () => {
     describe('Routes', () => {
-        describe('ENCLOS', enclos)
+        describe('ENCLOS', enclos);
         describe('DRAGODINDES', dragodindes);
     });
 
