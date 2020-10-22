@@ -46,7 +46,7 @@ dofusSchema.statics.get = async (userId: string): Promise<dofusType | false> => 
     return false;
 };
 
-dofusSchema.statics.getNotifications = async (): Promise<notifArrayType[] | false> => {
+dofusSchema.statics.getDragodindesIfFecondExist = async (): Promise<notifArrayType[] | false> => {
     const Dofus = mongoose.model<dofusType>('Dofus');
     const allDofusInfos = await Dofus.find({
         notif: true

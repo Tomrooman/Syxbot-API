@@ -92,7 +92,7 @@ export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next
 };
 
 /* eslint-disable max-lines-per-function */
-export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction): Promise<void>=> {
     if (res.discordData) {
         try {
             const apiToken: apiTokenType = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {

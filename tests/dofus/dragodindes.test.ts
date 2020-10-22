@@ -152,6 +152,30 @@ export const dragodindes = (): void => {
             });
     });
 
+    it('/dofus/dragodindes/status/used/remove => Return 400 + false if no data', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/status/used/remove')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession, dragodindes: [{ name: secondDragoObj.name }] })
+            .end((_err, res) => {
+                expect(res).to.have.status(400);
+                expect(res.body).to.be.false;
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/status/used/update => Return 400 + false if no dragodindes send', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/status/used/remove')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession})
+            .end((_err, res) => {
+                expect(res).to.have.status(400);
+                expect(res.body).to.be.false;
+                done();
+            });
+    });
+
     it('/dofus/dragodindes/notif => Return 201 + dofus data', done => {
         chai.request(server)
             .post('/dofus/dragodindes/notif')
@@ -389,7 +413,7 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/notif/verify => Return 400 + false if sended off', done => {
+    it('/dofus/dragodindes/notif/verify => Return 400 + false if notif off', done => {
         chai.request(server)
             .post('/dofus/dragodindes/notif/verify')
             .set('Cookie', websiteCookies)
@@ -400,4 +424,65 @@ export const dragodindes = (): void => {
                 done();
             });
     });
+
+    it('/dofus/dragodindes/status/last/update => Return 200 + updated last dragodinde', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/status/last/update')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession, dragodindes: [{ name: dragodindesObj.name }] })
+            .end((_err, res) => {
+                const firstDrago = _.find(res.body, { name: dragodindesObj.name });
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an('array').that.have.lengthOf(3);
+                expect(firstDrago.last.status).to.be.true;
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/status/last/remove => Return 200 + updated last dragodinde', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/status/last/remove')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession, dragodindes: [{ name: dragodindesObj.name }] })
+            .end((_err, res) => {
+                const firstDrago = _.find(res.body, { name: dragodindesObj.name });
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an('array').that.have.lengthOf(3);
+                expect(firstDrago.sended).to.be.false;
+                expect(firstDrago.last.status).to.be.false;
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/status/used/remove => Return 200 + updated used dragodindes', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/status/used/remove')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession, dragodindes: [{ name: secondDragoObj.name }] })
+            .end((_err, res) => {
+                const secondDrago = _.find(res.body, { name: secondDragoObj.name });
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an('array').that.have.lengthOf(3);
+                expect(secondDrago.sended).to.be.false;
+                expect(secondDrago.used).to.be.false;
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/status/used/update => Return 200 + updated used dragodindes', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/status/used/update')
+            .set('Cookie', websiteCookies)
+            .send({ ...websiteSession, dragodindes: [{ name: secondDragoObj.name }] })
+            .end((_err, res) => {
+                const secondDrago = _.find(res.body, { name: secondDragoObj.name });
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an('array').that.have.lengthOf(3);
+                expect(secondDrago.sended).to.be.true;
+                expect(secondDrago.used).to.be.true;
+                done();
+            });
+    });
+
+    // TEST /dofus/dragodindes/notif/all
 };

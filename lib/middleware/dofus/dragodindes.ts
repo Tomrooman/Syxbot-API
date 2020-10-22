@@ -8,7 +8,11 @@ import { Request, Response, NextFunction } from 'express';
 
 export const getAllDragodindesNotifInfos = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     const dragodindesNotif = await dofusModel.getAllDragodindesNotifInfos();
-    if (dragodindesNotif) res.dragodindesNotif = dragodindesNotif;
+    if (dragodindesNotif) {
+        res.dragodindesNotif = dragodindesNotif;
+        res.status(200);
+    }
+    else res.status(400);
     next();
 };
 
@@ -26,7 +30,7 @@ export const getDragodindes = async (req: Request, res: Response, next: NextFunc
 };
 
 export const verifySendedDragodindesNotif = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const infos = await dofusModel.getNotifications();
+    const infos = await dofusModel.getDragodindesIfFecondExist();
     if (infos && infos.length) {
         const notifArray: notifArrayType[] = [];
         infos.map((info: notifArrayType) => {
@@ -237,7 +241,7 @@ export const CreateOrAddDragodindes = async (req: Request, res: Response, next: 
 export const modifyDragodindesStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.body.dragodindes && req.params.action && req.params.type) {
         const allDofusInfos = await dofusModel.get(req.body.userId);
-        if (allDofusInfos && req.body.dragodindes.length >= 1) {
+        if (allDofusInfos && Object.keys(req.body.dragodindes).length) {
             let dragodindes: dragodindeType[] | false = false;
             const action: string = req.params.action;
             if (req.params.type === 'last')
@@ -245,8 +249,11 @@ export const modifyDragodindesStatus = async (req: Request, res: Response, next:
             else if (req.params.type === 'used')
                 dragodindes = await dofusModel.modifyUsedDragodindes(action, allDofusInfos, req.body.dragodindes);
             res.dragodindes = dragodindes;
+            res.status(200);
         }
+        else res.status(400);
     }
+    else res.status(400);
     next();
 };
 

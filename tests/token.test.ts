@@ -81,7 +81,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/expiration => Return existing token + 500 status because requesting discord api with false value', done => {
+        it('/token/expiration => Return existing token + 500 because requesting discord api with false value', done => {
             chai.request(server)
                 .post('/token/expiration')
                 .set('Cookie', websiteCookies)
@@ -112,7 +112,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/expiration => Return false + 400 status if token does not exist', done => {
+        it('/token/expiration => Return false + 400 if no token send', done => {
             chai.request(server)
                 .post('/token/expiration')
                 .set('Cookie', websiteCookies)
@@ -124,7 +124,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/remove => Return false + 400 status if token does not exist', done => {
+        it('/token/remove => Return false + 400 if token does not exist', done => {
             chai.request(server)
                 .delete('/token/remove')
                 .set('Cookie', websiteCookies)
@@ -136,7 +136,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/createCookie => Return false + 400 status without code data', done => {
+        it('/token/createCookie => Return false + 400 if no code send', done => {
             chai.request(server)
                 .post('/token/createCookie')
                 .set('Cookie', websiteCookies)
@@ -148,7 +148,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/createCookie => Return false + 500 status with code data because requesting discord api with false value', done => {
+        it('/token/createCookie => Return false + 500 even with code because requesting discord api with false value', done => {
             chai.request(server)
                 .post('/token/createCookie')
                 .set('Cookie', websiteCookies)
@@ -160,7 +160,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/update => Return false + 400 status without access_token', done => {
+        it('/token/update => Return false + 400 if access_token not send', done => {
             const alternativeTokenObj = {
                 ...tokenObj,
                 access_token: undefined
@@ -176,7 +176,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/update => Return false + 400 status without refresh_token', done => {
+        it('/token/update => Return false + 400 if refresh_token not send', done => {
             const alternativeTokenObj = {
                 ...tokenObj,
                 refresh_token: undefined
@@ -192,7 +192,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/update => Return false + 400 status without scope', done => {
+        it('/token/update => Return false + 400 if scope not send', done => {
             const alternativeTokenObj = {
                 ...tokenObj,
                 scope: undefined
@@ -208,7 +208,7 @@ describe('TOKEN', () => {
                 });
         });
 
-        it('/token/update => Return false + 400 status without token_type', done => {
+        it('/token/update => Return false + 400 if token_type not send', done => {
             const alternativeTokenObj = {
                 ...tokenObj,
                 token_type: undefined
@@ -324,4 +324,4 @@ describe('TOKEN', () => {
             expect(noExist).to.be.false;
         });
     });
-});
+}).timeout(5000);

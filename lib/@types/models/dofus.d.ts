@@ -67,7 +67,7 @@ export interface sortedDragoType {
 export interface userStatic extends Model<dofusType> {
     get(userId: string): Promise<dofusType> | false;
 
-    getNotifications(): Promise<notifArrayType[]> | false;
+    getDragodindesIfFecondExist(): Promise<notifArrayType[]> | false;
 
     setDragodindesToSended(notifArray: notifArrayType[]): Promise<boolean>;
 
