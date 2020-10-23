@@ -84,7 +84,7 @@ export const callMakeEndParams = (_req: Request, res: Response, next: NextFuncti
     next();
 };
 
-export const calculateTime = (_req: Request, res: Response, next: NextFunction, receivedDragodindes: dragodindeType[] = []): void | dataObjType => {
+export const calculateTime = (_req: Request, _res: Response, _next: NextFunction, receivedDragodindes: dragodindeType[] = []): void | dataObjType => {
     const dragodindes: any = receivedDragodindes;
     const now = Date.now();
     const ddFecond: dragodindeType | undefined = _.find(dragodindes, (drago: dragodindeType) => drago.last.status);
