@@ -70,8 +70,10 @@ dofusSchema.statics.getDragodindesIfFecondExist = async (): Promise<notifArrayTy
 
 dofusSchema.statics.getAllDragodindesNotifInfos = async (): Promise<userNotifInfos[] | false> => {
     const Dofus = mongoose.model<dofusType>('Dofus');
-    const allDofusInfos = await Dofus.find();
-    if (allDofusInfos) {
+    const allDofusInfos = await Dofus.find({
+        notif: true
+    });
+    if (allDofusInfos && allDofusInfos.length) {
         const dofusNotif = allDofusInfos.map(dofusInfos => {
             return {
                 userId: dofusInfos.userId,
@@ -106,9 +108,7 @@ dofusSchema.statics.setDragodindesToSended = async (notifArray: notifArrayType[]
                     const allDofusInfos = await Dofus.get(array.userId);
                     if (allDofusInfos) {
                         allDofusInfos.dragodindes.map(drago => {
-                            if (dragoName.includes(drago.name)) {
-                                drago.sended = true
-                            };
+                            if (dragoName.includes(drago.name)) drago.sended = true;
                         });
                         allDofusInfos.markModified('dragodindes');
                         await allDofusInfos.save();

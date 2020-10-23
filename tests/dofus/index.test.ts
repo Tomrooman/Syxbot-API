@@ -3,7 +3,7 @@
 
 import { enclos } from './enclos.test';
 import { dragodindes } from './dragodindes.test';
-// import { model } from './model.test';
+import { dofusModel } from './model.test';
 
 describe('DOFUS', () => {
     describe('Routes', () => {
@@ -11,5 +11,5 @@ describe('DOFUS', () => {
         describe('DRAGODINDES', dragodindes);
     });
 
-    // describe('Model', model);
+    describe('Model', dofusModel);
 });

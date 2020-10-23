@@ -54,7 +54,7 @@ export const setDragodindesToSend = async (_req: Request, res: Response, next: N
         (res.dragodindes as notifArrayType[]).map((infos: notifArrayType) => {
             const dragoToSend: dragodindeType[] = [];
             (infos.dragodindes as sortedDragoType[]).map((drago: sortedDragoType) => {
-                if (drago.end.time === 'Maintenant' && !drago.sended) dragoToSend.push({...drago, sended: true});
+                if (drago.end.time === 'Maintenant' && !drago.sended) dragoToSend.push({ ...drago, sended: true });
             });
             if (dragoToSend.length) {
                 notifArrayToSend.push({

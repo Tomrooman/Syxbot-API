@@ -132,7 +132,7 @@ export const dragodindes = (): void => {
         chai.request(server)
             .post('/dofus/dragodindes/remove')
             .set('Cookie', websiteCookies)
-            .send({ ...websiteSession, dragodindes: ['fake value']})
+            .send({ ...websiteSession, dragodindes: ['fake value'] })
             .end((_err, res) => {
                 expect(res).to.have.status(400);
                 expect(res.body).to.be.false;
@@ -144,7 +144,7 @@ export const dragodindes = (): void => {
         chai.request(server)
             .post('/dofus/dragodindes/remove')
             .set('Cookie', websiteCookies)
-            .send({ ...websiteSession, dragodindes: []})
+            .send({ ...websiteSession, dragodindes: [] })
             .end((_err, res) => {
                 expect(res).to.have.status(400);
                 expect(res.body).to.be.false;
@@ -168,7 +168,7 @@ export const dragodindes = (): void => {
         chai.request(server)
             .post('/dofus/dragodindes/status/used/remove')
             .set('Cookie', websiteCookies)
-            .send({ ...websiteSession})
+            .send({ ...websiteSession })
             .end((_err, res) => {
                 expect(res).to.have.status(400);
                 expect(res.body).to.be.false;
@@ -180,7 +180,7 @@ export const dragodindes = (): void => {
         chai.request(server)
             .post('/dofus/dragodindes/notif')
             .set('Cookie', websiteCookies)
-            .send({...websiteSession, status: 'on'})
+            .send({ ...websiteSession, status: 'on' })
             .end(async (_err, res) => {
                 expect(res).to.have.status(201);
                 expect(res.body.notif).to.be.true;
@@ -235,7 +235,7 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/create => Return 400 + false with empty dragodindes data', done => {
+    it('/dofus/dragodindes/create => Send empty dragodindes # return 400 + false', done => {
         chai.request(server)
             .post('/dofus/dragodindes/create')
             .set('Cookie', websiteCookies)
@@ -296,11 +296,11 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/remove => remove dragodinde & return 200 + existing dragodindes', done => {
+    it('/dofus/dragodindes/remove => Remove dragodinde & return 200 + existing dragodindes', done => {
         chai.request(server)
             .post('/dofus/dragodindes/remove')
             .set('Cookie', websiteCookies)
-            .send({ ...websiteSession, dragodindes: [{name: thirdDragoObj.name}] })
+            .send({ ...websiteSession, dragodindes: [{ name: thirdDragoObj.name }] })
             .end((_err, res) => {
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.an('array').that.have.lengthOf(2);
@@ -338,15 +338,27 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/notif => Return 201 + notif ON', done => {
+    it('/dofus/dragodindes/notif => Send status ON + return 201/notif true', done => {
         chai.request(server)
             .post('/dofus/dragodindes/notif')
             .set('Cookie', websiteCookies)
-            .send({...websiteSession, status: 'on'})
+            .send({ ...websiteSession, status: 'on' })
             .end((_err, res) => {
                 expect(res).to.have.status(201);
                 expect(res.body.notif).to.be.true;
                 expect(res.body.dragodindes).to.be.an('array').that.have.lengthOf(3);
+                done();
+            });
+    });
+
+    it('/dofus/dragodindes/notif/all => Return 200 + dofus data', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/notif/all')
+            .set('Cookie', websiteCookies)
+            .send(websiteSession)
+            .end((_err, res) => {
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an('array').that.have.lengthOf(1);
                 done();
             });
     });
@@ -404,7 +416,7 @@ export const dragodindes = (): void => {
         chai.request(server)
             .post('/dofus/dragodindes/notif')
             .set('Cookie', websiteCookies)
-            .send({...websiteSession, status: 'off'})
+            .send({ ...websiteSession, status: 'off' })
             .end((_err, res) => {
                 expect(res).to.have.status(201);
                 expect(res.body.notif).to.be.false;
@@ -435,6 +447,8 @@ export const dragodindes = (): void => {
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.an('array').that.have.lengthOf(3);
                 expect(firstDrago.last.status).to.be.true;
+                expect(firstDrago.sended).to.be.true;
+                expect(firstDrago.used).to.be.false;
                 done();
             });
     });
@@ -450,6 +464,7 @@ export const dragodindes = (): void => {
                 expect(res.body).to.be.an('array').that.have.lengthOf(3);
                 expect(firstDrago.sended).to.be.false;
                 expect(firstDrago.last.status).to.be.false;
+                expect(firstDrago.used).to.be.false;
                 done();
             });
     });
@@ -465,6 +480,7 @@ export const dragodindes = (): void => {
                 expect(res.body).to.be.an('array').that.have.lengthOf(3);
                 expect(secondDrago.sended).to.be.false;
                 expect(secondDrago.used).to.be.false;
+                expect(secondDrago.last.status).to.be.false;
                 done();
             });
     });
@@ -480,9 +496,20 @@ export const dragodindes = (): void => {
                 expect(res.body).to.be.an('array').that.have.lengthOf(3);
                 expect(secondDrago.sended).to.be.true;
                 expect(secondDrago.used).to.be.true;
+                expect(secondDrago.last.status).to.be.false;
                 done();
             });
     });
 
-    // TEST /dofus/dragodindes/notif/all
+    it('/dofus/dragodindes/notif/all => Return 400 + false if notif off', done => {
+        chai.request(server)
+            .post('/dofus/dragodindes/notif/all')
+            .set('Cookie', websiteCookies)
+            .send(websiteSession)
+            .end((_err, res) => {
+                expect(res).to.have.status(400);
+                expect(res.body).to.be.false;
+                done();
+            });
+    });
 };

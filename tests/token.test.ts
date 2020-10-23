@@ -8,7 +8,8 @@ import { tokenType } from '../lib/@types/models/token';
 
 const expect = chai.expect;
 
-describe('TOKEN', () => {
+describe('TOKEN', function () {
+    this.timeout(3000);
     const tokenObj = {
         userId: '1234554321',
         access_token: 'bad access token',
@@ -324,4 +325,4 @@ describe('TOKEN', () => {
             expect(noExist).to.be.false;
         });
     });
-}).timeout(5000);
+});
