@@ -441,7 +441,7 @@ export const dragodindes = (): void => {
         chai.request(server)
             .post('/dofus/dragodindes/status/last/update')
             .set('Cookie', websiteCookies)
-            .send({ ...websiteSession, dragodindes: [{ name: dragodindesObj.name }] })
+            .send({ ...websiteSession, dragodindes: [dragodindesObj] })
             .end((_err, res) => {
                 const firstDrago = _.find(res.body, { name: dragodindesObj.name });
                 expect(res).to.have.status(200);
@@ -457,7 +457,7 @@ export const dragodindes = (): void => {
         chai.request(server)
             .post('/dofus/dragodindes/status/last/remove')
             .set('Cookie', websiteCookies)
-            .send({ ...websiteSession, dragodindes: [{ name: dragodindesObj.name }] })
+            .send({ ...websiteSession, dragodindes: [dragodindesObj] })
             .end((_err, res) => {
                 const firstDrago = _.find(res.body, { name: dragodindesObj.name });
                 expect(res).to.have.status(200);

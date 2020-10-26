@@ -9,7 +9,7 @@ import { tokenType } from '../lib/@types/models/token';
 const expect = chai.expect;
 
 describe('TOKEN', function () {
-    this.timeout(3000);
+    this.timeout(5000);
     const tokenObj = {
         userId: '1234554321',
         access_token: 'bad access token',

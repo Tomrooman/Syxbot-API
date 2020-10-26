@@ -8,11 +8,15 @@ import {
 const Schema = mongoose.Schema;
 
 const dofusSchema = new Schema({
-    userId: String,
+    userId: {
+        type: String,
+        require: true,
+        unique: true
+    },
     enclos: [{
         _id: {
             type: mongoose.Types.ObjectId,
-            default: new mongoose.Types.ObjectId(),
+            default: mongoose.Types.ObjectId(),
             auto: true
         },
         title: String,
@@ -141,7 +145,7 @@ dofusSchema.statics.createNotificationStatus = async (userId: string, status: st
 };
 
 dofusSchema.statics.addDragodindes = async (allDofusInfos: dofusType, addedDragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
-    if (allDofusInfos && addedDragodindes && addedDragodindes.length) {
+    if (allDofusInfos && Object.keys(allDofusInfos).length && addedDragodindes && addedDragodindes.length) {
         addedDragodindes.map(drago => {
             allDofusInfos.dragodindes.push(drago);
         });
@@ -156,12 +160,9 @@ dofusSchema.statics.createDragodindes = async (userId: string, addedDragodindes:
     if (userId && addedDragodindes && addedDragodindes.length) {
         const dofusObj = {
             userId: userId,
-            dragodindes: [] as dragodindeType[],
+            dragodindes: addedDragodindes,
             enclos: []
         };
-        addedDragodindes.map((drago: dragodindeType) => {
-            dofusObj.dragodindes.push(drago);
-        });
         const Dofus = mongoose.model<dofusType>('Dofus');
         const dofusSaved = await new Dofus(dofusObj).save();
         return dofusSaved.dragodindes;
@@ -170,7 +171,7 @@ dofusSchema.statics.createDragodindes = async (userId: string, addedDragodindes:
 };
 
 dofusSchema.statics.removeDragodindes = async (allDofusInfos: dofusType, dragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
-    if (allDofusInfos && dragodindes && dragodindes.length) {
+    if (allDofusInfos && Object.keys(allDofusInfos).length && dragodindes && dragodindes.length) {
         dragodindes.map(drago => {
             const index = _.findIndex(allDofusInfos.dragodindes, (o: dragodindeType) => drago.name === o.name);
             if (index !== -1) {
@@ -187,7 +188,7 @@ dofusSchema.statics.removeDragodindes = async (allDofusInfos: dofusType, dragodi
 };
 
 dofusSchema.statics.setNotificationsByStatus = async (allDofusInfos: dofusType, status: string): Promise<dofusType | false> => {
-    if (allDofusInfos && status) {
+    if (allDofusInfos && Object.keys(allDofusInfos).length && status) {
         allDofusInfos.notif = status === 'on' ? true : false;
         allDofusInfos.markModified('notif');
         await allDofusInfos.save();
@@ -197,7 +198,9 @@ dofusSchema.statics.setNotificationsByStatus = async (allDofusInfos: dofusType, 
 };
 
 dofusSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos: dofusType, dragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
-    if (action && allDofusInfos && dragodindes && dragodindes.length) {
+    if (action && allDofusInfos && Object.keys(allDofusInfos).length &&
+        dragodindes && dragodindes.length) {
+        if (_.findIndex(allDofusInfos.dragodindes, { name: dragodindes[0].name }) === -1) return false;
         allDofusInfos.dragodindes.map(drago => {
             if (action === 'update') {
                 if (drago.name === dragodindes[0].name) {
@@ -208,7 +211,10 @@ dofusSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos
                     drago.used = false;
                     drago.sended = true;
                 }
-                else drago.last = { status: false };
+                else if (drago.last.status && drago.name !== dragodindes[0].name) {
+                   drago.last = { status: false };
+                   drago.sended = false;
+                }
             }
             else if (action === 'remove') {
                 if (drago.name === dragodindes[0].name) {

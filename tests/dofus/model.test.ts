@@ -3,19 +3,41 @@
 
 import dofusSchema from '../../lib/models/dofus';
 import chai from 'chai';
-import { dofusType, userNotifInfos } from 'lib/@types/models/dofus';
+import { dofusType, dragodindeType, userNotifInfos } from 'lib/@types/models/dofus';
 
 const expect = chai.expect;
 
 export const dofusModel = (): void => {
+    const dragodindesObj = {
+        name: 'Amande et Emeraude',
+        duration: 100,
+        generation: 3,
+        used: false,
+        last: {
+            status: false
+        },
+        sended: false
+    };
+    const secondDragoObj = {
+        ...dragodindesObj,
+        name: 'Ivoire et Pourpre',
+        generation: 5,
+        duration: 120
+    };
+    const thirdDragoObj = {
+        ...dragodindesObj,
+        name: 'Pourpre et Emeraude',
+        generation: 4,
+        duration: 120
+    };
     const dofusObj = {
         userId: '1234554321'
     };
     const secondDofusObj = {
-        userId: '2'
+        userId: '222222'
     };
     const thirdDofusObj = {
-        userId: '3'
+        userId: '333333'
     };
 
     after(async () => {
@@ -103,5 +125,125 @@ export const dofusModel = (): void => {
         expect(Object.keys(dofus[1])).to.be.an('array').that.have.lengthOf(2);
         expect(dofus[1].userId).to.equal(secondDofusObj.userId);
         expect(dofus[1].notif).to.be.true;
+    });
+
+    it('addDragodindes() => Add dragodindes and return dragodindes', async () => {
+        const dofusGet = await dofusSchema.get(dofusObj.userId) as dofusType;
+        let dofus = await dofusSchema.addDragodindes(dofusGet, []);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.addDragodindes({} as dofusType, [dragodindesObj]);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.addDragodindes(dofusGet, [dragodindesObj, secondDragoObj]) as dragodindeType[];
+        expect(dofus).to.be.an('array').that.have.lengthOf(2);
+        expect(dofus[0].last.status).to.equal(dragodindesObj.last.status);
+        expect(dofus[0].used).to.equal(dragodindesObj.used);
+        expect(dofus[0].sended).to.equal(dragodindesObj.sended);
+        expect(dofus[0].name).to.equal(dragodindesObj.name);
+        expect(dofus[0].duration).to.equal(dragodindesObj.duration);
+        expect(dofus[0].generation).to.equal(dragodindesObj.generation);
+        expect(dofus[1].last.status).to.equal(secondDragoObj.last.status);
+        expect(dofus[1].used).to.equal(secondDragoObj.used);
+        expect(dofus[1].sended).to.equal(secondDragoObj.sended);
+        expect(dofus[1].name).to.equal(secondDragoObj.name);
+        expect(dofus[1].duration).to.equal(secondDragoObj.duration);
+        expect(dofus[1].generation).to.equal(secondDragoObj.generation);
+    });
+
+    it('createDragodindes() => Create dofus data and return dragodindes', async () => {
+        await dofusSchema.deleteOne({userId: secondDofusObj.userId});
+        let dofus = await dofusSchema.createDragodindes('', [dragodindesObj]);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.createDragodindes(secondDofusObj.userId, []);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.createDragodindes(secondDofusObj.userId, [dragodindesObj, secondDragoObj]) as dragodindeType[];
+        expect(dofus).to.be.an('array').that.have.lengthOf(2);
+        expect(dofus[0].last.status).to.equal(dragodindesObj.last.status);
+        expect(dofus[0].used).to.equal(dragodindesObj.used);
+        expect(dofus[0].sended).to.equal(dragodindesObj.sended);
+        expect(dofus[0].name).to.equal(dragodindesObj.name);
+        expect(dofus[0].duration).to.equal(dragodindesObj.duration);
+        expect(dofus[0].generation).to.equal(dragodindesObj.generation);
+        expect(dofus[1].last.status).to.equal(secondDragoObj.last.status);
+        expect(dofus[1].used).to.equal(secondDragoObj.used);
+        expect(dofus[1].sended).to.equal(secondDragoObj.sended);
+        expect(dofus[1].name).to.equal(secondDragoObj.name);
+        expect(dofus[1].duration).to.equal(secondDragoObj.duration);
+        expect(dofus[1].generation).to.equal(secondDragoObj.generation);
+    });
+
+    it('removeDragodindes() => Remove dragodindes and return dragodindes', async () => {
+        const dofusGet = await dofusSchema.get(dofusObj.userId) as dofusType;
+        const dragoGet = dofusGet.dragodindes;
+        let dofus = await dofusSchema.removeDragodindes({} as dofusType, [dragodindesObj]);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.removeDragodindes(dofusGet, []);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.removeDragodindes(dofusGet, [dragodindesObj]) as dragodindeType[];
+        expect(dragoGet).to.be.an('array').that.have.lengthOf(2);
+        expect(dofus).to.be.an('array').that.have.lengthOf(1);
+        expect(dofus[0].last.status).to.equal(secondDragoObj.last.status);
+        expect(dofus[0].used).to.equal(secondDragoObj.used);
+        expect(dofus[0].sended).to.equal(secondDragoObj.sended);
+        expect(dofus[0].name).to.equal(secondDragoObj.name);
+        expect(dofus[0].duration).to.equal(secondDragoObj.duration);
+        expect(dofus[0].generation).to.equal(secondDragoObj.generation);
+    });
+
+    it('setNotificationsByStatus() => Set dofus notif and return dofus data', async () => {
+        const dofusGet = await dofusSchema.get(dofusObj.userId) as dofusType;
+        const secondDofusGet = await dofusSchema.get(secondDofusObj.userId) as dofusType;
+        const thirdDofusGet = await dofusSchema.get(thirdDofusObj.userId) as dofusType;
+        const secondNotifGet = secondDofusGet.notif;
+        const thirdNotifGet = thirdDofusGet.notif;
+        let dofus = await dofusSchema.setNotificationsByStatus({} as dofusType, 'on');
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.setNotificationsByStatus(secondDofusGet, '');
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.setNotificationsByStatus(secondDofusGet, 'off') as dofusType;
+        expect(dofusGet.notif).to.be.true;
+        expect(secondNotifGet).to.be.false;
+        expect(dofus.notif).to.be.false;
+        dofus = await dofusSchema.setNotificationsByStatus(thirdDofusGet, 'on') as dofusType;
+        expect(thirdNotifGet).to.be.false;
+        expect(dofus.notif).to.be.true;
+    });
+
+    it('modifyLastDragodindes() => Modify last dragodindes and return dragodindes', async () => {
+        const dofusGet = await dofusSchema.get(dofusObj.userId) as dofusType;
+        const secondDofusGet = await dofusSchema.get(secondDofusObj.userId) as dofusType;
+        let dofus = await dofusSchema.modifyLastDragodindes('update', secondDofusGet, []);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.modifyLastDragodindes('update', {} as dofusType, [dragodindesObj]);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.modifyLastDragodindes('', secondDofusGet, [dragodindesObj]);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.modifyLastDragodindes('update', dofusGet, [dragodindesObj]);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.modifyLastDragodindes('update', secondDofusGet, [dragodindesObj]) as dragodindeType[];
+        expect(dofus).to.be.an('array').that.have.lengthOf(2);
+        expect(dofus[0].name).to.equal(dragodindesObj.name);
+        expect(dofus[0].sended).to.be.true;
+        expect(dofus[0].last.status).to.be.true;
+        expect(dofus[0].last.date).to.exist;
+        dofus = await dofusSchema.modifyLastDragodindes('update', secondDofusGet, [secondDragoObj]) as dragodindeType[];
+        expect(dofus).to.be.an('array').that.have.lengthOf(2);
+        expect(dofus[0].name).to.equal(dragodindesObj.name);
+        expect(dofus[0].sended).to.be.false;
+        expect(dofus[0].last.status).to.be.false;
+        expect(dofus[0].last.date).to.not.exist;
+        expect(dofus[1].name).to.equal(secondDragoObj.name);
+        expect(dofus[1].sended).to.be.true;
+        expect(dofus[1].last.status).to.be.true;
+        expect(dofus[1].last.date).to.exist;
+        dofus = await dofusSchema.modifyLastDragodindes('remove', secondDofusGet, [secondDragoObj]) as dragodindeType[];
+        expect(dofus).to.be.an('array').that.have.lengthOf(2);
+        expect(dofus[0].name).to.equal(dragodindesObj.name);
+        expect(dofus[0].sended).to.be.false;
+        expect(dofus[0].last.status).to.be.false;
+        expect(dofus[0].last.date).to.not.exist;
+        expect(dofus[1].name).to.equal(secondDragoObj.name);
+        expect(dofus[1].sended).to.be.false;
+        expect(dofus[1].last.status).to.be.false;
+        expect(dofus[1].last.date).to.not.exist;
     });
 };
