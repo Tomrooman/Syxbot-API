@@ -212,8 +212,8 @@ dofusSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos
                     drago.sended = true;
                 }
                 else if (drago.last.status && drago.name !== dragodindes[0].name) {
-                   drago.last = { status: false };
-                   drago.sended = false;
+                    drago.last = { status: false };
+                    drago.sended = false;
                 }
             }
             else if (action === 'remove') {
@@ -233,8 +233,9 @@ dofusSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos
     return false;
 };
 
-dofusSchema.statics.automateStatus = async (allDofusInfos: dofusType, dragodindes: { last: dragodindeType[], used: dragodindeType[] }): Promise<dragodindeType[] | false> => {
-    if (allDofusInfos && dragodindes) {
+dofusSchema.statics.automaticStatus = async (allDofusInfos: dofusType, dragodindes: { last: dragodindeType[], used: dragodindeType[] }): Promise<dragodindeType[] | false> => {
+    if (allDofusInfos && Object.keys(allDofusInfos).length && dragodindes &&
+    (dragodindes.last.length || dragodindes.used.length)) {
         allDofusInfos.dragodindes.map(drago => {
             const isLast = _.find(dragodindes.last, (o: dragodindeType) => drago.name === o.name);
             const isUsed = _.find(dragodindes.used, (o: dragodindeType) => drago.name === o.name);

@@ -24,12 +24,6 @@ export const dofusModel = (): void => {
         generation: 5,
         duration: 120
     };
-    const thirdDragoObj = {
-        ...dragodindesObj,
-        name: 'Pourpre et Emeraude',
-        generation: 4,
-        duration: 120
-    };
     const dofusObj = {
         userId: '1234554321'
     };
@@ -150,7 +144,7 @@ export const dofusModel = (): void => {
     });
 
     it('createDragodindes() => Create dofus data and return dragodindes', async () => {
-        await dofusSchema.deleteOne({userId: secondDofusObj.userId});
+        await dofusSchema.deleteOne({ userId: secondDofusObj.userId });
         let dofus = await dofusSchema.createDragodindes('', [dragodindesObj]);
         expect(dofus).to.be.false;
         dofus = await dofusSchema.createDragodindes(secondDofusObj.userId, []);
@@ -225,24 +219,53 @@ export const dofusModel = (): void => {
         expect(dofus[0].sended).to.be.true;
         expect(dofus[0].last.status).to.be.true;
         expect(dofus[0].last.date).to.exist;
+        expect(dofus[0].used).to.be.false;
         dofus = await dofusSchema.modifyLastDragodindes('update', secondDofusGet, [secondDragoObj]) as dragodindeType[];
         expect(dofus).to.be.an('array').that.have.lengthOf(2);
         expect(dofus[0].name).to.equal(dragodindesObj.name);
         expect(dofus[0].sended).to.be.false;
         expect(dofus[0].last.status).to.be.false;
         expect(dofus[0].last.date).to.not.exist;
+        expect(dofus[0].used).to.be.false;
         expect(dofus[1].name).to.equal(secondDragoObj.name);
         expect(dofus[1].sended).to.be.true;
         expect(dofus[1].last.status).to.be.true;
         expect(dofus[1].last.date).to.exist;
+        expect(dofus[1].used).to.be.false;
         dofus = await dofusSchema.modifyLastDragodindes('remove', secondDofusGet, [secondDragoObj]) as dragodindeType[];
         expect(dofus).to.be.an('array').that.have.lengthOf(2);
         expect(dofus[0].name).to.equal(dragodindesObj.name);
         expect(dofus[0].sended).to.be.false;
         expect(dofus[0].last.status).to.be.false;
         expect(dofus[0].last.date).to.not.exist;
+        expect(dofus[0].used).to.be.false;
         expect(dofus[1].name).to.equal(secondDragoObj.name);
         expect(dofus[1].sended).to.be.false;
+        expect(dofus[1].last.status).to.be.false;
+        expect(dofus[1].last.date).to.not.exist;
+        expect(dofus[1].used).to.be.false;
+    });
+
+    it('automaticStatus() => Set dragodindes status with fecondator automatic data', async () => {
+        const automaticDragodindes = {
+            last: [dragodindesObj],
+            used: [secondDragoObj]
+        };
+        const dofusGet = await dofusSchema.get(secondDofusObj.userId) as dofusType;
+        let dofus = await dofusSchema.automaticStatus({} as dofusType, automaticDragodindes);
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.automaticStatus(dofusGet, { last:[], used: [] });
+        expect(dofus).to.be.false;
+        dofus = await dofusSchema.automaticStatus(dofusGet, automaticDragodindes) as dragodindeType[];
+        expect(dofus).to.be.an('array').that.have.lengthOf(2);
+        expect(dofus[0].name).to.equal(dragodindesObj.name);
+        expect(dofus[0].sended).to.be.true;
+        expect(dofus[0].used).to.be.false;
+        expect(dofus[0].last.status).to.be.true;
+        expect(dofus[0].last.date).to.exist;
+        expect(dofus[1].name).to.equal(secondDragoObj.name);
+        expect(dofus[1].sended).to.be.true;
+        expect(dofus[1].used).to.be.true;
         expect(dofus[1].last.status).to.be.false;
         expect(dofus[1].last.date).to.not.exist;
     });

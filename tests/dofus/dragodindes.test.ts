@@ -68,9 +68,9 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/fecondator/automate => Return 400 + false with no dragodindes', done => {
+    it('/dofus/dragodindes/fecondator/automatic => Return 400 + false with no dragodindes', done => {
         chai.request(server)
-            .post('/dofus/dragodindes/fecondator/automate')
+            .post('/dofus/dragodindes/fecondator/automatic')
             .set('Cookie', websiteCookies)
             .send(websiteSession)
             .end((_err, res) => {
@@ -80,9 +80,9 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/fecondator/automate => Return 400 + false with empty data', done => {
+    it('/dofus/dragodindes/fecondator/automatic => Return 400 + false with empty data', done => {
         chai.request(server)
-            .post('/dofus/dragodindes/fecondator/automate')
+            .post('/dofus/dragodindes/fecondator/automatic')
             .set('Cookie', websiteCookies)
             .send({ ...websiteSession, dragodindes: { last: [], used: [] } })
             .end((_err, res) => {
@@ -92,9 +92,9 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/fecondator/automate => Return 400 + false with no dofus data', done => {
+    it('/dofus/dragodindes/fecondator/automatic => Return 400 + false with no dofus data', done => {
         chai.request(server)
-            .post('/dofus/dragodindes/fecondator/automate')
+            .post('/dofus/dragodindes/fecondator/automatic')
             .set('Cookie', websiteCookies)
             .send({ ...websiteSession, dragodindes: { last: ['fake data'] } })
             .end((_err, res) => {
@@ -278,9 +278,9 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/fecondator/automate => Return 200 + last dragodindes', done => {
+    it('/dofus/dragodindes/fecondator/automatic => Return 200 + last dragodindes', done => {
         chai.request(server)
-            .post('/dofus/dragodindes/fecondator/automate')
+            .post('/dofus/dragodindes/fecondator/automatic')
             .set('Cookie', websiteCookies)
             .send({ ...websiteSession, dragodindes: { last: [secondDragoObj] } })
             .end((_err, res) => {
@@ -379,9 +379,9 @@ export const dragodindes = (): void => {
             });
     });
 
-    it('/dofus/dragodindes/fecondator/automate => Return 200 + last & used dragodindes', done => {
+    it('/dofus/dragodindes/fecondator/automatic => Return 200 + last & used dragodindes', done => {
         chai.request(server)
-            .post('/dofus/dragodindes/fecondator/automate')
+            .post('/dofus/dragodindes/fecondator/automatic')
             .set('Cookie', websiteCookies)
             .send({ ...websiteSession, dragodindes: { last: [thirdDragoObj], used: [secondDragoObj] } })
             .end((_err, res) => {

@@ -26,8 +26,8 @@ router.post('/fecondator',
         });
     });
 
-router.post('/fecondator/automate',
-    dragodindesMiddleware.modifyAutomateDragodindesStatus,
+router.post('/fecondator/automatic',
+    dragodindesMiddleware.modifyAutomaticDragodindesStatus,
     (_req, res) => {
         res.send(res.dragodindes || false);
     });
