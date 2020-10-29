@@ -266,7 +266,7 @@ describe('TOKEN', function () {
             const token = await tokenSchema.createToken(tokenObj, 200) as tokenType;
             const noTokenObj = await tokenSchema.createToken({} as tokenType, 200);
             const noExpiresIn = await tokenSchema.createToken(tokenObj, 0);
-            expect(Object.keys(token)).to.be.an('array').that.have.lengthOf(6);
+            expect(Object.keys(token)).to.be.an('array').that.have.lengthOf(7);
             expect(token._id).to.be.string;
             expect(token.userId).to.equal(tokenObj.userId);
             expect(token.access_token).to.equal(tokenObj.access_token);

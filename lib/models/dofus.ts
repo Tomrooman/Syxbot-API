@@ -44,8 +44,8 @@ dofusSchema.statics.get = async (userId: string): Promise<dofusType | false> => 
         const Dofus = mongoose.model<dofusType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
             userId: userId
-        });
-        if (allDofusInfos) return allDofusInfos;
+        }).lean();
+        if (allDofusInfos) return allDofusInfos as dofusType;
     }
     return false;
 };
@@ -54,7 +54,7 @@ dofusSchema.statics.getDragodindesIfFecondExist = async (): Promise<notifArrayTy
     const Dofus = mongoose.model<dofusType>('Dofus');
     const allDofusInfos = await Dofus.find({
         notif: true
-    });
+    }).lean() as dofusType[];
     if (allDofusInfos) {
         const dragodindes: notifArrayType[] = [];
         allDofusInfos.map((infos: dofusType) => {
@@ -76,7 +76,7 @@ dofusSchema.statics.getAllDragodindesNotifInfos = async (): Promise<userNotifInf
     const Dofus = mongoose.model<dofusType>('Dofus');
     const allDofusInfos = await Dofus.find({
         notif: true
-    });
+    }).lean();
     if (allDofusInfos && allDofusInfos.length) {
         const dofusNotif = allDofusInfos.map(dofusInfos => {
             return {
@@ -94,7 +94,7 @@ dofusSchema.statics.getDragodindes = async (userId: string): Promise<dragodindeT
         const Dofus = mongoose.model<dofusType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
             userId: userId
-        });
+        }).lean();
         if (allDofusInfos) return allDofusInfos.dragodindes;
     }
     return false;
@@ -109,11 +109,12 @@ dofusSchema.statics.setDragodindesToSended = async (notifArray: notifArrayType[]
                     if (drago.end.time === 'Maintenant') return drago.name;
                 });
                 if (dragoName && dragoName.length) {
-                    const allDofusInfos = await Dofus.get(array.userId);
+                    let allDofusInfos = await Dofus.get(array.userId);
                     if (allDofusInfos) {
                         allDofusInfos.dragodindes.map(drago => {
                             if (dragoName.includes(drago.name)) drago.sended = true;
                         });
+                        allDofusInfos = Dofus.hydrate(allDofusInfos);
                         allDofusInfos.markModified('dragodindes');
                         await allDofusInfos.save();
                     }
@@ -139,19 +140,20 @@ dofusSchema.statics.createNotificationStatus = async (userId: string, status: st
         };
         const Dofus = mongoose.model<dofusType>('Dofus');
         const dofusSaved = await new Dofus(dofusObj).save();
-        return dofusSaved;
+        return dofusSaved.toObject();
     }
     return false;
 };
 
 dofusSchema.statics.addDragodindes = async (allDofusInfos: dofusType, addedDragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
     if (allDofusInfos && Object.keys(allDofusInfos).length && addedDragodindes && addedDragodindes.length) {
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         addedDragodindes.map(drago => {
             allDofusInfos.dragodindes.push(drago);
         });
         allDofusInfos.markModified('dragodindes');
         await allDofusInfos.save();
-        return allDofusInfos.dragodindes;
+        return allDofusInfos.toObject().dragodindes;
     }
     return false;
 };
@@ -165,7 +167,7 @@ dofusSchema.statics.createDragodindes = async (userId: string, addedDragodindes:
         };
         const Dofus = mongoose.model<dofusType>('Dofus');
         const dofusSaved = await new Dofus(dofusObj).save();
-        return dofusSaved.dragodindes;
+        return dofusSaved.toObject().dragodindes;
     }
     return false;
 };
@@ -180,9 +182,10 @@ dofusSchema.statics.removeDragodindes = async (allDofusInfos: dofusType, dragodi
             }
 
         });
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.markModified('dragodindes');
         await allDofusInfos.save();
-        return allDofusInfos.dragodindes;
+        return allDofusInfos.toObject().dragodindes;
     }
     return false;
 };
@@ -190,9 +193,10 @@ dofusSchema.statics.removeDragodindes = async (allDofusInfos: dofusType, dragodi
 dofusSchema.statics.setNotificationsByStatus = async (allDofusInfos: dofusType, status: string): Promise<dofusType | false> => {
     if (allDofusInfos && Object.keys(allDofusInfos).length && status) {
         allDofusInfos.notif = status === 'on' ? true : false;
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.markModified('notif');
         await allDofusInfos.save();
-        return allDofusInfos;
+        return allDofusInfos.toObject();
     }
     return false;
 };
@@ -202,8 +206,8 @@ dofusSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos
         dragodindes && dragodindes.length) {
         if (_.findIndex(allDofusInfos.dragodindes, { name: dragodindes[0].name }) === -1) return false;
         allDofusInfos.dragodindes.map(drago => {
-            if (action === 'update') {
-                if (drago.name === dragodindes[0].name) {
+            if (drago.name === dragodindes[0].name) {
+                if (action === 'update') {
                     drago.last = {
                         status: true,
                         date: Date.now()
@@ -211,13 +215,7 @@ dofusSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos
                     drago.used = false;
                     drago.sended = true;
                 }
-                else if (drago.last.status && drago.name !== dragodindes[0].name) {
-                    drago.last = { status: false };
-                    drago.sended = false;
-                }
-            }
-            else if (action === 'remove') {
-                if (drago.name === dragodindes[0].name) {
+                else if (action === 'remove') {
                     drago.last = {
                         status: false
                     };
@@ -225,17 +223,22 @@ dofusSchema.statics.modifyLastDragodindes = async (action: string, allDofusInfos
                     drago.sended = false;
                 }
             }
+            else if (action === 'update' && drago.last.status) {
+                drago.last = { status: false };
+                drago.sended = false;
+            }
         });
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.markModified('dragodindes');
         await allDofusInfos.save();
-        return allDofusInfos.dragodindes;
+        return allDofusInfos.toObject().dragodindes;
     }
     return false;
 };
 
 dofusSchema.statics.automaticStatus = async (allDofusInfos: dofusType, dragodindes: { last: dragodindeType[], used: dragodindeType[] }): Promise<dragodindeType[] | false> => {
     if (allDofusInfos && Object.keys(allDofusInfos).length && dragodindes &&
-    (dragodindes.last.length || dragodindes.used.length)) {
+        (dragodindes.last.length || dragodindes.used.length)) {
         allDofusInfos.dragodindes.map(drago => {
             const isLast = _.find(dragodindes.last, (o: dragodindeType) => drago.name === o.name);
             const isUsed = _.find(dragodindes.used, (o: dragodindeType) => drago.name === o.name);
@@ -255,17 +258,20 @@ dofusSchema.statics.automaticStatus = async (allDofusInfos: dofusType, dragodind
                 drago.sended = true;
             }
         });
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.markModified('dragodindes');
         await allDofusInfos.save();
-        return allDofusInfos.dragodindes;
+        return allDofusInfos.toObject().dragodindes;
     }
     return false;
 };
 
 dofusSchema.statics.modifyUsedDragodindes = async (action: string, allDofusInfos: dofusType, dragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
-    if (action && allDofusInfos && dragodindes && dragodindes.length) {
+    if (action && allDofusInfos && Object.keys(allDofusInfos).length &&
+        dragodindes && dragodindes.length) {
+        if (_.findIndex(allDofusInfos.dragodindes, { name: dragodindes[0].name }) === -1) return false;
         allDofusInfos.dragodindes.map(drago => {
-            if (_.findIndex(dragodindes, (o: dragodindeType) => drago.name === o.name) !== -1) {
+            if (drago.name === dragodindes[0].name) {
                 if (action === 'update') {
                     drago.used = true;
                     drago.last = {
@@ -279,19 +285,21 @@ dofusSchema.statics.modifyUsedDragodindes = async (action: string, allDofusInfos
                 }
             }
         });
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.markModified('dragodindes');
         await allDofusInfos.save();
-        return allDofusInfos.dragodindes;
+        return allDofusInfos.toObject().dragodindes;
     }
     return false;
 };
 
 dofusSchema.statics.addEnclos = async (allDofusInfos: dofusType, title: string, content: string): Promise<enclosType[] | false> => {
     if (allDofusInfos && title && content) {
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.enclos.push({ title: title, content: content });
         allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
-        return allDofusInfos.enclos;
+        return allDofusInfos.toObject().enclos;
     }
     return false;
 };
@@ -308,7 +316,7 @@ dofusSchema.statics.createEnclos = async (userId: string, title: string, content
         };
         const Dofus = mongoose.model<dofusType>('Dofus');
         const dofusSaved = await new Dofus(dofusObj).save();
-        return dofusSaved.enclos;
+        return dofusSaved.toObject().enclos;
     }
     return false;
 };
@@ -318,9 +326,10 @@ dofusSchema.statics.updateEnclos = async (allDofusInfos: dofusType, id: string, 
         allDofusInfos.enclos.map(enclo => {
             if (enclo._id?.toString() === id) enclo.content = content;
         });
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
-        return allDofusInfos.enclos;
+        return allDofusInfos.toObject().enclos;
     }
     return false;
 };
@@ -331,9 +340,10 @@ dofusSchema.statics.removeEnclos = async (allDofusInfos: dofusType, id: string):
             if (enclo._id?.toString() === id) delete allDofusInfos.enclos[index];
         });
         allDofusInfos.enclos = _.compact(allDofusInfos.enclos);
+        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
         allDofusInfos.markModified('enclos');
         await allDofusInfos.save();
-        return allDofusInfos.enclos;
+        return allDofusInfos.toObject().enclos;
     }
     return false;
 };

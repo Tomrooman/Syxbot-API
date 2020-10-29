@@ -77,8 +77,8 @@ settingsSchema.pre('save', function (next) {
 
 settingsSchema.statics.getAllSettings = async (): Promise<settingsType[]> => {
     const Settings = mongoose.model<settingsType>('Settings');
-    const settings = await Settings.find();
-    return settings;
+    const settings = await Settings.find().lean();
+    return settings as settingsType[];
 };
 
 settingsSchema.statics.get = async (guildId: string): Promise<settingsType | false> => {
@@ -86,8 +86,8 @@ settingsSchema.statics.get = async (guildId: string): Promise<settingsType | fal
         const Settings = mongoose.model<settingsType>('Settings');
         const settings = await Settings.findOne({
             guildId: guildId
-        });
-        if (settings) return settings;
+        }).lean();
+        if (settings) return settings as settingsType;
     }
     return false;
 };
@@ -101,7 +101,7 @@ settingsSchema.statics.createSettings = async (guildId: string, notif: notifType
         };
         const Settings = mongoose.model<settingsType>('Settings');
         const settingsSaved = await new Settings(settingsObj).save();
-        return settingsSaved;
+        return settingsSaved.toObject();
     }
     return false;
 };
@@ -113,10 +113,11 @@ settingsSchema.statics.updateSettings = async (settings: settingsType, notif: no
         settings.notif = notif;
         settings.audio = audio;
         // allSettings.twitter = req.body.twitter;
+        settings = mongoose.model<settingsType>('Settings').hydrate(settings);
         settings.markModified('notif');
         settings.markModified('audio');
         await settings.save();
-        return settings;
+        return settings.toObject();
     }
     return false;
 };

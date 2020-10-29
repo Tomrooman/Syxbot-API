@@ -37,8 +37,8 @@ tokenSchema.statics.get = async (userId: string): Promise<tokenType | false> => 
         const Token = mongoose.model<tokenType>('Token');
         const token = await Token.findOne({
             userId: userId
-        });
-        if (token) return token;
+        }).lean();
+        if (token) return token as tokenType;
     }
     return false;
 };
@@ -55,7 +55,7 @@ tokenSchema.statics.createToken = async (tokenObj: tokenType, expires_in: number
         };
         const Token = mongoose.model<tokenType>('Token');
         const tokenSaved = await new Token(newTokenObj).save();
-        return tokenSaved;
+        return tokenSaved.toObject();
     }
     return false;
 };
@@ -69,13 +69,14 @@ tokenSchema.statics.updateToken = async (tokenInfos: tokenType, tokenObj: tokenO
         tokenInfos.expire_at = expire_at;
         tokenInfos.refresh_token = tokenObj.refresh_token;
         tokenInfos.scope = tokenObj.scope;
+        tokenInfos = mongoose.model<tokenType>('Token').hydrate(tokenInfos);
         tokenInfos.markModified('access_token');
         tokenInfos.markModified('token_type');
         tokenInfos.markModified('expire_at');
         tokenInfos.markModified('refresh_token');
         tokenInfos.markModified('scope');
         const tokenSaved = await tokenInfos.save();
-        return tokenSaved;
+        return tokenSaved.toObject();
     }
     return false;
 };
