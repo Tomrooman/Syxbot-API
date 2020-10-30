@@ -70,8 +70,9 @@ if (process.env.NODE_ENV !== 'test') {
 mongoose.connect(DB_url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    autoIndex: false,
-    useFindAndModify: false
+    useCreateIndex: true,
+    useFindAndModify: false,
+    autoIndex: false
 });
 mongoose.connection.once('open', (): void => {
     if (process.env.NODE_ENV !== 'test') {

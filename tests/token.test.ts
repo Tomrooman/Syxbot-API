@@ -11,7 +11,7 @@ const expect = chai.expect;
 describe('TOKEN', function () {
     this.timeout(5000);
     const tokenObj = {
-        userId: '1234554321',
+        userID: '1234554321',
         access_token: 'bad access token',
         token_type: 'test type',
         expire_at: '2000',
@@ -53,7 +53,7 @@ describe('TOKEN', function () {
                     expect(res).to.have.status(201);
                     expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(7);
                     expect(res.body._id).to.be.string;
-                    expect(res.body.userId).to.equal(tokenObj.userId);
+                    expect(res.body.userID).to.equal(tokenObj.userID);
                     expect(res.body.access_token).to.equal(tokenObj.access_token);
                     expect(res.body.token_type).to.equal(tokenObj.token_type);
                     expect(res.body.expire_at).to.exist;
@@ -72,7 +72,7 @@ describe('TOKEN', function () {
                     expect(res).to.have.status(200);
                     expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(7);
                     expect(res.body._id).to.be.string;
-                    expect(res.body.userId).to.equal(tokenObj.userId);
+                    expect(res.body.userID).to.equal(tokenObj.userID);
                     expect(res.body.access_token).to.equal(modifiedTokenObj.access_token);
                     expect(res.body.token_type).to.equal(modifiedTokenObj.token_type);
                     expect(res.body.expire_at).to.exist;
@@ -91,7 +91,7 @@ describe('TOKEN', function () {
                     expect(res).to.have.status(500);
                     expect(Object.keys(res.body)).to.be.an('array').that.have.lengthOf(7);
                     expect(res.body._id).to.be.string;
-                    expect(res.body.userId).to.equal(tokenObj.userId);
+                    expect(res.body.userID).to.equal(tokenObj.userID);
                     expect(res.body.access_token).to.equal(modifiedTokenObj.access_token);
                     expect(res.body.token_type).to.equal(modifiedTokenObj.token_type);
                     expect(res.body.expire_at).to.exist;
@@ -234,7 +234,7 @@ describe('TOKEN', function () {
         });
 
         it('Must not save without one property', done => {
-            let token = new tokenSchema({ ...tokenObj, userId: undefined });
+            let token = new tokenSchema({ ...tokenObj, userID: undefined });
             let err = token.validateSync();
             expect(err).to.exist;
             token = new tokenSchema({ ...tokenObj, access_token: undefined });
@@ -256,7 +256,7 @@ describe('TOKEN', function () {
         });
 
         it('get() => Token should be empty', async () => {
-            let token = await tokenSchema.get(tokenObj.userId);
+            let token = await tokenSchema.get(tokenObj.userID);
             expect(token).to.be.false;
             token = await tokenSchema.get('');
             expect(token).to.be.false;
@@ -268,7 +268,7 @@ describe('TOKEN', function () {
             const noExpiresIn = await tokenSchema.createToken(tokenObj, 0);
             expect(Object.keys(token)).to.be.an('array').that.have.lengthOf(7);
             expect(token._id).to.be.string;
-            expect(token.userId).to.equal(tokenObj.userId);
+            expect(token.userID).to.equal(tokenObj.userID);
             expect(token.access_token).to.equal(tokenObj.access_token);
             expect(token.token_type).to.equal(tokenObj.token_type);
             expect(token.expire_at).to.exist;
@@ -279,10 +279,10 @@ describe('TOKEN', function () {
         });
 
         it('get() => Get one token', async () => {
-            const token = await tokenSchema.get(tokenObj.userId) as tokenType;
+            const token = await tokenSchema.get(tokenObj.userID) as tokenType;
             expect(Object.keys(token)).to.be.an('array').that.have.lengthOf(7);
             expect(token._id).to.be.string;
-            expect(token.userId).to.equal(tokenObj.userId);
+            expect(token.userID).to.equal(tokenObj.userID);
             expect(token.access_token).to.equal(tokenObj.access_token);
             expect(token.token_type).to.equal(tokenObj.token_type);
             expect(token.expire_at).to.exist;
@@ -293,7 +293,7 @@ describe('TOKEN', function () {
 
         it('updateToken() => Return updated token', async () => {
             const updatedToken = {
-                userId: tokenObj.userId,
+                userID: tokenObj.userID,
                 access_token: 'modified access token',
                 token_type: 'modified type',
                 refresh_token: 'modified refresh token',
@@ -305,7 +305,7 @@ describe('TOKEN', function () {
             const noExpireAt = await tokenSchema.updateToken(savedToken, updatedToken, 0);
             expect(Object.keys(token)).to.be.an('array').that.have.lengthOf(7);
             expect(token._id).to.be.string;
-            expect(token.userId).to.equal(tokenObj.userId);
+            expect(token.userID).to.equal(tokenObj.userID);
             expect(token.access_token).to.equal(updatedToken.access_token);
             expect(token.token_type).to.equal(updatedToken.token_type);
             expect(token.expire_at).to.equal(tokenObj.expire_at);
@@ -317,11 +317,11 @@ describe('TOKEN', function () {
         });
 
         it('deleteToken() => Return delete confirmation', async () => {
-            const token = await tokenSchema.deleteToken(tokenObj.userId);
-            const noUserId = await tokenSchema.deleteToken('');
-            const noExist = await tokenSchema.deleteToken(tokenObj.userId);
+            const token = await tokenSchema.deleteToken(tokenObj.userID);
+            const nouserID = await tokenSchema.deleteToken('');
+            const noExist = await tokenSchema.deleteToken(tokenObj.userID);
             expect(token).to.be.true;
-            expect(noUserId).to.be.false;
+            expect(nouserID).to.be.false;
             expect(noExist).to.be.false;
         });
     });

@@ -1,14 +1,25 @@
-import { Document, Model } from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose';
 
 export interface dofusType extends Document {
-    userId: string;
+    userID: string;
     enclos: enclosType[];
     dragodindes: dragodindeType[];
     notif: boolean;
 }
 
+export interface findAndUpdateID {
+    userID: string;
+    enclosID?: string;
+}
+
 export interface enclosType {
     _id?: string;
+    title: string;
+    content: string;
+}
+
+export interface modifyEnclosType {
+    _id: mongoose.Types.ObjectId;
     title: string;
     content: string;
 }
@@ -25,12 +36,12 @@ export interface dataObjType {
 }
 
 export interface notifArrayType {
-    userId: string;
+    userID: string;
     dragodindes: dragodindesType[] | sortedDragoType[];
 }
 
 export interface userNotifInfos {
-    userId: string;
+    userID: string;
     notif: boolean;
 }
 
@@ -65,7 +76,7 @@ export interface sortedDragoType {
 
 /* eslint-disable max-len */
 export interface userStatic extends Model<dofusType> {
-    get(userId: string): Promise<dofusType> | false;
+    get(userID: string): Promise<dofusType> | false;
 
     getDragodindesIfFecondExist(): Promise<notifArrayType[]> | false;
 
@@ -73,13 +84,13 @@ export interface userStatic extends Model<dofusType> {
 
     getAllDragodindesNotifInfos(): Promise<dofusType[]> | false;
 
-    getDragodindes(userId: string): Promise<dragodindeType[]> | false;
+    getDragodindes(userID: string): Promise<dragodindeType[]> | false;
 
-    createNotificationStatus(userId: string, status: string): Promise<dofusType> | false;
+    createNotificationStatus(userID: string, status: string): Promise<dofusType> | false;
 
     addDragodindes(allDofusInfos: dofusType, addedDragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;
 
-    createDragodindes(userId: string, addedDragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;
+    createDragodindes(userID: string, addedDragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;
 
     removeDragodindes(allDofusInfos: dofusType, dragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;
 
@@ -91,11 +102,5 @@ export interface userStatic extends Model<dofusType> {
 
     modifyUsedDragodindes(action: string, allDofusInfos: dofusType, dragodindes: dragodindeType[]): Promise<dragodindeType[]> | false;
 
-    addEnclos(allDofusInfos: dofusType, title: string, content: string): Promise<enclosType[]> | false;
-
-    createEnclos(userId: string, title: string, content: string): Promise<enclosType[]> | false;
-
-    updateEnclos(allDofusInfos: dofusType, id: string, content: string): Promise<enclosType[]> | false;
-
-    removeEnclos(allDofusInfos: dofusType, id: string): Promise<enclosType[]> | false;
+    findAndUpdateEnclos(ObjID: findAndUpdateID, title: string, content: string): Promise<enclosType[]> | false;
 }

@@ -34,7 +34,7 @@ describe('SESSION', () => {
         const hash = await bcrypt.hash(Config.security.secret, Config.bcrypt.saltRounds);
         const signature: string = jwt.sign({
             secret: hash,
-            userId: '1234554321'
+            userID: '1234554321'
         }, Config.security.secret);
         const syxbot_infos = 'syxbot_infos=' + JSON.stringify({
             jwt: signature
@@ -50,7 +50,7 @@ describe('SESSION', () => {
         });
         const customSignature: string = jwt.sign({
             secret: 'fake hash',
-            userId: '1234554321'
+            userID: '1234554321'
         }, Config.security.secret);
         const customSyxbotInfos = 'syxbot_infos=' + JSON.stringify({
             jwt: customSignature

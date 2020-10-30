@@ -11,20 +11,8 @@ router.post('/',
         res.send(res.enclos || false);
     });
 
-router.post('/create',
-    enclosMiddleware.createOrAddEnclos,
-    (_req, res) => {
-        res.send(res.enclos || false);
-    });
-
-router.post('/update',
-    enclosMiddleware.updateEnclos,
-    (_req, res) => {
-        res.send(res.enclos || false);
-    });
-
-router.post('/remove',
-    enclosMiddleware.removeEnclos,
+router.post('/modify',
+    enclosMiddleware.modifyEnclos,
     (_req, res) => {
         res.send(res.enclos || false);
     });

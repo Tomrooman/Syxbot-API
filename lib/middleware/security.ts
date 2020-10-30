@@ -10,13 +10,13 @@ import { getDiscordConnection } from '../../index';
 export const websiteAuthVerif = async (req: Request, res: Response, next: NextFunction): Promise<ServerResponse | void> => {
     if (req.body.type === 'site') {
         if (req.body.token === config.security.token) {
-            req.body.userId = undefined;
+            req.body.userID = undefined;
             const syxbotInfos = req.universalCookies.get('syxbot_infos');
             const syxbot = req.universalCookies.get('syxbot');
             if (syxbot && syxbotInfos) {
-                const userId = verifyJsonToken(syxbotInfos.jwt);
-                if (userId) {
-                    req.body.userId = userId;
+                const userID = verifyJsonToken(syxbotInfos.jwt);
+                if (userID) {
+                    req.body.userID = userID;
                     return next();
                 }
                 return res.status(401).json('Invalid data');
@@ -32,7 +32,7 @@ const verifyJsonToken = (signature: string): boolean | string | undefined => {
     try {
         const verify = jwt.verify(signature, config.security.secret);
         bcrypt.compare(config.security.secret, verify.secret);
-        return verify.userId;
+        return verify.userID;
     }
     catch (e) {
         return false;

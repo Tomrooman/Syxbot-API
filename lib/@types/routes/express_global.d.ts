@@ -47,7 +47,7 @@ declare global {
                 get(name: string): {
                     username: string;
                     discriminator: string;
-                    userId: string;
+                    userID: string;
                     token_type: string;
                     expire_at: number;
                     secret: string;

@@ -2,13 +2,14 @@ import mongoose from 'mongoose';
 import _ from 'lodash';
 import {
     dofusType, dragodindeType, userStatic, enclosType,
-    notifArrayType, userNotifInfos, sortedDragoType
+    notifArrayType, userNotifInfos, sortedDragoType, findAndUpdateID,
+    modifyEnclosType
 } from '../@types/models/dofus';
 
 const Schema = mongoose.Schema;
 
 const dofusSchema = new Schema({
-    userId: {
+    userID: {
         type: String,
         require: true,
         unique: true
@@ -39,11 +40,11 @@ const dofusSchema = new Schema({
     versionKey: false
 });
 
-dofusSchema.statics.get = async (userId: string): Promise<dofusType | false> => {
-    if (userId) {
+dofusSchema.statics.get = async (userID: string): Promise<dofusType | false> => {
+    if (userID) {
         const Dofus = mongoose.model<dofusType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
-            userId: userId
+            userID: userID
         }).lean();
         if (allDofusInfos) return allDofusInfos as dofusType;
     }
@@ -61,7 +62,7 @@ dofusSchema.statics.getDragodindesIfFecondExist = async (): Promise<notifArrayTy
             if (infos.dragodindes.length) {
                 if (_.find(infos.dragodindes, drago => drago.last.status)) {
                     dragodindes.push({
-                        userId: infos.userId,
+                        userID: infos.userID,
                         dragodindes: infos.dragodindes
                     });
                 }
@@ -80,7 +81,7 @@ dofusSchema.statics.getAllDragodindesNotifInfos = async (): Promise<userNotifInf
     if (allDofusInfos && allDofusInfos.length) {
         const dofusNotif = allDofusInfos.map(dofusInfos => {
             return {
-                userId: dofusInfos.userId,
+                userID: dofusInfos.userID,
                 notif: dofusInfos.notif
             };
         });
@@ -89,11 +90,11 @@ dofusSchema.statics.getAllDragodindesNotifInfos = async (): Promise<userNotifInf
     return false;
 };
 
-dofusSchema.statics.getDragodindes = async (userId: string): Promise<dragodindeType[] | false> => {
-    if (userId) {
+dofusSchema.statics.getDragodindes = async (userID: string): Promise<dragodindeType[] | false> => {
+    if (userID) {
         const Dofus = mongoose.model<dofusType>('Dofus');
         const allDofusInfos = await Dofus.findOne({
-            userId: userId
+            userID: userID
         }).lean();
         if (allDofusInfos) return allDofusInfos.dragodindes;
     }
@@ -109,7 +110,7 @@ dofusSchema.statics.setDragodindesToSended = async (notifArray: notifArrayType[]
                     if (drago.end.time === 'Maintenant') return drago.name;
                 });
                 if (dragoName && dragoName.length) {
-                    let allDofusInfos = await Dofus.get(array.userId);
+                    let allDofusInfos = await Dofus.get(array.userID);
                     if (allDofusInfos) {
                         allDofusInfos.dragodindes.map(drago => {
                             if (dragoName.includes(drago.name)) drago.sended = true;
@@ -130,10 +131,10 @@ dofusSchema.statics.setDragodindesToSended = async (notifArray: notifArrayType[]
     return false;
 };
 
-dofusSchema.statics.createNotificationStatus = async (userId: string, status: string): Promise<dofusType | false> => {
-    if (userId && status) {
+dofusSchema.statics.createNotificationStatus = async (userID: string, status: string): Promise<dofusType | false> => {
+    if (userID && status) {
         const dofusObj = {
-            userId: userId,
+            userID: userID,
             enclos: [],
             dragodindes: [],
             notif: status === 'on' ? true : false
@@ -158,10 +159,10 @@ dofusSchema.statics.addDragodindes = async (allDofusInfos: dofusType, addedDrago
     return false;
 };
 
-dofusSchema.statics.createDragodindes = async (userId: string, addedDragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
-    if (userId && addedDragodindes && addedDragodindes.length) {
+dofusSchema.statics.createDragodindes = async (userID: string, addedDragodindes: dragodindeType[]): Promise<dragodindeType[] | false> => {
+    if (userID && addedDragodindes && addedDragodindes.length) {
         const dofusObj = {
-            userId: userId,
+            userID: userID,
             dragodindes: addedDragodindes,
             enclos: []
         };
@@ -293,57 +294,29 @@ dofusSchema.statics.modifyUsedDragodindes = async (action: string, allDofusInfos
     return false;
 };
 
-dofusSchema.statics.addEnclos = async (allDofusInfos: dofusType, title: string, content: string): Promise<enclosType[] | false> => {
-    if (allDofusInfos && title && content) {
-        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
-        allDofusInfos.enclos.push({ title: title, content: content });
-        allDofusInfos.markModified('enclos');
-        await allDofusInfos.save();
-        return allDofusInfos.toObject().enclos;
+dofusSchema.statics.findAndUpdateEnclos = async (ObjID: findAndUpdateID, title: string, content: string): Promise<enclosType[] | false> => {
+    const Dofus = mongoose.model<dofusType>('Dofus');
+    if (ObjID.userID && content &&
+        (ObjID.enclosID && mongoose.Types.ObjectId.isValid(ObjID.enclosID) || title)) {
+        const enclosData = { title, content } as modifyEnclosType;
+        const query = { userID: ObjID.userID };
+        const update = ObjID.enclosID ?
+            { $set: { 'enclos.$[elem]': { title, content } } } :
+            { $push: { enclos: enclosData } };
+        const options = ObjID.enclosID ?
+            { new: true, arrayFilters: [{ 'elem._id': ObjID.enclosID }] } :
+            { new: true, upsert: true, setDefaultsOnInsert: true };
+        const result = await Dofus.findOneAndUpdate(query, update, options).lean() as dofusType;
+        return result.enclos;
     }
-    return false;
-};
-
-dofusSchema.statics.createEnclos = async (userId: string, title: string, content: string): Promise<enclosType[] | false> => {
-    if (userId && title && content) {
-        const dofusObj = {
-            userId: userId,
-            dragodindes: [],
-            enclos: [{
-                title: title,
-                content: content
-            }]
-        };
-        const Dofus = mongoose.model<dofusType>('Dofus');
-        const dofusSaved = await new Dofus(dofusObj).save();
-        return dofusSaved.toObject().enclos;
-    }
-    return false;
-};
-
-dofusSchema.statics.updateEnclos = async (allDofusInfos: dofusType, id: string, content: string): Promise<enclosType[] | false> => {
-    if (allDofusInfos && id && content) {
-        allDofusInfos.enclos.map(enclo => {
-            if (enclo._id?.toString() === id) enclo.content = content;
-        });
-        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
-        allDofusInfos.markModified('enclos');
-        await allDofusInfos.save();
-        return allDofusInfos.toObject().enclos;
-    }
-    return false;
-};
-
-dofusSchema.statics.removeEnclos = async (allDofusInfos: dofusType, id: string): Promise<enclosType[] | false> => {
-    if (allDofusInfos && id) {
-        allDofusInfos.enclos.map((enclo, index) => {
-            if (enclo._id?.toString() === id) delete allDofusInfos.enclos[index];
-        });
-        allDofusInfos.enclos = _.compact(allDofusInfos.enclos);
-        allDofusInfos = mongoose.model<dofusType>('Dofus').hydrate(allDofusInfos);
-        allDofusInfos.markModified('enclos');
-        await allDofusInfos.save();
-        return allDofusInfos.toObject().enclos;
+    else if (ObjID.userID && ObjID.enclosID && mongoose.Types.ObjectId.isValid(ObjID.enclosID)
+        && !content.length && !title.length) {
+        const result = await Dofus.findOneAndUpdate(
+            { userID: ObjID.userID },
+            { $pull: { enclos: { _id: ObjID.enclosID } } },
+            { new: true }
+        ).lean() as dofusType;
+        return result.enclos;
     }
     return false;
 };

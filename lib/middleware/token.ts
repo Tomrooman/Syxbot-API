@@ -10,14 +10,14 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const userId = req.body.userId;
-    const token = await tokenModel.get(userId);
+    const userID = req.body.userID;
+    const token = await tokenModel.get(userID);
     if (token) res.token = token;
     next();
 };
 
 export const createOrUpdateToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const userId = req.body.userId;
+    const userID = req.body.userID;
     const access_token = req.body.access_token;
     const refresh_token = req.body.refresh_token;
     const scope = req.body.scope;
@@ -25,13 +25,13 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
     if (access_token && refresh_token && scope && token_type) {
         let token: tokenType | false = false;
         const tokenObj = {
-            userId: userId,
+            userID: userID,
             access_token: access_token,
             refresh_token: refresh_token,
             scope: scope,
             token_type: token_type
         };
-        const tokenInfos = await tokenModel.get(req.body.userId);
+        const tokenInfos = await tokenModel.get(req.body.userID);
         if (tokenInfos) {
             token = await tokenModel.updateToken(tokenInfos, tokenObj, req.body.expire_at);
             res.status(200);
@@ -47,8 +47,8 @@ export const createOrUpdateToken = async (req: Request, res: Response, next: Nex
 };
 
 export const removeToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const userId = req.body.userId;
-    const token = await tokenModel.deleteToken(userId);
+    const userID = req.body.userID;
+    const token = await tokenModel.deleteToken(userID);
     if (token) {
         res.clearCookie('syxbot');
         res.clearCookie('syxbot_infos');
@@ -92,7 +92,7 @@ export const setUpdateDataToCallDiscordAPI = (_req: Request, res: Response, next
 };
 
 /* eslint-disable max-lines-per-function */
-export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction): Promise<void>=> {
+export const getTokenDiscordAPI = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (res.discordData) {
         try {
             const apiToken: apiTokenType = await Axios.post('https://discord.com/api/oauth2/token', res.discordData, {
@@ -110,7 +110,7 @@ export const getTokenDiscordAPI = async (_req: Request, res: Response, next: Nex
                     const hash = await bcrypt.hash(Config.security.secret, Config.bcrypt.saltRounds);
                     const signature: string = jwt.sign({
                         secret: hash,
-                        userId: discordMe.data.id
+                        userID: discordMe.data.id
                     }, Config.security.secret);
                     setCookies(res, discordMe, apiToken, signature);
                     res.token = {
